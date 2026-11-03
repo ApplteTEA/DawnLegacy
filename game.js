@@ -126,7 +126,7 @@ async function enemyAction(){
    fight.active=idx;
    fight.message=p.name+'이(가) 쓰러졌다! '+active().name+' 출전!';
  }
- save();if(fight)battleUI();
+ save();if(fight){fight.busy=false;battleUI()}
 }
 async function attack(i){
  if(!fight||fight.busy)return;
