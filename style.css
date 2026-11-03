@@ -54,3 +54,64 @@
 #dpad button{border-radius:6px;border-color:#dbe6d1;background:#1b3644d9;box-shadow:inset 0 -4px 0 #0e2631}
 #actions button{border-color:#e6eadb;box-shadow:inset 0 -5px 0 #0003,0 5px 0 #12232c}
 @media(max-height:460px){.battle-bottom{min-height:100px;height:35%}.battle-status{padding:4px 9px;border-width:2px}.battle-hp-track{height:8px}.battle-hp-number{font-size:10px}.battle-name{font-size:13px}.battle-message{font-size:14px}.battle-ground.enemy{top:44%}}
+
+/* Fold landscape layout correction: single full-viewport coordinate system */
+html,body,#app{width:100%;height:100%;height:100dvh;overflow:hidden}
+#app{display:block;position:fixed;inset:0;width:100vw;height:100dvh}
+#stage{position:absolute;inset:0;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;box-shadow:none!important;background:#314c4b}
+#scene{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;image-rendering:pixelated}
+#hud{left:max(12px,env(safe-area-inset-left));top:max(10px,env(safe-area-inset-top));max-width:56%;padding:6px 10px;font-size:clamp(10px,1.5vw,16px);z-index:2}
+#topbar{top:max(10px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:2}
+#dpad{left:max(14px,env(safe-area-inset-left));bottom:max(12px,env(safe-area-inset-bottom));width:clamp(108px,18vh,190px)!important;height:clamp(108px,18vh,190px)!important;z-index:2}
+#actions{right:max(18px,env(safe-area-inset-right));bottom:max(25px,env(safe-area-inset-bottom));gap:clamp(12px,3vw,35px);z-index:2}
+#actions button{width:clamp(54px,12vh,100px)!important;height:clamp(54px,12vh,100px)!important}
+#overlay{inset:0;width:100vw;height:100dvh;padding:clamp(6px,1.5vh,14px);overflow:hidden;align-items:center;justify-content:center}
+#dialog{max-height:calc(100dvh - 12px);max-width:calc(100vw - 12px)}
+#dialog:has(.intro){max-height:calc(100dvh - 12px);overflow:auto}
+#dialog:has(.hg-battle){position:relative;flex:none;width:min(100vw,1100px)!important;height:calc(100dvh - 8px)!important;max-width:100vw!important;max-height:100dvh!important;overflow:hidden!important;padding:0!important;border:0!important;box-shadow:none!important}
+.hg-battle{height:100%;min-height:0;display:flex;flex-direction:column}
+.battle-field{height:0;flex:1 1 auto;min-height:0}
+.battle-bottom{height:clamp(115px,34dvh,230px);min-height:0;flex:none;grid-template-columns:52% 48%}
+.battle-options{min-width:0;min-height:0;overflow:auto}
+.battle-message{min-width:0;min-height:0;overflow:auto;overflow-wrap:anywhere}
+.battle-commands{min-height:0}
+#dialog .battle-commands button{min-height:0!important;margin:0!important;padding:3px 6px!important}
+.battle-status.enemy{left:3%;top:6%}
+.battle-status.ally{right:3%;bottom:5%}
+.enemy-mon{left:63%;top:18%;height:39%}
+.ally-mon{left:12%;bottom:7%;height:50%}
+@media(max-height:550px) and (orientation:landscape){
+ #dialog:has(.intro){padding:8px 14px}
+ .intro h1{font-size:20px;margin-bottom:2px}
+ .intro-eyebrow{font-size:9px;margin:0 0 3px}
+ .intro p{font-size:11px;margin:3px 0 6px}
+ .type-grid{grid-template-columns:repeat(9,minmax(0,1fr));gap:4px;margin:7px 0}
+ .intro .type-card{min-height:43px!important;padding:3px!important;font-size:11px!important}
+ .type-symbol{font-size:16px}
+ .type-choice{padding:5px 10px}
+ .type-choice h2{font-size:17px!important}
+ .intro .intro-main{padding:7px 12px!important}
+ .intro .intro-footnote{font-size:10px}
+ .roulette-stage{height:150px}
+ .partner-hero{padding:4px 10px;margin:5px auto}
+ .partner-emblem{width:55px;height:55px;font-size:32px}
+ .partner-name{font-size:20px}
+ .battle-bottom{height:38dvh;min-height:95px}
+ .battle-status{padding:3px 7px;min-width:140px;border-width:2px}
+ .battle-name{font-size:12px}
+ .battle-hp-label{margin-top:2px}
+ .battle-hp-track{height:8px}
+ .battle-message{font-size:clamp(12px,1.7vw,17px);padding:8px 12px}
+ #dialog .battle-commands button{font-size:clamp(11px,1.5vw,16px)}
+}
+@media(orientation:portrait){
+ #stage{height:100dvh!important}
+ #scene{object-fit:cover}
+ #dpad{width:clamp(110px,29vw,170px)!important;height:clamp(110px,29vw,170px)!important}
+ #actions button{width:clamp(56px,15vw,88px)!important;height:clamp(56px,15vw,88px)!important}
+ .battle-bottom{grid-template-columns:1fr;height:42dvh;grid-template-rows:38% 62%}
+ .battle-message{border-right:0;border-bottom:3px solid #dce4d4}
+ .battle-status{min-width:130px;width:43%}
+ .enemy-mon{width:25%;left:60%}
+ .ally-mon{width:30%;left:10%}
+}
