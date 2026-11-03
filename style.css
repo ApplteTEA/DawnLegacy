@@ -172,3 +172,16 @@ html,body,#app{width:100%;height:100%;height:100dvh;overflow:hidden}
 #actions #keyB{transform:translateY(9px)!important}
 #actions button:active{filter:brightness(1.25);box-shadow:0 1px 0 #142e37!important}
 @media(orientation:landscape){#dpad{width:clamp(95px,23vh,150px)!important;height:clamp(95px,23vh,150px)!important}#actions button{width:clamp(48px,13vh,78px)!important;height:clamp(48px,13vh,78px)!important}}
+
+/* Handheld field layout: a real game viewport above a separate touch controller */
+@media(orientation:portrait){
+ #app,#stage{background:#162f36!important}
+ #scene{position:absolute!important;top:clamp(74px,10dvh,100px)!important;left:0!important;width:100%!important;height:auto!important;aspect-ratio:10/9!important;object-fit:fill!important;background:#8ac17f!important;image-rendering:pixelated!important;box-shadow:0 7px 0 #0c242e,0 11px 20px #0c202780!important}
+ #hud{top:max(14px,env(safe-area-inset-top))!important;left:14px!important;max-width:calc(100vw - 120px)!important}
+ #topbar{top:max(14px,env(safe-area-inset-top))!important;right:14px!important}
+ #dpad{bottom:max(38px,env(safe-area-inset-bottom))!important;left:clamp(18px,5vw,35px)!important;width:clamp(138px,38vw,172px)!important;height:clamp(138px,38vw,172px)!important}
+ #actions{bottom:max(66px,env(safe-area-inset-bottom))!important;right:clamp(16px,4vw,28px)!important;gap:clamp(9px,2.8vw,17px)!important}
+ #actions button{width:clamp(58px,15vw,82px)!important;height:clamp(58px,15vw,82px)!important}
+ #stage:before{content:'DAWN LEGACY';position:absolute;top:calc(clamp(74px,10dvh,100px) + 100vw * .9 + 22px);left:0;right:0;text-align:center;font-size:clamp(13px,3.8vw,19px);font-weight:900;letter-spacing:.25em;color:#80a8a0;pointer-events:none}
+ #toast{top:calc(clamp(74px,10dvh,100px) + 100vw * .35)!important}
+}
