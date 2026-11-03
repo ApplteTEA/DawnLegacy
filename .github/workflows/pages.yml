@@ -19,6 +19,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Verify field engine
+        run: |
+          node --check bootstrap.js
+          node --check field-manifest.js
+          node --check field-actors.js
+          node --check world-v2.js
+          node --check game.js
+          node tests/field-actors.test.cjs
       - name: Configure Pages and initialize site
         uses: actions/configure-pages@v5
         with:

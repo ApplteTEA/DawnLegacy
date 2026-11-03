@@ -12,88 +12,6 @@ const WORLD_V2=(()=>{
    paint(r);return cv;
  };
  const sprites={};
- const trainerImage=new Image();let trainerReady=false;
- trainerImage.onload=()=>{trainerReady=trainerImage.naturalWidth>0};
- trainerImage.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAoCAYAAACfKfiZAAAHuElEQVR42q2YfWxT5xXGf9eQQEKd2NRR4gST3GAHNIitJsRQr2AICqNBDaAx/iitULugohUoYgsDIVAFg60fQtUI2hhfRe1ARUjpQJCNaHwE1A/ShSVetSQOcRLaOFZcbBLyQbL47g/bN7a5+WI7kuXr9x77Oe95n3POcy0wCRtor56Qn8rrByA+r2RcX2EyAaQka6W+/v5x/XoHByb8u1MnEKKENIUZ8XF8v6EYAEmd+LRbT598b9qRE1Jk1lReP/F5JcKkArhTflA6efIvLDfO5UZzIy9PSY0CUwoC4GFLL5/lr5Y/G3LXcPvcUQZrL0lKQShGlZeZKe/gygs/5vmUp91iA4jMgNDTxw9dwZ8w36ikuMiO3azlzf1nxg5goL2at3YekYpdQyw1JAMogo8VQKz90CWxp7UJgNLSNVhtFiGSnCol9v4vpnQ0v83KkY8wtjKiAmhxd0tOV4e8+/8HeKTVtX1Pw5VPJUUSHivbIuWvK+VnP1owISDhtVcI6DQjR3DwuGL6I+3UhUre/vCPo1dB7+DQqOcY5kPL2pcRl65EiiFQYN9bCB99EkXAWHvg74aYWyolx+oHj6LAn08RZPCs3NnK7UI7D/9rGyZ9bDF9YBhgVA6IS1fK135nHT63BwCtPhWNyYLGZAnyoKtXcTMTbkThL4UDCad0ZoTPXw9/LF/PWTaPApNlVJDKYU9UI5tcKw7ZtakCjw/sj0iHmsTs+UF2t3xLXejec+19rBwlCMXBFbtQ7+tSBhfV3HV1ApCYPV8Gj/ycmD2fx6Kaa1OVm5fSIBNiJ11iQgLFRXYKmcHj0C6LF80DQDNGmiO5cfXrhiBgy7dy0FU1jTxyu4LVNjQAUhBbBXD6wBsYNEmsL1lFnCYNp6uD6/TKu/S5PfjcHvzOunED8Lk9vDhbK2fGKqZRVdPIkL+TZL2IJddM3uxMTh94I8iBwdpLbD58mtyCFwAoKpjL2YufYxLXAvDibK3McoBzn342KnjxonlypXwZ8rvr6uSR20WyXiRLpwZgui6VW/U+aaC9WgiTUHK6OsgZDtA0RYUt34qj5h5nL17mzB8+gnYffN3Art376evvp3dwiBnxcSQmJMhn2zs4REpyEiajic2lr8tBVdU0sr5kFU5XR1SwVjENldc/UgXOZicYTbR6e8jSqZmuS8WmS2XrO2UyUMWhnTQ9bKG/Zxrv/mkkE8l6kfc32HnO1QPAL94pk+9Zcs1Pgbd6e0aqID6vBLtZi0GTRJ2jno62f4/J3pyZ2VgyMzBokuS1IX8nCeonDJvjGTbHK7b2Vm8PzmYnzmYnafRhycwgPq8kyMTB2kvS5sOnOXvxMpvWvxIVcc5wgN2HdgCw5NVtfFhUzJxlwapoethCzsxs2Xf7BycB+H1ZKQC7zlyWwYsK5uJ0dVDnqOdvR/ZitVmIzysRVKEZLVjFNGAYq5hGznCAAa9HBs/WJ5GtTyJOk8ZjUY1OFLHaLNjyV8jXC0vsAHSSyMISO1abhdMHtjPg9TDk78Ru1mIS04MlGMKM6oQJ6ifY8q3cdXViLVrIclcPN5obydYHUx3QacjSBftCeC38HrbpulSION9sfRJmbQpmbYq8tumna3lp6z7hqU745v4zwvWKD3HU3MOSmSGnOQwOYBLTx+wBJjGdvRvs0drBOIuCooXcqvchNH/H8SM7xxelKclaeWrfPndU3mmLuztq15JpMZKvQVHKtbi78bpcrNt7BIMmmImP//mNMO4sAOh65BMqDu3EoEkif12pnIXYlLuqr6Hy+qOUUaT9ZOchAL6qOKoIPuo0HKy9JAV0GnJv/oMHVbfIWL4JgyaJryqORvmFA4rNQMbyTUTOlUk/mh0r2yL9+XotJjGd3/0nkT2tTVxx3R85a6MJk5iOVUyTh03YHDX3eODvptxoY6khmT2tTUjGWQCcvfi5MG4Gwj1hwOthz4HtVO8/D8BqcQ4FRQsBePuDE7R6e7hadSvqu+VGG8W6BbzHv+S13Yd2sOTVbZiMJgZrL40tywHuflGHVUyjsuIkWv2IimmaouLUhUosmRncKX+XLJ06mInQ67ufr5eFR2NIql2bKqDVp3L73NFRn5YVSZiYPZ9k3TQAvIUGmqaoqHPU82vdAu7fbOD+zQZMYrr82liYx8OWoA5cbpwbfMoSNQRWLJY148bCPO6UHxyfhC9t3SccK9sitTq0sgKuc9TLfX26K0i490/skEe0q/oa1dfPMyBqOO5yAnDc5cT09142LsqM/O2JVUFN1TeculDJF7c/IUH9hLn61KCmH8W+bPehEjXMWTYPE73UOepxNjsZ8HoI6DQUrvsVA17PxEWpZJwFNV3YlrzOA3+3XFJXxTg2L8tHJ4rsOnxM9l+2YgWBFYtxAoXM4GJogjb292PIXRMsRTGd2ra2iZVhWC6F49n2m/MkJiQQp0mTF8PqRmnGD/k76XrUzbGyzSSonxDZ7p9ZlkcCh2d7pBqy5edHBTEjPi4K/Nn/oglmSQrrxaB14PSHJHpILUXev1rV+ayPZsq2vmSV4Ki5h6PmHoA0XZfKe79cG5XO8lPXcYSItlqcI3e/cf9Rm4iT3azFrE2h0e2h0e0RcoYDitypbWujtr0NyTgLu1kbJeNGs/8Ck00Stguq3oQAAAAASUVORK5CYII=';
- const trainerFrames={};
- const makeTrainerFrame=(direction,frame)=>{
-   const cv=document.createElement('canvas');cv.width=32;cv.height=40;
-   const c=cv.getContext('2d');c.imageSmoothingEnabled=false;
-   const p=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h)};
-   // Use the SAME high-detail PNG for all directions, retaining outline and shading.
-   if(direction==='Left'){
-     c.translate(32,0);c.scale(-1,1);
-   }
-   if(direction==='Left'||direction==='Right'){
-     // Profile: narrower torso, visible nose and single eye, no front-facing eyes.
-     c.drawImage(trainerImage,5,0,22,40,7,0,21,40);
-     p(7,14,9,12,'#382f36');
-     p(16,15,9,11,'#e9b995');
-     p(22,17,2,2,'#222a34');
-     p(25,20,3,2,'#d29a7d');
-     p(6,21,6,11,'#ac424e');
-     p(8,6,19,3,'#e76570');
-     p(23,10,7,3,'#b52f40');
-   }else{
-     c.drawImage(trainerImage,0,0,32,40);
-     if(direction==='Up'){
-       // Back: cover facial features, preserve PNG's hat/body/boots.
-       p(7,13,19,12,'#302c36');
-       p(8,14,17,8,'#47373c');
-       p(10,20,13,4,'#332c34');
-       p(9,24,15,12,'#25364e');
-       p(11,25,11,9,'#b94953');
-       p(13,27,7,5,'#e6c2a3');
-       p(8,7,18,5,'#c83c4e');
-       p(10,5,14,2,'#ed7378');
-     }
-   }
-   if(frame!==0){
-     // Alternate the planted foot and shift the silhouette by one pixel.
-     const left=frame===1;
-     c.clearRect(left?20:8,36,5,4);
-     p(left?8:20,36,5,3,'#262c3c');
-   }
-   return cv;
- };
- const getTrainerFrame=(key)=>{
-   if(!trainerReady)return null;
-   const direction=key.includes('Up')?'Up':key.includes('Left')?'Left':key.includes('Right')?'Right':'Down';
-   const frame=key.includes('Walk')?1+Math.floor(Date.now()/110)%2:0;
-   const id=direction+frame;
-   return trainerFrames[id]||(trainerFrames[id]=makeTrainerFrame(direction,frame));
- };
- const pokemonIds={'치코리타':152,'베이리프':153,'메가니움':154,'브케인':155,'마그케인':156,'마그마라시':157,'블레이범':157,'리아코':158,'엘리게이':159,'장크로다일':160,'이상해씨':1,'이상해풀':2,'이상해꽃':3,'파이리':4,'리자드':5,'리자몽':6,'꼬부기':7,'어니부기':8,'거북왕':9,'구구':16,'피죤':17,'꼬렛':19,'캐터피':10,'단데기':11,'뿔충이':13,'딱충이':14,'모다피':69,'우츠동':70,'주뱃':41,'골뱃':42,'꼬마돌':74,'데구리':75,'메리프':179,'보송송':180,'전룡':181,'우파':194,'델빌':228,'이브이':133,'고오스':92,'고우스트':93,'팬텀':94,'피카츄':25,'라이츄':26,'식스테일':37,'나인테일':38,'가디':58,'윈디':59,'미뇽':147,'무우마':200,'코일':81,'레어코일':82,'롱스톤':95,'애버라스':246,'데기라스':247,'네이티':177,'니로우':198,'피콘':204,'쏘콘':205,'마릴':183,'마릴리':184,'통통코':187,'두코':188,'초라기':170,'랜턴':171,'고라파덕':54,'골덕':55,'알통몬':66,'근육몬':67,'모래두지':27,'고지':28,'쥬쥬':86,'루주라':124,'꾸꾸리':220,'포푸니':215,'단단지':213,'에이팜':190,'에브이':196,'블래키':197,'부스터':136,'샤미드':134,'쥬피썬더':135,'해너츠':192,'핫삼':212,'강철톤':208,'마그마그':218,'마그카르고':219,'꼬지모':185,'헤라크로스':214,'토게피':175,'무장조':227,'코코리':231,'코코리':231,'코코리':231,'코코리':231};
- const pokemonCache=new Map();
- const getPokemonImage=(name,back)=>{
-   const id=pokemonIds[name];if(!id)return null;
-   const key=id+':'+(back?'back':'front');
-   if(!pokemonCache.has(key)){
-     const entry={image:new Image(),ready:false,failed:false};
-     const path='sprites/pokemon/'+(back?'back/':'')+id+'.png';
-     const urls=[
-       'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/'+path,
-       'https://raw.githubusercontent.com/PokeAPI/sprites/master/'+path,
-       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+id+'.png'
-     ];
-     let index=0;
-     const load=()=>{
-       const image=new Image();
-       entry.image=image;
-       image.onload=()=>{entry.ready=image.naturalWidth>0;entry.failed=!entry.ready};
-       image.onerror=()=>{if(++index<urls.length)load();else entry.failed=true};
-       image.src=urls[index];
-     };
-     pokemonCache.set(key,entry);load();
-   }
-   return pokemonCache.get(key);
- };
- // Warm the most common starter images before the first field frame.
- for(const name of ['치코리타','브케인','리아코']){
-   getPokemonImage(name,false);getPokemonImage(name,true);
- }
- // Local, authored chibi sprite assets; no external image dependency.
- const drawLpc=()=>false;
  sprites.tree=sprite(r=>{
    r(17,41,15,20,'#66503a');r(21,42,7,18,'#9c7850');
    r(3,21,43,28,'#244e39');r(6,13,37,31,'#347447');r(12,6,28,29,'#478d51');
@@ -122,151 +40,6 @@ const WORLD_V2=(()=>{
    r(0,11,32,4,'#ddc79a');r(0,20,32,4,'#c8ad7f');
    r(5,3,5,27,'#b89a70');r(24,3,5,27,'#b89a70');
  },32,32);
- // Original chibi pixel-art sprites: four directions and three walking poses.
- const colors={
-  hero:{X:'#253044',H:'#483b3c',C:'#d44452',c:'#f37c80',W:'#fff3e5',S:'#f2c69e',s:'#dca17e',E:'#273747',B:'#376ca9',b:'#79b5e4',N:'#35466d',n:'#647fa8',K:'#403b49',k:'#e7e0d5',P:'#e6c77d'},
-  npc:{X:'#283b48',H:'#59453b',C:'#406989',c:'#83a6c1',W:'#e6e2d3',S:'#e9bb91',s:'#d39475',E:'#293845',B:'#4b998c',b:'#92c5b0',N:'#4a6172',n:'#718c9e',K:'#383f4b',k:'#dfd6c4',P:'#c4ac85'},
-  npc2:{X:'#3a3941',H:'#8b5e43',C:'#8c624a',c:'#cda27d',W:'#f2e7c8',S:'#f0c39b',s:'#d99b78',E:'#343c42',B:'#a77b65',b:'#d2a48b',N:'#605a68',n:'#8c8293',K:'#4c4142',k:'#eee0c7',P:'#c2ad76'}
- };
- const fronts=[
- '................',
- '.....XXXXXX.....',
- '....XCCCCCCX....',
- '...XCCccccCCX...',
- '..XCCcWWWWcCCX..',
- '..XCCCCCCCCCCX..',
- '...XHHHHHHHHX...',
- '....HSSSSSSH....',
- '...XSSSEESSX....',
- '...XSSSSSSSX....',
- '....SSsSSsSS....',
- '.....XSSSSX.....',
- '....XXBBBBXX....',
- '...XSBBbbBBSX...',
- '...XSBBBBBBSX...',
- '...XSBBBBBBSX...',
- '....XNNNNNNX....',
- '....XNNNNNNX....',
- '....XNNXXNNX....',
- '....XKKXXKKX....',
- '....XkkXXkkX....',
- '................'
- ];
- const backs=[
- '................',
- '.....XXXXXX.....',
- '....XCCCCCCX....',
- '...XCCccccCCX...',
- '..XCCCCCCCCCCX..',
- '..XCCCCCCCCCCX..',
- '...XHHHHHHHHX...',
- '....HHHHHHHH....',
- '...XHHHHHHHHX...',
- '...XHHHHHHHHX...',
- '....HHHHHHHH....',
- '.....XSSSSX.....',
- '....XXBBBBXX....',
- '...XSBBBBBBSX...',
- '...XSBBbbBBSX...',
- '...XSBBBBBBSX...',
- '....XNNNNNNX....',
- '....XNNNNNNX....',
- '....XNNXXNNX....',
- '....XKKXXKKX....',
- '....XkkXXkkX....',
- '................'
- ];
- const profiles=[
- '................',
- '.....XXXXXX.....',
- '....XCCCCCCX....',
- '...XCCccccCCX...',
- '..XCCcWWWWcCCX..',
- '..XCCCCCCCCCCX..',
- '....XHHHHHHHX...',
- '.....HSSSSSSX...',
- '....XSSSESSSX...',
- '....XSSSSSSSX...',
- '.....SSsSSsS....',
- '......XSSSX.....',
- '.....XXBBBBX....',
- '....XSBBbbBBSX..',
- '....XSBBBBBBSX..',
- '....XSBBBBBBSX..',
- '.....XNNNNNNX...',
- '.....XNNNNNNX...',
- '.....XNNXXNNX...',
- '.....XKKXXKKX...',
- '.....XkkXXkkX...',
- '................'
- ];
- const paint=(r,rows,palette)=>{
-   rows.forEach((row,y)=>[...row].forEach((pixel,x)=>{
-     if(pixel!=='.'&&palette[pixel])r(x*2,y*2,2,2,palette[pixel]);
-   }));
- };
- const variantRows=(base,variant,direction,step)=>{
-   const rows=base.slice();
-   if(variant==='npc'){
-     rows[1]='......XXXX......';
-     rows[2]='.....XCCCCX.....';
-     rows[3]='....XCCccCCX....';
-     rows[4]='...XCCCCCCCCX...';
-     rows[14]=rows[14].replace(/b/g,'W');
-   }
-   if(variant==='npc2'){
-     rows[1]='.....XHHHHX.....';
-     rows[2]='....XHHHHHHX....';
-     rows[3]='...XHHHHHHHHX...';
-     rows[4]='...XHHHHHHHHX...';
-     rows[5]='....XHHHHHHX....';
-   }
-   if(step===1){
-     rows[18]='....XNN..NNX....';
-     rows[19]='...XKK....KKX...';
-     rows[20]='...Xkk....kkX...';
-   }else if(step===2){
-     rows[18]='.....XNNNNX.....';
-     rows[19]='.....XKKKKX.....';
-     rows[20]='.....XkkkkX.....';
-   }
-   if(direction==='right')return rows.map(row=>[...row].reverse().join(''));
-   return rows;
- };
- const human=(direction,variant,step)=>sprite(r=>{
-   const base=direction==='up'?backs:direction==='down'?fronts:profiles;
-   paint(r,variantRows(base,variant,direction,step),colors[variant]);
- },32,44);
- for(const [suffix,direction] of [['Down','down'],['Up','up'],['Left','left'],['Right','right']]){
-   for(const kind of ['player','npc','npc2']){
-     const variant=kind==='player'?'hero':kind;
-     sprites[kind+suffix]=human(direction,variant,0);
-     sprites[kind+suffix+'Walk']=human(direction,variant,1);
-     sprites[kind+suffix+'Walk2']=human(direction,variant,2);
-   }
- }
- sprites.npc=sprites.npcDown;
- const follower=(direction,frame=0)=>sprite(r=>{
-   const up=direction==='up',left=direction==='left',right=direction==='right';
-   r(3,27,22,3,'#4b7b50');
-   r(7,21,6,7,'#a46d46');r(17,21+(frame?1:0),6,7,'#a46d46');
-   r(5,11,21,14,'#b98454');r(7,13,17,10,'#e3b782');
-   if(left||right){
-     r(left?3:21,13,6,8,'#d6a16e');
-     r(left?8:19,16,3,3,'#2c3941');
-     r(left?13:15,22,5,3,'#976747');
-   }else{
-     r(5,3,7,13,'#cf9969');r(19,3,7,13,'#cf9969');
-     r(7,6,3,6,'#edc18b');r(21,6,3,6,'#edc18b');
-     if(!up){r(10,16,3,4,'#303941');r(20,16,3,4,'#303941');r(15,22,4,3,'#936144')}
-     else{r(10,14,12,7,'#ab794e')}
-   }
- },31,31);
- for(const [suffix,direction] of [['Down','down'],['Up','up'],['Left','left'],['Right','right']]){
-   sprites['follower'+suffix]=follower(direction);
-   sprites['follower'+suffix+'Walk']=follower(direction,1);
- }
- sprites.follower=sprites.followerDown;
  const makeHouse=(roof,trim,sign)=>{
    return sprite(r=>{
      r(6,67,119,8,'#4c7654');
@@ -302,66 +75,12 @@ const WORLD_V2=(()=>{
  const draw=(ctx,canvas,state,npcs,isGrass)=>{
    const W=canvas.width,H=canvas.height;
    ctx.imageSmoothingEnabled=false;
-   const camX=state.x*T-W/2+T/2,camY=state.y*T-H/2+T/2;
+   const poses=FIELD_ACTORS.sample(state);
+   const camX=poses.player.x*T-W/2+T/2,camY=poses.player.y*T-H/2+T/2;
    const P=(x,y)=>[Math.round(x*T-camX),Math.round(y*T-camY)];
    const img=(key,x,y,w,h)=>{
-     const sp=sprites[key],dw=w||(sp?sp.width:32),dh=h||(sp?sp.height:44);
-     if(key.startsWith('player')&&trainerReady){
-       const frame=getTrainerFrame(key);
-       ctx.save();ctx.imageSmoothingEnabled=false;
-       ctx.drawImage(frame,Math.round(x),Math.round(y),dw,dh);
-       ctx.restore();return;
-     }
-     if(key.startsWith('follower')){
-       const name=state.party&&state.party[0]&&state.party[0].name;
-       const back=key.includes('Up');
-       const entry=getPokemonImage(name,back);const frontEntry=back?getPokemonImage(name,false):null;
-       const display=entry&&entry.ready?entry:frontEntry&&frontEntry.ready?frontEntry:null;
-       if(display){
-         ctx.save();ctx.imageSmoothingEnabled=false;
-         const flip=key.includes('Left');
-         if(flip){ctx.translate(Math.round(x+dw),0);ctx.scale(-1,1);ctx.drawImage(display.image,0,Math.round(y)-2,dw,dh)}
-         else ctx.drawImage(display.image,Math.round(x),Math.round(y)-2,dw,dh);
-         ctx.restore();return;
-       }
-     }
-     if(key.startsWith('follower')){
-       const mon=state.party&&state.party[0],name=mon&&mon.name||'';
-       const isGrass=/치코리타|베이리프|메가니움|이상해/.test(name);
-       const isFire=/브케인|마그케인|블레이범|파이리|리자드/.test(name);
-       const isWater=/리아코|엘리게이|장크로다일|꼬부기/.test(name);
-       ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(dw/32,dh/32);
-       const p=(x,y,w,h,col)=>rect(ctx,x,y,w,h,col);
-       if(isGrass){
-         // Leaf-headed green starter: distinct silhouette, not a generic brown box.
-         p(12,1,7,12,'#407e50');p(16,2,10,5,'#62a866');
-         p(7,13,19,15,'#86c96f');p(9,8,15,14,'#a2d885');
-         p(4,22,7,7,'#79b764');p(22,22,7,7,'#79b764');
-         p(10,12,4,4,'#304a42');p(21,12,4,4,'#304a42');
-         p(15,19,5,3,'#e7bb8e');p(9,26,6,4,'#4d9862');p(21,26,6,4,'#4d9862');
-       }else if(isFire){
-         // Long-nosed cream-and-blue fire starter with back flames.
-         p(3,3,7,13,'#e5b548');p(6,0,5,10,'#ef6846');p(9,4,6,11,'#f7d36b');
-         p(8,13,17,15,'#294b62');p(11,8,14,15,'#f2dbb2');
-         p(19,12,10,6,'#f2dbb2');p(25,15,5,3,'#d39b75');
-         p(19,11,3,3,'#263744');p(11,24,6,6,'#3b6171');p(21,24,6,6,'#3b6171');
-       }else if(isWater){
-         // Blue crocodile-like starter with a wide jaw and dorsal spikes.
-         p(8,1,6,11,'#d84e4d');p(14,5,6,9,'#d84e4d');
-         p(8,12,18,16,'#4e9fce');p(10,7,18,15,'#64b4dc');
-         p(21,14,10,7,'#77bce1');p(21,20,10,4,'#f1e3c4');
-         p(12,12,4,4,'#263f53');p(9,25,6,5,'#3a86b5');p(22,25,6,5,'#3a86b5');
-       }else{
-         const color=mon&&mon.types&&mon.types[0]==='전기'?'#efd158':'#bb9b79';
-         p(7,8,18,19,color);p(11,3,12,12,color);
-         p(7,1,6,12,color);p(21,1,6,12,color);
-         p(12,15,3,4,'#263c43');p(21,15,3,4,'#263c43');
-         p(11,26,5,4,'#65514a');p(21,26,5,4,'#65514a');
-       }
-       ctx.restore();return;
-     }
-     if(drawLpc(ctx,key,x,y,dw,dh))return;
-     if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),dw,dh);
+     const sp=sprites[key];
+     if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),w||sp.width,h||sp.height);
    };
    rect(ctx,0,0,W,H,palette.grass);
    const minX=Math.max(0,Math.floor(camX/T)-2),maxX=Math.min(99,Math.ceil((camX+W)/T)+2);
@@ -406,22 +125,7 @@ const WORLD_V2=(()=>{
      }
      for(let x=26;x<=95;x+=20){const [px,py]=P(x,5);img('lab',px-8,py-49,104,81)}
    }
-   const directions=['Up','Right','Down','Left'];
-   const direction=directions[state.face??2];
-   const moving=Date.now()-(state.lastMoveAt||0)<260;
-   const step=moving?(Math.floor(Date.now()/95)%2===0?'Walk':'Walk2'):'';
-   const entities=npcs.map((n,i)=>({x:n.x,y:n.y,key:(i%3===0?'npc2':'npc')+directions[n.face??2],priority:0}));
-   if(state.party&&state.party.length){
-     const trail=state.followerTrail&&state.followerTrail.length?state.followerTrail[0]:null;
-     const opposite=[[0,1],[-1,0],[0,-1],[1,0]][state.face??2];
-     const fx=trail?trail.x:state.x+opposite[0],fy=trail?trail.y:state.y+opposite[1];
-     const dx=state.x-fx,dy=state.y-fy;
-     const followDirection=dx>0?'Right':dx<0?'Left':dy>0?'Down':dy<0?'Up':direction;
-     entities.push({x:fx,y:fy,key:'follower'+followDirection+(moving?'Walk':''),priority:1});
-   }
-   entities.push({x:state.x,y:state.y,key:'player'+direction+step,priority:2});
-   entities.sort((a,b)=>a.y-b.y||a.priority-b.priority);
-   for(const a of entities){const [px,py]=P(a.x,a.y);if(a.key.startsWith('follower'))img(a.key,px-9,py-10,42,34);else img(a.key,px-4,py-17,32,44)}
+   FIELD_ACTORS.draw(ctx,state,npcs,P,poses);
  };
  return {draw,houseList};
 })();

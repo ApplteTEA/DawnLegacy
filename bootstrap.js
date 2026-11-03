@@ -1,40 +1,15 @@
 'use strict';
-(function () {
-  const version = Date.now().toString();
-  const oldStyle = document.querySelector('link[rel="stylesheet"]');
-  const freshStyle = document.createElement('link');
-  freshStyle.rel = 'stylesheet';
-  freshStyle.href = './style.css?fresh=' + version;
-  freshStyle.onload = function () {
-    if (oldStyle && oldStyle.parentNode) oldStyle.parentNode.removeChild(oldStyle);
-  };
-  document.head.appendChild(freshStyle);
-  const battleStyle = document.createElement('link');
-  battleStyle.rel = 'stylesheet';
-  battleStyle.href = './battle-v2.css?fresh=' + version;
-  document.head.appendChild(battleStyle);
-  const script = document.createElement('script');
-  script.src = './game.js?fresh=' + version;
-  script.async = false;
-  script.onerror = function () {
-    const overlay = document.getElementById('overlay');
-    const body = document.getElementById('dialogBody');
-    if (body && overlay) {
-      body.innerHTML = '<h2>게임 파일을 불러오지 못했어</h2><p>네트워크를 확인한 후 새로고침해 줘.</p>';
-      overlay.classList.remove('hidden');
-    }
-  };
-  const artScript=document.createElement('script');
-  artScript.src='./world-v2.js?fresh='+version;
-  artScript.async=false;
-  artScript.onload=function(){document.body.appendChild(script)};
-  artScript.onerror=function(){
-    const body=document.getElementById('dialogBody');
-    const overlay=document.getElementById('overlay');
-    if(body&&overlay){
-      body.innerHTML='<h2>새 필드 엔진을 불러오지 못했어</h2><p>페이지를 다시 열어줘.</p>';
-      overlay.classList.remove('hidden');
-    }
-  };
-  document.body.appendChild(artScript);
+(async function(){
+ const version='field-actors-20261103';
+ for(const href of ['style.css','battle-v2.css']){
+  const link=document.createElement('link');link.rel='stylesheet';link.href='./'+href+'?v='+version;document.head.appendChild(link);
+ }
+ try{
+  for(const src of ['field-manifest.js','field-actors.js','world-v2.js','game.js']){
+   await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='./'+src+'?v='+version;script.onload=resolve;script.onerror=()=>reject(new Error(src));document.body.appendChild(script)});
+  }
+ }catch(error){
+  document.getElementById('dialogBody').innerHTML='<h2>게임 파일을 불러오지 못했어</h2><p>페이지를 새로고침해 줘.</p>';
+  document.getElementById('overlay').classList.remove('hidden');console.error(error);
+ }
 })();
