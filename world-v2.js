@@ -40,40 +40,116 @@ const WORLD_V2=(()=>{
    r(0,11,32,4,'#ddc79a');r(0,20,32,4,'#c8ad7f');
    r(5,3,5,27,'#b89a70');r(24,3,5,27,'#b89a70');
  },32,32);
- // 24x32 character sprites, scaled 2x in the field for a classic handheld look.
- const human=(direction,variant,frame=0)=>sprite(r=>{
-   const isNpc=variant!=='hero';
-   const cap=isNpc?(variant==='npc2'?'#82614b':'#466b87'):'#d04e57';
-   const capLight=isNpc?(variant==='npc2'?'#bd9972':'#7298b1'):'#ef8a83';
-   const jacket=isNpc?(variant==='npc2'?'#bd805e':'#3c8d80'):'#397db6';
-   const dark='#293b50',skin='#edbb92',hair=isNpc?'#4a3b35':'#443a3b';
-   const side=direction==='left'||direction==='right',up=direction==='up';
-   const step=frame?2:0;
-   r(5,30,17,2,'#4b7c51');
-   r(7,25,5,6,'#34435b');r(14,25+step,5,6-step,'#34435b');
-   r(7,29,5,2,'#e4dbcb');r(14,29+step,5,2,'#e4dbcb');
-   r(5,17,16,10,dark);r(7,18,12,9,jacket);
-   r(4,18+(frame?2:0),3,8,skin);r(21,18+(frame?0:2),3,8,skin);
-   r(8,9,11,9,up?hair:skin);
-   r(7,8,13,4,hair);
-   r(5,6,17,5,cap);r(8,2,11,5,cap);r(10,3,7,2,capLight);
-   r(5,10,3,2,cap);
-   if(up){
-     r(9,12,9,5,hair);r(9,20,9,5,'#285b86');
-   }else if(side){
-     if(direction==='left'){
-       r(8,13,2,2,'#293842');r(7,16,4,2,'#d79a79');
-       r(6,10,4,4,hair);r(18,19,3,6,'#295e87');
-     }else{
-       r(17,13,2,2,'#293842');r(17,16,4,2,'#d79a79');
-       r(18,10,4,4,hair);r(5,19,3,6,'#295e87');
-     }
-   }else{
-     r(10,13,2,2,'#293842');r(16,13,2,2,'#293842');
-     r(13,17,3,1,'#c88470');
-     r(9,20,8,4,isNpc?'#d1b28a':'#7cb3d6');
+ // Character artwork v3: per-pixel silhouettes instead of assembled rectangles.
+ // Every row is a 16-pixel authored sprite, with transparent dots.
+ const paintPixels=(r,rows,palette,scale=2)=>{
+   rows.forEach((line,y)=>[...line].forEach((ch,x)=>{if(ch!=='.'&&palette[ch])r(x*scale,y*scale,scale,scale,palette[ch])}));
+ };
+ const characterPalettes={
+   hero:{O:'#263c4b',H:'#463c38',R:'#b7354a',r:'#ee7e7a',W:'#f8e6c5',S:'#f2c39a',s:'#d99478',E:'#303e46',B:'#2e6fa9',b:'#74a6cb',J:'#f6e4be',N:'#253b64',n:'#4e6790',K:'#3b3c44',k:'#f5f0db'},
+   npc:{O:'#303b42',H:'#54443a',R:'#3c667a',r:'#8eb2bb',W:'#e7d9bd',S:'#dfb18b',s:'#c58b70',E:'#333c42',B:'#3c8579',b:'#78aa92',J:'#e2d4b6',N:'#455b6e',n:'#6c8292',K:'#45434a',k:'#e7dfc7'},
+   npc2:{O:'#383d3e',H:'#7b513d',R:'#9a6548',r:'#d9aa78',W:'#f1dfb9',S:'#e8bb92',s:'#bd8a6b',E:'#353e42',B:'#a36e56',b:'#d19c76',J:'#f0d5a9',N:'#58615d',n:'#8b8575',K:'#5a4741',k:'#e8d7b6'}
+ };
+ const front=[
+ '................',
+ '.....OOOOOO.....',
+ '....ORRRRRRO....',
+ '...ORRrrrrRRO...',
+ '...ORRRWWRRRO...',
+ '..ORRRRRRRRRRO..',
+ '...OOHHHHHHOO...',
+ '....HSSSSSSH....',
+ '....SSSEESS.....',
+ '....SSSSSSSS.....',
+ '.....sSSSSs......',
+ '.....OSSSSO......',
+ '....OOBBBBOO.....',
+ '...OSBBBBBBSO....',
+ '...OSBbbbBBSO....',
+ '...OSBBBBBBSO....',
+ '....ONNNNNNO.....',
+ '....ONNNNNNO.....',
+ '....ONN..NNO.....',
+ '....OKK..KKO.....',
+ '....Okk..kkO.....',
+ '................'
+ ];
+ const back=[
+ '................',
+ '.....OOOOOO.....',
+ '....ORRRRRRO....',
+ '...ORRrrrrRRO...',
+ '...ORRRRRRRRO...',
+ '..ORRRRRRRRRRO..',
+ '...OOHHHHHHOO...',
+ '....HHHHHHHH....',
+ '....HHHHHHHH....',
+ '.....HHHHHH......',
+ '.....OSSSSO......',
+ '.....OJJJJO......',
+ '....OOBBBBOO.....',
+ '...OSBBBBBBSO....',
+ '...OSBbbbBBSO....',
+ '...OSBBBBBBSO....',
+ '....ONNNNNNO.....',
+ '....ONNNNNNO.....',
+ '....ONN..NNO.....',
+ '....OKK..KKO.....',
+ '....Okk..kkO.....',
+ '................'
+ ];
+ const profile=[
+ '................',
+ '.....OOOOO......',
+ '....ORRRRRO.....',
+ '...ORRrrRRRO....',
+ '...ORRRWWRRRO...',
+ '..ORRRRRRRRRO...',
+ '....OHHHHHHO....',
+ '.....HSSSSSO....',
+ '.....SSESSSO....',
+ '.....SSSSSSO....',
+ '......sSSs......',
+ '......OSSO......',
+ '.....OOBBBOO....',
+ '....OSBBBBBSO...',
+ '....OSBbbBBSO...',
+ '....OSBBBBBSO...',
+ '.....ONNNNNO....',
+ '.....ONNNNNO....',
+ '.....ONN.NNO....',
+ '.....OKK.KKO....',
+ '.....Okk.kkO....',
+ '................'
+ ];
+ const customize=(rows,variant,direction,frame)=>{
+   let result=rows.slice();
+   if(variant==='npc'){
+     // Short-brimmed navy cap and a light scarf.
+     result[1]='......OOOO......';
+     result[2]='.....ORRRRO.....';
+     result[3]='....ORRrrRRO....';
+     result[14]=result[14].replace(/b/g,'J');
+   }else if(variant==='npc2'){
+     // Auburn-haired villager without the protagonist's cap.
+     result[1]='.....OHHHHO.....';
+     result[2]='....OHHHHHHO....';
+     result[3]='...OHHHrrHHHO...';
+     result[4]='...OHHHHHHHHO...';
+     result[5]='....OHHHHHHO....';
    }
- },27,33);
+   if(frame){
+     result[18]='....ONN...NNO....';
+     result[19]='...OKK.....KKO...';
+     result[20]='...Okk.....kkO...';
+   }
+   if(direction==='right')result=result.map(line=>[...line].reverse().join(''));
+   return result;
+ };
+ const human=(direction,variant,frame=0)=>sprite(r=>{
+   const rows=direction==='up'?back:direction==='down'?front:profile;
+   paintPixels(r,customize(rows,variant,direction,frame),characterPalettes[variant]);
+ },32,44);
  for(const [suffix,direction] of [['Down','down'],['Up','up'],['Left','left'],['Right','right']]){
    sprites['player'+suffix]=human(direction,'hero');
    sprites['player'+suffix+'Walk']=human(direction,'hero',1);
@@ -197,7 +273,7 @@ const WORLD_V2=(()=>{
    }
    entities.push({x:state.x,y:state.y,key:'player'+direction+(moving?'Walk':''),priority:2});
    entities.sort((a,b)=>a.y-b.y||a.priority-b.priority);
-   for(const a of entities){const [px,py]=P(a.x,a.y);img(a.key,px-2,py-10,29,36)}
+   for(const a of entities){const [px,py]=P(a.x,a.y);img(a.key,px-4,py-17,32,44)}
  };
  return {draw,houseList};
 })();
