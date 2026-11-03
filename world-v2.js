@@ -13,8 +13,22 @@ const WORLD_V2=(()=>{
  };
  const sprites={};
  const trainerImage=new Image();let trainerReady=false;
- trainerImage.onload=()=>{trainerReady=true};trainerImage.src='data:image/png;base64,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';
-
+ trainerImage.onload=()=>{trainerReady=trainerImage.naturalWidth>0};
+ trainerImage.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAoCAYAAACfKfiZAAAHuElEQVR42q2YfWxT5xXGf9eQQEKd2NRR4gST3GAHNIitJsRQr2AICqNBDaAx/iitULugohUoYgsDIVAFg60fQtUI2hhfRe1ARUjpQJCNaHwE1A/ShSVetSQOcRLaOFZcbBLyQbL47g/bN7a5+WI7kuXr9x77Oe95n3POcy0wCRtor56Qn8rrByA+r2RcX2EyAaQka6W+/v5x/XoHByb8u1MnEKKENIUZ8XF8v6EYAEmd+LRbT598b9qRE1Jk1lReP/F5JcKkArhTflA6efIvLDfO5UZzIy9PSY0CUwoC4GFLL5/lr5Y/G3LXcPvcUQZrL0lKQShGlZeZKe/gygs/5vmUp91iA4jMgNDTxw9dwZ8w36ikuMiO3azlzf1nxg5goL2at3YekYpdQyw1JAMogo8VQKz90CWxp7UJgNLSNVhtFiGSnCol9v4vpnQ0v83KkY8wtjKiAmhxd0tOV4e8+/8HeKTVtX1Pw5VPJUUSHivbIuWvK+VnP1owISDhtVcI6DQjR3DwuGL6I+3UhUre/vCPo1dB7+DQqOcY5kPL2pcRl65EiiFQYN9bCB99EkXAWHvg74aYWyolx+oHj6LAn08RZPCs3NnK7UI7D/9rGyZ9bDF9YBhgVA6IS1fK135nHT63BwCtPhWNyYLGZAnyoKtXcTMTbkThL4UDCad0ZoTPXw9/LF/PWTaPApNlVJDKYU9UI5tcKw7ZtakCjw/sj0iHmsTs+UF2t3xLXejec+19rBwlCMXBFbtQ7+tSBhfV3HV1ApCYPV8Gj/ycmD2fx6Kaa1OVm5fSIBNiJ11iQgLFRXYKmcHj0C6LF80DQDNGmiO5cfXrhiBgy7dy0FU1jTxyu4LVNjQAUhBbBXD6wBsYNEmsL1lFnCYNp6uD6/TKu/S5PfjcHvzOunED8Lk9vDhbK2fGKqZRVdPIkL+TZL2IJddM3uxMTh94I8iBwdpLbD58mtyCFwAoKpjL2YufYxLXAvDibK3McoBzn342KnjxonlypXwZ8rvr6uSR20WyXiRLpwZgui6VW/U+aaC9WgiTUHK6OsgZDtA0RYUt34qj5h5nL17mzB8+gnYffN3Art376evvp3dwiBnxcSQmJMhn2zs4REpyEiajic2lr8tBVdU0sr5kFU5XR1SwVjENldc/UgXOZicYTbR6e8jSqZmuS8WmS2XrO2UyUMWhnTQ9bKG/Zxrv/mkkE8l6kfc32HnO1QPAL94pk+9Zcs1Pgbd6e0aqID6vBLtZi0GTRJ2jno62f4/J3pyZ2VgyMzBokuS1IX8nCeonDJvjGTbHK7b2Vm8PzmYnzmYnafRhycwgPq8kyMTB2kvS5sOnOXvxMpvWvxIVcc5wgN2HdgCw5NVtfFhUzJxlwapoethCzsxs2Xf7BycB+H1ZKQC7zlyWwYsK5uJ0dVDnqOdvR/ZitVmIzysRVKEZLVjFNGAYq5hGznCAAa9HBs/WJ5GtTyJOk8ZjUY1OFLHaLNjyV8jXC0vsAHSSyMISO1abhdMHtjPg9TDk78Ru1mIS04MlGMKM6oQJ6ifY8q3cdXViLVrIclcPN5obydYHUx3QacjSBftCeC38HrbpulSION9sfRJmbQpmbYq8tumna3lp6z7hqU745v4zwvWKD3HU3MOSmSGnOQwOYBLTx+wBJjGdvRvs0drBOIuCooXcqvchNH/H8SM7xxelKclaeWrfPndU3mmLuztq15JpMZKvQVHKtbi78bpcrNt7BIMmmImP//mNMO4sAOh65BMqDu3EoEkif12pnIXYlLuqr6Hy+qOUUaT9ZOchAL6qOKoIPuo0HKy9JAV0GnJv/oMHVbfIWL4JgyaJryqORvmFA4rNQMbyTUTOlUk/mh0r2yL9+XotJjGd3/0nkT2tTVxx3R85a6MJk5iOVUyTh03YHDX3eODvptxoY6khmT2tTUjGWQCcvfi5MG4Gwj1hwOthz4HtVO8/D8BqcQ4FRQsBePuDE7R6e7hadSvqu+VGG8W6BbzHv+S13Yd2sOTVbZiMJgZrL40tywHuflGHVUyjsuIkWv2IimmaouLUhUosmRncKX+XLJ06mInQ67ufr5eFR2NIql2bKqDVp3L73NFRn5YVSZiYPZ9k3TQAvIUGmqaoqHPU82vdAu7fbOD+zQZMYrr82liYx8OWoA5cbpwbfMoSNQRWLJY148bCPO6UHxyfhC9t3SccK9sitTq0sgKuc9TLfX26K0i490/skEe0q/oa1dfPMyBqOO5yAnDc5cT09142LsqM/O2JVUFN1TeculDJF7c/IUH9hLn61KCmH8W+bPehEjXMWTYPE73UOepxNjsZ8HoI6DQUrvsVA17PxEWpZJwFNV3YlrzOA3+3XFJXxTg2L8tHJ4rsOnxM9l+2YgWBFYtxAoXM4GJogjb292PIXRMsRTGd2ra2iZVhWC6F49n2m/MkJiQQp0mTF8PqRmnGD/k76XrUzbGyzSSonxDZ7p9ZlkcCh2d7pBqy5edHBTEjPi4K/Nn/oglmSQrrxaB14PSHJHpILUXev1rV+ayPZsq2vmSV4Ki5h6PmHoA0XZfKe79cG5XO8lPXcYSItlqcI3e/cf9Rm4iT3azFrE2h0e2h0e0RcoYDitypbWujtr0NyTgLu1kbJeNGs/8Ck00Stguq3oQAAAAASUVORK5CYII=';
+ const pokemonIds={'치코리타':152,'베이리프':153,'메가니움':154,'브케인':155,'마그케인':156,'블레이범':157,'리아코':158,'엘리게이':159,'장크로다일':160,'이상해씨':1,'이상해풀':2,'이상해꽃':3,'파이리':4,'리자드':5,'리자몽':6,'꼬부기':7,'어니부기':8,'거북왕':9,'피카츄':25,'라이츄':26,'이브이':133,'구구':16,'꼬렛':19,'우파':194,'델빌':228,'식스테일':37,'가디':58,'미뇽':147,'고오스':92};
+ const pokemonCache=new Map();
+ const getPokemonImage=(name,back)=>{
+   const id=pokemonIds[name];if(!id)return null;
+   const key=id+':'+(back?'back':'front');
+   if(!pokemonCache.has(key)){
+     const image=new Image();const entry={image,ready:false,failed:false};
+     image.onload=()=>{entry.ready=image.naturalWidth>0};
+     image.onerror=()=>{entry.failed=true};
+     image.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+(back?'back/':'')+id+'.png';
+     pokemonCache.set(key,entry);
+   }
+   return pokemonCache.get(key);
+ };
  // Local, authored chibi sprite assets; no external image dependency.
  const drawLpc=()=>false;
  sprites.tree=sprite(r=>{
@@ -227,7 +241,28 @@ const WORLD_V2=(()=>{
    ctx.imageSmoothingEnabled=false;
    const camX=state.x*T-W/2+T/2,camY=state.y*T-H/2+T/2;
    const P=(x,y)=>[Math.round(x*T-camX),Math.round(y*T-camY)];
-   const img=(key,x,y,w,h)=>{const sp=sprites[key];const dw=w||(sp?sp.width:32),dh=h||(sp?sp.height:44);if(key.startsWith('player')&&trainerReady){ctx.save();ctx.imageSmoothingEnabled=false;const dir=key.includes('Left')?-1:1;const bob=key.includes('Walk')?(Math.floor(Date.now()/110)%2):0;if(dir<0){ctx.translate(Math.round(x+dw),0);ctx.scale(-1,1);ctx.drawImage(trainerImage,0,Math.round(y)+bob,dw,dh)}else ctx.drawImage(trainerImage,Math.round(x),Math.round(y)+bob,dw,dh);ctx.restore();return}if(drawLpc(ctx,key,x,y,dw,dh))return;if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),dw,dh)};
+   const img=(key,x,y,w,h)=>{
+     const sp=sprites[key],dw=w||(sp?sp.width:32),dh=h||(sp?sp.height:44);
+     if(key.startsWith('player')&&trainerReady&&key.includes('Down')){
+       ctx.save();ctx.imageSmoothingEnabled=false;
+       const bob=key.includes('Walk')?Math.floor(Date.now()/100)%2:0;
+       ctx.drawImage(trainerImage,Math.round(x),Math.round(y)+bob,dw,dh);ctx.restore();return;
+     }
+     if(key.startsWith('follower')){
+       const name=state.party&&state.party[0]&&state.party[0].name;
+       const back=key.includes('Up');
+       const entry=getPokemonImage(name,back);
+       if(entry&&entry.ready){
+         ctx.save();ctx.imageSmoothingEnabled=false;
+         const flip=key.includes('Left');
+         if(flip){ctx.translate(Math.round(x+dw),0);ctx.scale(-1,1);ctx.drawImage(entry.image,0,Math.round(y)-2,dw,dh)}
+         else ctx.drawImage(entry.image,Math.round(x),Math.round(y)-2,dw,dh);
+         ctx.restore();return;
+       }
+     }
+     if(drawLpc(ctx,key,x,y,dw,dh))return;
+     if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),dw,dh);
+   };
    rect(ctx,0,0,W,H,palette.grass);
    const minX=Math.max(0,Math.floor(camX/T)-2),maxX=Math.min(99,Math.ceil((camX+W)/T)+2);
    const minY=Math.max(0,Math.floor(camY/T)-2),maxY=Math.min(23,Math.ceil((camY+H)/T)+2);
