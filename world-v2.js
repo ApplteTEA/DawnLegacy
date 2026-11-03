@@ -59,14 +59,29 @@ const WORLD_V2=(()=>{
    const id=pokemonIds[name];if(!id)return null;
    const key=id+':'+(back?'back':'front');
    if(!pokemonCache.has(key)){
-     const image=new Image();const entry={image,ready:false,failed:false};
-     image.onload=()=>{entry.ready=image.naturalWidth>0};
-     image.onerror=()=>{entry.failed=true};
-     image.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+(back?'back/':'')+id+'.png';
-     pokemonCache.set(key,entry);
+     const entry={image:new Image(),ready:false,failed:false};
+     const path='sprites/pokemon/'+(back?'back/':'')+id+'.png';
+     const urls=[
+       'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/'+path,
+       'https://raw.githubusercontent.com/PokeAPI/sprites/master/'+path,
+       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'+id+'.png'
+     ];
+     let index=0;
+     const load=()=>{
+       const image=new Image();
+       entry.image=image;
+       image.onload=()=>{entry.ready=image.naturalWidth>0;entry.failed=!entry.ready};
+       image.onerror=()=>{if(++index<urls.length)load();else entry.failed=true};
+       image.src=urls[index];
+     };
+     pokemonCache.set(key,entry);load();
    }
    return pokemonCache.get(key);
  };
+ // Warm the most common starter images before the first field frame.
+ for(const name of ['치코리타','브케인','리아코']){
+   getPokemonImage(name,false);getPokemonImage(name,true);
+ }
  // Local, authored chibi sprite assets; no external image dependency.
  const drawLpc=()=>false;
  sprites.tree=sprite(r=>{
@@ -290,12 +305,13 @@ const WORLD_V2=(()=>{
      if(key.startsWith('follower')){
        const name=state.party&&state.party[0]&&state.party[0].name;
        const back=key.includes('Up');
-       const entry=getPokemonImage(name,back);
-       if(entry&&entry.ready){
+       const entry=getPokemonImage(name,back);const frontEntry=back?getPokemonImage(name,false):null;
+       const display=entry&&entry.ready?entry:frontEntry&&frontEntry.ready?frontEntry:null;
+       if(display){
          ctx.save();ctx.imageSmoothingEnabled=false;
          const flip=key.includes('Left');
-         if(flip){ctx.translate(Math.round(x+dw),0);ctx.scale(-1,1);ctx.drawImage(entry.image,0,Math.round(y)-2,dw,dh)}
-         else ctx.drawImage(entry.image,Math.round(x),Math.round(y)-2,dw,dh);
+         if(flip){ctx.translate(Math.round(x+dw),0);ctx.scale(-1,1);ctx.drawImage(display.image,0,Math.round(y)-2,dw,dh)}
+         else ctx.drawImage(display.image,Math.round(x),Math.round(y)-2,dw,dh);
          ctx.restore();return;
        }
      }
