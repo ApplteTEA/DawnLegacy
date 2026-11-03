@@ -12,28 +12,8 @@ const WORLD_V2=(()=>{
    paint(r);return cv;
  };
  const sprites={};
- // Real, independently authored LPC pixel-art sprite sheet, not programmatic character blocks.
- // Source: Gaurav Munjal / Stephen Challener (Redshrike), CC BY-SA 3.0.
- const lpc=new Image();
- let lpcReady=false;
- lpc.onload=()=>{lpcReady=lpc.naturalWidth>=144&&lpc.naturalHeight>=192;if(lpcReady&&typeof draw==='function')draw()};
- lpc.onerror=()=>{lpcReady=false};
- lpc.src='https://lpc.opengameart.org/sites/default/files/universal-lpc-sprite_male_01_walk-3frame_2.png';
- const drawLpc=(ctx,key,x,y,w,h)=>{
-   if(!lpcReady||!(/^(player|npc|npc2)/).test(key))return false;
-   const direction=key.includes('Up')?0:key.includes('Left')?1:key.includes('Right')?2:3;
-   const moving=key.includes('Walk');
-   const frame=moving?Math.floor(Date.now()/150)%3:1;
-   const fw=lpc.naturalWidth/3,fh=lpc.naturalHeight/4;
-   if(!Number.isInteger(fw)||!Number.isInteger(fh))return false;
-   ctx.save();
-   ctx.imageSmoothingEnabled=false;
-   if(key.startsWith('npc2'))ctx.filter='hue-rotate(105deg) saturate(0.9)';
-   else if(key.startsWith('npc'))ctx.filter='hue-rotate(215deg) saturate(0.9)';
-   ctx.drawImage(lpc,frame*fw,direction*fh,fw,fh,Math.round(x),Math.round(y),w,h);
-   ctx.restore();
-   return true;
- };
+ // Local, authored chibi sprite assets; no external image dependency.
+ const drawLpc=()=>false;
  sprites.tree=sprite(r=>{
    r(17,41,15,20,'#66503a');r(21,42,7,18,'#9c7850');
    r(3,21,43,28,'#244e39');r(6,13,37,31,'#347447');r(12,6,28,29,'#478d51');
@@ -62,121 +42,128 @@ const WORLD_V2=(()=>{
    r(0,11,32,4,'#ddc79a');r(0,20,32,4,'#c8ad7f');
    r(5,3,5,27,'#b89a70');r(24,3,5,27,'#b89a70');
  },32,32);
- // Character artwork v3: per-pixel silhouettes instead of assembled rectangles.
- // Every row is a 16-pixel authored sprite, with transparent dots.
- const paintPixels=(r,rows,palette,scale=2)=>{
-   rows.forEach((line,y)=>[...line].forEach((ch,x)=>{if(ch!=='.'&&palette[ch])r(x*scale,y*scale,scale,scale,palette[ch])}));
+ // Original chibi pixel-art sprites: four directions and three walking poses.
+ const colors={
+  hero:{X:'#253044',H:'#483b3c',C:'#d44452',c:'#f37c80',W:'#fff3e5',S:'#f2c69e',s:'#dca17e',E:'#273747',B:'#376ca9',b:'#79b5e4',N:'#35466d',n:'#647fa8',K:'#403b49',k:'#e7e0d5',P:'#e6c77d'},
+  npc:{X:'#283b48',H:'#59453b',C:'#406989',c:'#83a6c1',W:'#e6e2d3',S:'#e9bb91',s:'#d39475',E:'#293845',B:'#4b998c',b:'#92c5b0',N:'#4a6172',n:'#718c9e',K:'#383f4b',k:'#dfd6c4',P:'#c4ac85'},
+  npc2:{X:'#3a3941',H:'#8b5e43',C:'#8c624a',c:'#cda27d',W:'#f2e7c8',S:'#f0c39b',s:'#d99b78',E:'#343c42',B:'#a77b65',b:'#d2a48b',N:'#605a68',n:'#8c8293',K:'#4c4142',k:'#eee0c7',P:'#c2ad76'}
  };
- const characterPalettes={
-   hero:{O:'#263c4b',H:'#463c38',R:'#b7354a',r:'#ee7e7a',W:'#f8e6c5',S:'#f2c39a',s:'#d99478',E:'#303e46',B:'#2e6fa9',b:'#74a6cb',J:'#f6e4be',N:'#253b64',n:'#4e6790',K:'#3b3c44',k:'#f5f0db'},
-   npc:{O:'#303b42',H:'#54443a',R:'#3c667a',r:'#8eb2bb',W:'#e7d9bd',S:'#dfb18b',s:'#c58b70',E:'#333c42',B:'#3c8579',b:'#78aa92',J:'#e2d4b6',N:'#455b6e',n:'#6c8292',K:'#45434a',k:'#e7dfc7'},
-   npc2:{O:'#383d3e',H:'#7b513d',R:'#9a6548',r:'#d9aa78',W:'#f1dfb9',S:'#e8bb92',s:'#bd8a6b',E:'#353e42',B:'#a36e56',b:'#d19c76',J:'#f0d5a9',N:'#58615d',n:'#8b8575',K:'#5a4741',k:'#e8d7b6'}
- };
- const front=[
+ const fronts=[
  '................',
- '.....OOOOOO.....',
- '....ORRRRRRO....',
- '...ORRrrrrRRO...',
- '...ORRRWWRRRO...',
- '..ORRRRRRRRRRO..',
- '...OOHHHHHHOO...',
+ '.....XXXXXX.....',
+ '....XCCCCCCX....',
+ '...XCCccccCCX...',
+ '..XCCcWWWWcCCX..',
+ '..XCCCCCCCCCCX..',
+ '...XHHHHHHHHX...',
  '....HSSSSSSH....',
- '....SSSEESS.....',
- '....SSSSSSSS.....',
- '.....sSSSSs......',
- '.....OSSSSO......',
- '....OOBBBBOO.....',
- '...OSBBBBBBSO....',
- '...OSBbbbBBSO....',
- '...OSBBBBBBSO....',
- '....ONNNNNNO.....',
- '....ONNNNNNO.....',
- '....ONN..NNO.....',
- '....OKK..KKO.....',
- '....Okk..kkO.....',
+ '...XSSSEESSX....',
+ '...XSSSSSSSX....',
+ '....SSsSSsSS....',
+ '.....XSSSSX.....',
+ '....XXBBBBXX....',
+ '...XSBBbbBBSX...',
+ '...XSBBBBBBSX...',
+ '...XSBBBBBBSX...',
+ '....XNNNNNNX....',
+ '....XNNNNNNX....',
+ '....XNNXXNNX....',
+ '....XKKXXKKX....',
+ '....XkkXXkkX....',
  '................'
  ];
- const back=[
+ const backs=[
  '................',
- '.....OOOOOO.....',
- '....ORRRRRRO....',
- '...ORRrrrrRRO...',
- '...ORRRRRRRRO...',
- '..ORRRRRRRRRRO..',
- '...OOHHHHHHOO...',
+ '.....XXXXXX.....',
+ '....XCCCCCCX....',
+ '...XCCccccCCX...',
+ '..XCCCCCCCCCCX..',
+ '..XCCCCCCCCCCX..',
+ '...XHHHHHHHHX...',
  '....HHHHHHHH....',
+ '...XHHHHHHHHX...',
+ '...XHHHHHHHHX...',
  '....HHHHHHHH....',
- '.....HHHHHH......',
- '.....OSSSSO......',
- '.....OJJJJO......',
- '....OOBBBBOO.....',
- '...OSBBBBBBSO....',
- '...OSBbbbBBSO....',
- '...OSBBBBBBSO....',
- '....ONNNNNNO.....',
- '....ONNNNNNO.....',
- '....ONN..NNO.....',
- '....OKK..KKO.....',
- '....Okk..kkO.....',
+ '.....XSSSSX.....',
+ '....XXBBBBXX....',
+ '...XSBBBBBBSX...',
+ '...XSBBbbBBSX...',
+ '...XSBBBBBBSX...',
+ '....XNNNNNNX....',
+ '....XNNNNNNX....',
+ '....XNNXXNNX....',
+ '....XKKXXKKX....',
+ '....XkkXXkkX....',
  '................'
  ];
- const profile=[
+ const profiles=[
  '................',
- '.....OOOOO......',
- '....ORRRRRO.....',
- '...ORRrrRRRO....',
- '...ORRRWWRRRO...',
- '..ORRRRRRRRRO...',
- '....OHHHHHHO....',
- '.....HSSSSSO....',
- '.....SSESSSO....',
- '.....SSSSSSO....',
- '......sSSs......',
- '......OSSO......',
- '.....OOBBBOO....',
- '....OSBBBBBSO...',
- '....OSBbbBBSO...',
- '....OSBBBBBSO...',
- '.....ONNNNNO....',
- '.....ONNNNNO....',
- '.....ONN.NNO....',
- '.....OKK.KKO....',
- '.....Okk.kkO....',
+ '.....XXXXXX.....',
+ '....XCCCCCCX....',
+ '...XCCccccCCX...',
+ '..XCCcWWWWcCCX..',
+ '..XCCCCCCCCCCX..',
+ '....XHHHHHHHX...',
+ '.....HSSSSSSX...',
+ '....XSSSESSSX...',
+ '....XSSSSSSSX...',
+ '.....SSsSSsS....',
+ '......XSSSX.....',
+ '.....XXBBBBX....',
+ '....XSBBbbBBSX..',
+ '....XSBBBBBBSX..',
+ '....XSBBBBBBSX..',
+ '.....XNNNNNNX...',
+ '.....XNNNNNNX...',
+ '.....XNNXXNNX...',
+ '.....XKKXXKKX...',
+ '.....XkkXXkkX...',
  '................'
  ];
- const customize=(rows,variant,direction,frame)=>{
-   let result=rows.slice();
-   if(variant==='npc'){
-     // Short-brimmed navy cap and a light scarf.
-     result[1]='......OOOO......';
-     result[2]='.....ORRRRO.....';
-     result[3]='....ORRrrRRO....';
-     result[14]=result[14].replace(/b/g,'J');
-   }else if(variant==='npc2'){
-     // Auburn-haired villager without the protagonist's cap.
-     result[1]='.....OHHHHO.....';
-     result[2]='....OHHHHHHO....';
-     result[3]='...OHHHrrHHHO...';
-     result[4]='...OHHHHHHHHO...';
-     result[5]='....OHHHHHHO....';
-   }
-   if(frame){
-     result[18]='....ONN...NNO....';
-     result[19]='...OKK.....KKO...';
-     result[20]='...Okk.....kkO...';
-   }
-   if(direction==='right')result=result.map(line=>[...line].reverse().join(''));
-   return result;
+ const paint=(r,rows,palette)=>{
+   rows.forEach((row,y)=>[...row].forEach((pixel,x)=>{
+     if(pixel!=='.'&&palette[pixel])r(x*2,y*2,2,2,palette[pixel]);
+   }));
  };
- const human=(direction,variant,frame=0)=>sprite(r=>{
-   const rows=direction==='up'?back:direction==='down'?front:profile;
-   paintPixels(r,customize(rows,variant,direction,frame),characterPalettes[variant]);
+ const variantRows=(base,variant,direction,step)=>{
+   const rows=base.slice();
+   if(variant==='npc'){
+     rows[1]='......XXXX......';
+     rows[2]='.....XCCCCX.....';
+     rows[3]='....XCCccCCX....';
+     rows[4]='...XCCCCCCCCX...';
+     rows[14]=rows[14].replace(/b/g,'W');
+   }
+   if(variant==='npc2'){
+     rows[1]='.....XHHHHX.....';
+     rows[2]='....XHHHHHHX....';
+     rows[3]='...XHHHHHHHHX...';
+     rows[4]='...XHHHHHHHHX...';
+     rows[5]='....XHHHHHHX....';
+   }
+   if(step===1){
+     rows[18]='....XNN..NNX....';
+     rows[19]='...XKK....KKX...';
+     rows[20]='...Xkk....kkX...';
+   }else if(step===2){
+     rows[18]='.....XNNNNX.....';
+     rows[19]='.....XKKKKX.....';
+     rows[20]='.....XkkkkX.....';
+   }
+   if(direction==='right')return rows.map(row=>[...row].reverse().join(''));
+   return rows;
+ };
+ const human=(direction,variant,step)=>sprite(r=>{
+   const base=direction==='up'?backs:direction==='down'?fronts:profiles;
+   paint(r,variantRows(base,variant,direction,step),colors[variant]);
  },32,44);
  for(const [suffix,direction] of [['Down','down'],['Up','up'],['Left','left'],['Right','right']]){
-   sprites['player'+suffix]=human(direction,'hero');
-   sprites['player'+suffix+'Walk']=human(direction,'hero',1);
-   sprites['npc'+suffix]=human(direction,'npc');
-   sprites['npc2'+suffix]=human(direction,'npc2');
+   for(const kind of ['player','npc','npc2']){
+     const variant=kind==='player'?'hero':kind;
+     sprites[kind+suffix]=human(direction,variant,0);
+     sprites[kind+suffix+'Walk']=human(direction,variant,1);
+     sprites[kind+suffix+'Walk2']=human(direction,variant,2);
+   }
  }
  sprites.npc=sprites.npcDown;
  const follower=(direction,frame=0)=>sprite(r=>{
@@ -283,7 +270,8 @@ const WORLD_V2=(()=>{
    }
    const directions=['Up','Right','Down','Left'];
    const direction=directions[state.face??2];
-   const moving=Date.now()-(state.lastMoveAt||0)<160;
+   const moving=Date.now()-(state.lastMoveAt||0)<260;
+   const step=moving?(Math.floor(Date.now()/95)%2===0?'Walk':'Walk2'):'';
    const entities=npcs.map((n,i)=>({x:n.x,y:n.y,key:(i%3===0?'npc2':'npc')+directions[n.face??2],priority:0}));
    if(state.party&&state.party.length){
      const trail=state.followerTrail&&state.followerTrail.length?state.followerTrail[0]:null;
@@ -291,7 +279,7 @@ const WORLD_V2=(()=>{
      const fx=trail?trail.x:state.x+opposite[0],fy=trail?trail.y:state.y+opposite[1];
      const dx=state.x-fx,dy=state.y-fy;
      const followDirection=dx>0?'Right':dx<0?'Left':dy>0?'Down':dy<0?'Up':direction;
-     entities.push({x:fx,y:fy,key:'follower'+followDirection+(moving?'Walk':''),priority:1});
+     entities.push({x:fx,y:fy,key:'follower'+followDirection +step,priority:1});
    }
    entities.push({x:state.x,y:state.y,key:'player'+direction+(moving?'Walk':''),priority:2});
    entities.sort((a,b)=>a.y-b.y||a.priority-b.priority);
