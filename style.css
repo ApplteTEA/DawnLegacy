@@ -139,3 +139,23 @@ html,body,#app{width:100%;height:100%;height:100dvh;overflow:hidden}
  .hg-battle .enemy-mon{left:60%!important;top:23%!important;width:26%!important;height:31%!important}
  .hg-battle .ally-mon{left:11%!important;bottom:11%!important;width:31%!important;height:37%!important}
 }
+
+/* Field UI v3: adaptive viewport, no stretched or cropped map */
+#app,#stage{position:fixed!important;inset:0!important;display:block!important;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;overflow:hidden!important}
+#stage{background:#203f41!important}
+#scene{position:absolute!important;inset:0!important;display:block!important;width:100%!important;height:100%!important;object-fit:fill!important;image-rendering:pixelated!important}
+#hud{position:absolute!important;top:max(12px,env(safe-area-inset-top))!important;left:max(12px,env(safe-area-inset-left))!important;bottom:auto!important;z-index:3!important;max-width:calc(100vw - 125px)!important;display:flex!important;flex-wrap:wrap!important;gap:4px 9px!important;padding:8px 11px!important;font-size:clamp(11px,2.9vw,15px)!important}
+#hudInfo{font-size:.78em!important}
+#topbar{position:absolute!important;top:max(12px,env(safe-area-inset-top))!important;right:max(12px,env(safe-area-inset-right))!important;z-index:3!important}
+#topbar button{padding:8px 10px!important;font-size:clamp(12px,2.8vw,15px)!important}
+#dpad{position:absolute!important;left:max(15px,env(safe-area-inset-left))!important;bottom:max(22px,env(safe-area-inset-bottom))!important;width:clamp(135px,37vw,180px)!important;height:clamp(135px,37vw,180px)!important;z-index:3!important;opacity:.93!important}
+#dpad button{min-width:0!important;min-height:0!important;font-size:clamp(18px,4.3vw,26px)!important}
+#actions{position:absolute!important;right:max(16px,env(safe-area-inset-right))!important;bottom:max(43px,env(safe-area-inset-bottom))!important;z-index:3!important;gap:clamp(10px,2.5vw,24px)!important;align-items:center!important}
+#actions button{width:clamp(58px,15vw,90px)!important;height:clamp(58px,15vw,90px)!important;font-size:clamp(20px,5vw,31px)!important}
+#toast{z-index:4!important;top:clamp(75px,12dvh,130px)!important}
+@media(orientation:landscape){
+ #dpad{width:clamp(105px,25vh,165px)!important;height:clamp(105px,25vh,165px)!important;bottom:10px!important}
+ #actions{bottom:25px!important}
+ #actions button{width:clamp(50px,15vh,85px)!important;height:clamp(50px,15vh,85px)!important}
+ #hud{font-size:clamp(11px,1.7vw,15px)!important}
+}
