@@ -9,6 +9,10 @@
     if (oldStyle && oldStyle.parentNode) oldStyle.parentNode.removeChild(oldStyle);
   };
   document.head.appendChild(freshStyle);
+  const battleStyle = document.createElement('link');
+  battleStyle.rel = 'stylesheet';
+  battleStyle.href = './battle-v2.css?fresh=' + version;
+  document.head.appendChild(battleStyle);
   const script = document.createElement('script');
   script.src = './game.js?fresh=' + version;
   script.async = false;
