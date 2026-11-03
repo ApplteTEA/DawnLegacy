@@ -265,7 +265,7 @@ function battleUI(page='main'){
  btn('potion',()=>{if(!s.potions)return toast('상처약이 없어!');if(p.hp===p.max)return toast('HP가 가득해!');s.potions--;p.hp=Math.min(p.max,p.hp+20);fight.message=p.name+'의 HP가 20 회복되었다!';enemyTurn()});
  });
 }
-function resizeField(){const portrait=window.innerHeight>window.innerWidth;canvas.width=portrait?360:640;canvas.height=portrait?Math.max(480,Math.min(960,Math.round(360*window.innerHeight/window.innerWidth))):Math.max(320,Math.min(540,Math.round(640*window.innerHeight/window.innerWidth)));ctx.imageSmoothingEnabled=false}
+function resizeField(){const portrait=window.innerHeight>window.innerWidth;canvas.width=portrait?288:640;canvas.height=portrait?Math.max(420,Math.min(900,Math.round(288*window.innerHeight/window.innerWidth))):Math.max(320,Math.min(540,Math.round(640*window.innerHeight/window.innerWidth)));ctx.imageSmoothingEnabled=false}
 window.addEventListener('resize',resizeField);resizeField();
 function draw(){
  const W=canvas.width,H=canvas.height,T=24;
@@ -322,7 +322,7 @@ function draw(){
  //### Ground: coherent village plaza and distinct grass-route transitions
  for(let gy=0;gy<rows;gy++)for(let gx=0;gx<cols;gx++){
    const wx=cx+gx,wy=cy+gy,[x,y]=P(wx,wy),n=N(wx,wy);
-   if(wx<0||wx>=100||wy<0||wy>=24){R(x,y,24,24,'#326a56');continue}
+   if(wx<0||wx>=100||wy<0||wy>=24){R(x,y,24,24,(n%3?'#3c7b5c':'#448764'));if(n%4===0){R(x+4,y+8,15,9,'#317352');R(x+8,y+3,10,10,'#509a69')}continue}
    const isRoad=road(wx,wy);
    const wild=isGrass(wx,wy)&&wx>=20;
    const village=wx<20;
@@ -332,7 +332,7 @@ function draw(){
    }else if(wild){
      R(x+3,y+8,3,12,'#347c56');R(x+8,y+4,3,15,'#418c5b');
      R(x+15,y+7,4,13,'#347b54');R(x+20,y+5,2,8,'#559b64');
-     R(x+5,y+3,5,3,'#a2d68c');
+     R(x+5,y+3,5,3,'#a2d68c');R(x+2,y+19,20,2,'#4c925d');
    }else if(n<16){
      R(x+7,y+13,2,4,'#64a96b');R(x+12,y+10,2,5,'#70ae71');
    }
@@ -361,6 +361,33 @@ function draw(){
    }
    const [tx,ty]=P(base+16,10);
    if(tx>-30&&tx<W+30){R(tx+10,ty+7,5,20,'#7d6449');R(tx,ty-3,26,15,'#b18c60');R(tx+3,ty,20,9,'#e7d5a5');R(tx+6,ty+3,14,3,'#5e9882')}
+ }
+ //### Village pond with layered shoreline, animated glints and stone border
+ if(s.x<22){
+   for(let yy=15;yy<=18;yy++)for(let xx=2;xx<=6;xx++){
+     const [x,y]=P(xx,yy),corner=(xx===2||xx===6)&&(yy===15||yy===18);
+     if(corner)continue;
+     R(x,y,24,24,'#a2c987');
+     R(x+1,y+1,22,22,'#7eac9a');
+     R(x+3,y+3,18,18,'#579fa8');
+     R(x+4,y+5,16,12,(N(xx,yy)%2?'#4d98aa':'#62afbb'));
+     R(x+6,y+8,7,2,'#91d0ca');
+     if((xx+yy)%3===0){R(x+15,y+12,6,3,'#3e8d8c');R(x+17,y+11,2,2,'#a6d1a1')}
+   }
+   //### Decorative plaza: flowerbeds, lanterns, bench and stone edging
+   for(const [bx,by] of [[11,14],[14,14],[11,17],[14,17]]){
+     const [x,y]=P(bx,by);
+     R(x+2,y+8,20,14,'#4b8b57');R(x+4,y+10,16,10,'#67a55c');
+     for(let j=0;j<3;j++){R(x+5+j*5,y+10+(j%2)*4,4,4,j===1?'#ffe7b4':'#eeb5c2');R(x+6+j*5,y+11+(j%2)*4,2,2,'#fff0d1')}
+   }
+   for(const [lx,ly] of [[6,10],[16,10]]){
+     const [x,y]=P(lx,ly);
+     R(x+10,y+8,4,17,'#62594b');R(x+8,y+2,8,9,'#f8e7ae');
+     R(x+6,y+1,12,3,'#435a52');R(x+9,y+4,6,5,'#f6f1cb');
+   }
+   const [bx,by]=P(13,10);
+   R(bx+2,by+13,22,5,'#b17e59');R(bx+3,by+7,20,5,'#c69569');
+   R(bx+5,by+18,3,6,'#6d5748');R(bx+18,by+18,3,6,'#6d5748');
  }
  //### Decorative village flowers and small shrubs
  for(let yy=Math.max(3,cy);yy<Math.min(20,cy+rows);yy++)
