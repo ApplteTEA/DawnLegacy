@@ -1,0 +1,22 @@
+'use strict';
+const FIELD_ART=(()=>{
+ const svg=(body,w=96,h=96)=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+w+' '+h+'" shape-rendering="crispEdges">'+body+'</svg>');
+ const images={};
+ const load=(key,body,w=96,h=96)=>{const im=new Image();im.src=svg(body,w,h);im.onload=()=>{if(typeof draw==='function')draw()};images[key]=im};
+ const leaf='<path d="M8 44V25h8V14h11V7h34v7h11v11h9v19H72v11H18V44Z" fill="#27583e"/><path d="M10 37V23h10V12h14V6h25v7h13v13h8v14H67v10H19V39Z" fill="#3e8a55"/><path d="M18 30V18h15V9h26v9h12v13H60v11H24V30Z" fill="#5caa66"/><path d="M25 17h17v6H25zm24 3h14v6H49zM17 33h12v5H17z" fill="#8cc880"/><path d="M28 39h36v6H28z" fill="#367748"/><path d="M14 47h64v5H14z" fill="#224d3d"/>';
+ load('tree','<ellipse cx="46" cy="79" rx="34" ry="9" fill="#477c4d" opacity=".5"/><path d="M39 48h16v33H39z" fill="#76543b"/><path d="M45 50h5v26h-5z" fill="#ac8054"/>'+leaf);
+ const building=(roof,roofLight,roofDark,sign)=>'<ellipse cx="48" cy="87" rx="46" ry="7" fill="#557b58" opacity=".55"/><path d="M9 36h78v47H9z" fill="#d3b78c"/><path d="M15 39h66v36H15z" fill="#f2e5c5"/><path d="M9 72h78v11H9z" fill="#b7a17b"/><path d="M6 77h84v6H6z" fill="#756c58"/><path d="M2 31h92v11H2z" fill="'+roofDark+'"/><path d="M6 19h84v15H6z" fill="'+roof+'"/><path d="M12 12h72v9H12z" fill="'+roofLight+'"/><path d="M16 23h12v4H16zm21 0h12v4H37zm21 0h12v4H58z" fill="'+roofDark+'"/><path d="M13 42h21v23H13zm49 0h21v23H62z" fill="#a98e6b"/><path d="M16 45h15v17H16zm49 0h15v17H65z" fill="#5ba8b8"/><path d="M18 47h6v6h-6zm49 0h6v6h-6z" fill="#b7e1d6"/><path d="M39 56h19v27H39z" fill="#705346"/><path d="M42 59h13v24H42z" fill="#b48060"/><path d="M52 71h2v3h-2z" fill="#f8db91"/><path d="M37 83h23v5H37z" fill="#d8c6a0"/>'+sign;
+ load('home',building('#c65d65','#ef9a91','#85464f',''));
+ load('lab',building('#468ba3','#83c4d1','#2b6378','<path d="M31 18h34v13H31z" fill="#f8e9c7"/><path d="M35 21h26v7H35z" fill="#3e8a99"/><path d="M39 23h18v3H39z" fill="#e9f5e8"/>'));
+ load('shop',building('#649d7e','#a2c9a0','#3b705b','<path d="M30 18h36v13H30z" fill="#f8e9c7"/><path d="M34 21h28v7H34z" fill="#b16b5e"/><path d="M45 18h7v13h-7z" fill="#f7e7c8"/>'));
+ load('home2',building('#aa785e','#deb18a','#795340',''));
+ const person=(hat,shirt,eyes)=>'<ellipse cx="24" cy="56" rx="15" ry="4" fill="#4b7654" opacity=".5"/><path d="M14 44h9v10h-9zm12 0h9v10h-9z" fill="#2e3e5c"/><path d="M14 51h10v4H14zm12 0h10v4H26z" fill="#ded6c4"/><path d="M11 29h27v18H11z" fill="#2e4965"/><path d="M15 30h19v16H15z" fill="'+shirt+'"/><path d="M8 31h7v13H8zm30 0h6v13h-6z" fill="#e8b28d"/><path d="M16 16h17v16H16z" fill="#eec29d"/><path d="M13 12h24v9H13z" fill="#473b40"/><path d="M9 9h31v8H9z" fill="'+hat+'"/><path d="M14 3h22v8H14z" fill="'+hat+'"/><path d="M20 6h10v4H20z" fill="#f3e3c4"/>'+eyes;
+ load('player',person('#d45158','#3b7cba','<path d="M20 24h3v3h-3zm10 0h3v3h-3z" fill="#343b45"/>'),48,60);
+ load('npc',person('#587a99','#7ba6b1','<path d="M20 24h3v3h-3zm10 0h3v3h-3z" fill="#343b45"/>'),48,60);
+ load('follower','<ellipse cx="24" cy="52" rx="16" ry="4" fill="#47734c" opacity=".5"/><path d="M11 29h28v21H11z" fill="#b88454"/><path d="M9 15h9V5h7v12h5V5h7v10h6v23H9z" fill="#d6a16c"/><path d="M14 19h22v20H14z" fill="#e5b983"/><path d="M17 29h5v5h-5zm13 0h5v5h-5z" fill="#313b42"/><path d="M23 37h5v3h-5z" fill="#9c694e"/><path d="M12 46h9v6h-9zm17 0h9v6h-9z" fill="#986c4b"/>',48,60);
+ load('flower','<path d="M5 15h22v13H5z" fill="#367d50"/><path d="M2 11h28v10H2z" fill="#46965c"/><path d="M6 7h7v7H6zm12 4h7v7h-7z" fill="#f5b4bd"/><path d="M8 9h3v3H8zm12 4h3v3h-3z" fill="#f8e7af"/>',32,32);
+ load('lamp','<path d="M14 12h5v20h-5z" fill="#6a5a4b"/><path d="M10 4h13v14H10z" fill="#4b6b5c"/><path d="M12 7h9v9h-9z" fill="#ffe5a5"/><path d="M8 2h17v5H8z" fill="#395d54"/>',32,32);
+ load('bench','<path d="M3 12h26v5H3zm2-7h22v5H5z" fill="#c28c62"/><path d="M5 17h4v12H5zm18 0h4v12h-4z" fill="#795f4c"/>',32,32);
+ const draw=(ctx,key,x,y,w,h)=>{const im=images[key];if(im&&im.complete&&im.naturalWidth)ctx.drawImage(im,Math.round(x),Math.round(y),w,h)};
+ return {draw,images};
+})();
