@@ -40,50 +40,68 @@ const WORLD_V2=(()=>{
    r(0,11,32,4,'#ddc79a');r(0,20,32,4,'#c8ad7f');
    r(5,3,5,27,'#b89a70');r(24,3,5,27,'#b89a70');
  },32,32);
- sprites.playerDown=sprite(r=>{
-   r(7,33,23,4,'#477f55');r(9,25,7,10,'#283d58');r(20,25,7,10,'#283d58');
-   r(7,15,23,13,'#244c75');r(11,15,15,13,'#367ab2');
-   r(4,17,5,10,'#e7b48c');r(28,17,5,10,'#e7b48c');
-   r(11,7,15,11,'#edbc93');r(9,6,19,4,'#453b3a');
-   r(6,4,25,6,'#bf4654');r(11,0,15,5,'#d75e63');r(14,2,9,2,'#f4d6ba');
-   r(13,12,3,3,'#303843');r(22,12,3,3,'#303843');
- },38,38);
- sprites.playerUp=sprite(r=>{
-   r(7,33,23,4,'#477f55');r(9,25,7,10,'#283d58');r(20,25,7,10,'#283d58');
-   r(7,15,23,13,'#244c75');r(11,15,15,13,'#367ab2');
-   r(4,17,5,10,'#e7b48c');r(28,17,5,10,'#e7b48c');
-   r(11,7,15,11,'#604843');r(9,6,19,4,'#453b3a');
-   r(6,4,25,6,'#bf4654');r(11,0,15,5,'#d75e63');
-   r(14,18,9,7,'#255b8b');
- },38,38);
- sprites.playerLeft=sprite(r=>{
-   r(7,33,23,4,'#477f55');r(9,25,7,10,'#283d58');r(20,25,7,10,'#283d58');
-   r(7,15,23,13,'#244c75');r(11,15,15,13,'#367ab2');
-   r(7,17,5,10,'#e7b48c');r(26,17,5,10,'#e7b48c');
-   r(11,7,15,11,'#edbc93');r(9,6,19,4,'#453b3a');
-   r(6,4,25,6,'#bf4654');r(11,0,15,5,'#d75e63');
-   r(12,12,3,3,'#303843');r(9,16,5,3,'#e0a37f');
- },38,38);
- sprites.playerRight=sprite(r=>{
-   r(7,33,23,4,'#477f55');r(9,25,7,10,'#283d58');r(20,25,7,10,'#283d58');
-   r(7,15,23,13,'#244c75');r(11,15,15,13,'#367ab2');
-   r(7,17,5,10,'#e7b48c');r(26,17,5,10,'#e7b48c');
-   r(11,7,15,11,'#edbc93');r(9,6,19,4,'#453b3a');
-   r(6,4,25,6,'#bf4654');r(11,0,15,5,'#d75e63');
-   r(23,12,3,3,'#303843');r(26,16,5,3,'#e0a37f');
- },38,38);
- sprites.npc=sprite(r=>{
-   r(8,31,22,5,'#4d7853');r(10,24,7,10,'#344258');r(20,24,7,10,'#344258');
-   r(8,15,22,12,'#57948b');r(4,17,5,10,'#e4b58d');r(28,17,5,10,'#e4b58d');
-   r(11,7,15,11,'#e5b58f');r(8,4,22,6,'#476f87');r(12,0,14,5,'#648fa3');
-   r(13,12,3,3,'#303843');r(22,12,3,3,'#303843');
- },38,38);
- sprites.follower=sprite(r=>{
-   r(6,24,25,4,'#4d7d50');r(9,10,21,17,'#ba865b');
-   r(6,3,9,14,'#d5a36e');r(23,3,9,14,'#d5a36e');
-   r(13,12,13,10,'#e6b985');r(12,16,3,4,'#2e3740');r(25,16,3,4,'#2e3740');
-   r(17,21,6,3,'#8e6148');r(10,25,6,5,'#986b4d');r(24,25,6,5,'#986b4d');
- },38,32);
+ // 24x32 character sprites, scaled 2x in the field for a classic handheld look.
+ const human=(direction,variant,frame=0)=>sprite(r=>{
+   const isNpc=variant!=='hero';
+   const cap=isNpc?(variant==='npc2'?'#82614b':'#466b87'):'#d04e57';
+   const capLight=isNpc?(variant==='npc2'?'#bd9972':'#7298b1'):'#ef8a83';
+   const jacket=isNpc?(variant==='npc2'?'#bd805e':'#3c8d80'):'#397db6';
+   const dark='#293b50',skin='#edbb92',hair=isNpc?'#4a3b35':'#443a3b';
+   const side=direction==='left'||direction==='right',up=direction==='up';
+   const step=frame?2:0;
+   r(5,30,17,2,'#4b7c51');
+   r(7,25,5,6,'#34435b');r(14,25+step,5,6-step,'#34435b');
+   r(7,29,5,2,'#e4dbcb');r(14,29+step,5,2,'#e4dbcb');
+   r(5,17,16,10,dark);r(7,18,12,9,jacket);
+   r(4,18+(frame?2:0),3,8,skin);r(21,18+(frame?0:2),3,8,skin);
+   r(8,9,11,9,up?hair:skin);
+   r(7,8,13,4,hair);
+   r(5,6,17,5,cap);r(8,2,11,5,cap);r(10,3,7,2,capLight);
+   r(5,10,3,2,cap);
+   if(up){
+     r(9,12,9,5,hair);r(9,20,9,5,'#285b86');
+   }else if(side){
+     if(direction==='left'){
+       r(8,13,2,2,'#293842');r(7,16,4,2,'#d79a79');
+       r(6,10,4,4,hair);r(18,19,3,6,'#295e87');
+     }else{
+       r(17,13,2,2,'#293842');r(17,16,4,2,'#d79a79');
+       r(18,10,4,4,hair);r(5,19,3,6,'#295e87');
+     }
+   }else{
+     r(10,13,2,2,'#293842');r(16,13,2,2,'#293842');
+     r(13,17,3,1,'#c88470');
+     r(9,20,8,4,isNpc?'#d1b28a':'#7cb3d6');
+   }
+ },27,33);
+ for(const [suffix,direction] of [['Down','down'],['Up','up'],['Left','left'],['Right','right']]){
+   sprites['player'+suffix]=human(direction,'hero');
+   sprites['player'+suffix+'Walk']=human(direction,'hero',1);
+   sprites['npc'+suffix]=human(direction,'npc');
+   sprites['npc2'+suffix]=human(direction,'npc2');
+ }
+ sprites.npc=sprites.npcDown;
+ const follower=(direction,frame=0)=>sprite(r=>{
+   const up=direction==='up',left=direction==='left',right=direction==='right';
+   r(3,27,22,3,'#4b7b50');
+   r(7,21,6,7,'#a46d46');r(17,21+(frame?1:0),6,7,'#a46d46');
+   r(5,11,21,14,'#b98454');r(7,13,17,10,'#e3b782');
+   if(left||right){
+     r(left?3:21,13,6,8,'#d6a16e');
+     r(left?8:19,16,3,3,'#2c3941');
+     r(left?13:15,22,5,3,'#976747');
+   }else{
+     r(5,3,7,13,'#cf9969');r(19,3,7,13,'#cf9969');
+     r(7,6,3,6,'#edc18b');r(21,6,3,6,'#edc18b');
+     if(!up){r(10,16,3,4,'#303941');r(20,16,3,4,'#303941');r(15,22,4,3,'#936144')}
+     else{r(10,14,12,7,'#ab794e')}
+   }
+ },31,31);
+ for(const [suffix,direction] of [['Down','down'],['Up','up'],['Left','left'],['Right','right']]){
+   sprites['follower'+suffix]=follower(direction);
+   sprites['follower'+suffix+'Walk']=follower(direction,1);
+ }
+ sprites.follower=sprites.followerDown;
  const makeHouse=(roof,trim,sign)=>{
    return sprite(r=>{
      r(6,67,119,8,'#4c7654');
@@ -165,12 +183,21 @@ const WORLD_V2=(()=>{
      }
      for(let x=26;x<=95;x+=20){const [px,py]=P(x,5);img('lab',px-8,py-49,104,81)}
    }
-   const entities=npcs.map(n=>({x:n.x,y:n.y,key:'npc'}));
-   if(state.party&&state.party.length)entities.push({x:state.x,y:state.y+1,key:'follower'});
-   const dirs=['playerUp','playerRight','playerDown','playerLeft'];
-   entities.push({x:state.x,y:state.y,key:dirs[state.face??2]});
-   entities.sort((a,b)=>a.y-b.y);
-   for(const a of entities){const [px,py]=P(a.x,a.y);img(a.key,px-7,py-11)}
+   const directions=['Up','Right','Down','Left'];
+   const direction=directions[state.face??2];
+   const moving=Date.now()-(state.lastMoveAt||0)<160;
+   const entities=npcs.map((n,i)=>({x:n.x,y:n.y,key:(i%3===0?'npc2':'npc')+directions[n.face??2],priority:0}));
+   if(state.party&&state.party.length){
+     const trail=state.followerTrail&&state.followerTrail.length?state.followerTrail[0]:null;
+     const opposite=[[0,1],[-1,0],[0,-1],[1,0]][state.face??2];
+     const fx=trail?trail.x:state.x+opposite[0],fy=trail?trail.y:state.y+opposite[1];
+     const dx=state.x-fx,dy=state.y-fy;
+     const followDirection=dx>0?'Right':dx<0?'Left':dy>0?'Down':dy<0?'Up':direction;
+     entities.push({x:fx,y:fy,key:'follower'+followDirection+(moving?'Walk':''),priority:1});
+   }
+   entities.push({x:state.x,y:state.y,key:'player'+direction+(moving?'Walk':''),priority:2});
+   entities.sort((a,b)=>a.y-b.y||a.priority-b.priority);
+   for(const a of entities){const [px,py]=P(a.x,a.y);img(a.key,px-2,py-10,29,36)}
  };
  return {draw,houseList};
 })();
