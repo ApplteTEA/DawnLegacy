@@ -169,10 +169,24 @@ function win(msgs){
  battleMessage(title+' '+(details.join(' · ')||'경험치를 획득했어!'));
  const menu=document.querySelector('.sv-menu');
  if(menu)menu.innerHTML='<div class="sv-victory"><div class="sv-victory-mark">✦ WIN ✦</div><strong>'+title+'</strong><span>'+details.join('<br>')+'</span><button id="battleContinue">모험 계속하기 →</button></div>';
- const done=()=>{mode='world';fight=null;$('overlay').classList.remove('battle-mode');$('dialog').classList.remove('battle-mode');close()};
+ const done=()=>{
+   if(mode==='world'&&!dialogOpen)return;
+   mode='world';fight=null;dialogOpen=false;
+   const overlay=$('overlay');
+   overlay.style.setProperty('display','none','important');
+   $('dialogBody').replaceChildren();
+   overlay.classList.remove('battle-mode');
+   $('dialog').classList.remove('battle-mode');
+   overlay.classList.add('hidden');
+   requestAnimationFrame(()=>{overlay.style.removeProperty('display')});
+ };
  const continueButton=menu&&menu.querySelector('#battleContinue');
- if(continueButton)continueButton.addEventListener('click',done);
+ if(continueButton){
+   continueButton.addEventListener('click',done);
+   continueButton.addEventListener('pointerup',done);
+ }
  btn('battleContinue',done);
+ setTimeout(()=>{if(mode==='battle'&&fight&&fight.index>=fight.enemies.length)done()},4000);
 }
 function lose(){s.party.forEach(p=>{p.hp=p.max;p.moves.forEach(m=>m.pp=m.maxpp)});s.x=8;s.y=12;s.money=Math.max(0,s.money-500);save();mode='world';fight=null;pop('<h2>눈앞이 캄캄해졌다!</h2><p>새벽마을 포켓몬 센터로 돌아왔어. 모두 회복했어.</p><button id="done">계속하기</button>',()=>btn('done',close))}
 function capture(kind){if(fight.npc)return toast('트레이너 포켓몬은 잡을 수 없어!');if(s[kind]<=0)return toast('볼이 부족해!');s[kind]--;let e=foe(),chance=Math.min(.93,(kind==='great'?.35:.2)+(.8*(1-e.hp/e.max))+(e.shiny?.02:0));if(Math.random()<chance){let p=e;if(s.party.length<6)s.party.push(p);else s.box.push(p);s.dex[p.name]=2;mode='world';fight=null;save();pop('<h1>포획 성공!</h1><h2>'+(p.shiny?'✨ ':'')+p.name+'</h2><p>'+tag(p)+'</p><p>'+(eligible(p)?'타입 챌린지에 출전할 수 있어!':'선택 타입이 아니므로 수집 전용이야.')+'</p><p>'+(s.party.includes(p)?'파티에 합류했어.':'박스로 전송했어.')+'</p><button class="primary" id="done">계속하기</button>',()=>btn('done',close));return}fight.message='앗! '+e.name+'이(가) 볼에서 빠져나왔다!';enemyTurn()}
