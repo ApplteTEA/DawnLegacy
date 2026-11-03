@@ -279,9 +279,9 @@ const WORLD_V2=(()=>{
      const fx=trail?trail.x:state.x+opposite[0],fy=trail?trail.y:state.y+opposite[1];
      const dx=state.x-fx,dy=state.y-fy;
      const followDirection=dx>0?'Right':dx<0?'Left':dy>0?'Down':dy<0?'Up':direction;
-     entities.push({x:fx,y:fy,key:'follower'+followDirection +step,priority:1});
+     entities.push({x:fx,y:fy,key:'follower'+followDirection+(moving?'Walk':''),priority:1});
    }
-   entities.push({x:state.x,y:state.y,key:'player'+direction+(moving?'Walk':''),priority:2});
+   entities.push({x:state.x,y:state.y,key:'player'+direction+step,priority:2});
    entities.sort((a,b)=>a.y-b.y||a.priority-b.priority);
    for(const a of entities){const [px,py]=P(a.x,a.y);img(a.key,px-4,py-17,32,44)}
  };
