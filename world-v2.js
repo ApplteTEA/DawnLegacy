@@ -20,35 +20,39 @@ const WORLD_V2=(()=>{
    const cv=document.createElement('canvas');cv.width=32;cv.height=40;
    const c=cv.getContext('2d');c.imageSmoothingEnabled=false;
    const p=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h)};
-   if(direction==='Down'){
-     c.drawImage(trainerImage,0,0,32,40);
+   // Use the SAME high-detail PNG for all directions, retaining outline and shading.
+   if(direction==='Left'){
+     c.translate(32,0);c.scale(-1,1);
+   }
+   if(direction==='Left'||direction==='Right'){
+     // Profile: narrower torso, visible nose and single eye, no front-facing eyes.
+     c.drawImage(trainerImage,5,0,22,40,7,0,21,40);
+     p(7,14,9,12,'#382f36');
+     p(16,15,9,11,'#e9b995');
+     p(22,17,2,2,'#222a34');
+     p(25,20,3,2,'#d29a7d');
+     p(6,21,6,11,'#ac424e');
+     p(8,6,19,3,'#e76570');
+     p(23,10,7,3,'#b52f40');
    }else{
-     // Separate back and side silhouettes, never show the front-facing face.
-     const side=direction==='Left'||direction==='Right';
-     if(direction==='Left'){c.translate(32,0);c.scale(-1,1)}
-     p(10,34,6,5,'#293344');p(19,34,6,5,'#293344');
-     p(10,30,6,6,'#314b79');p(19,30,6,6,'#314b79');
-     p(7,20,21,13,'#23374d');p(10,21,15,11,'#397bb2');
-     p(side?7:5,22,5,9,'#efbc98');p(26,22,4,9,'#e7af89');
-     p(8,10,19,13,'#46383a');
-     p(10,12,16,10,side?'#e9b68f':'#433538');
-     p(8,6,21,8,'#c83e4b');p(11,3,16,5,'#e55c65');
-     p(10,4,13,2,'#f19a91');
-     if(side){
-       p(23,12,5,3,'#c83e4b');
-       p(23,16,2,3,'#253442');
-       p(24,19,4,3,'#d99b78');
-       p(10,23,5,9,'#a9464c');
-     }else{
-       p(9,14,18,8,'#4c3a3b');
-       p(12,24,11,8,'#c44d56');
-       p(14,25,7,5,'#e2c4a4');
+     c.drawImage(trainerImage,0,0,32,40);
+     if(direction==='Up'){
+       // Back: cover facial features, preserve PNG's hat/body/boots.
+       p(7,13,19,12,'#302c36');
+       p(8,14,17,8,'#47373c');
+       p(10,20,13,4,'#332c34');
+       p(9,24,15,12,'#25364e');
+       p(11,25,11,9,'#b94953');
+       p(13,27,7,5,'#e6c2a3');
+       p(8,7,18,5,'#c83c4e');
+       p(10,5,14,2,'#ed7378');
      }
    }
-   if(frame){
+   if(frame!==0){
+     // Alternate the planted foot and shift the silhouette by one pixel.
      const left=frame===1;
-     c.clearRect(left?19:10,34,6,6);
-     p(left?9:20,35,6,4,'#293344');
+     c.clearRect(left?20:8,36,5,4);
+     p(left?8:20,36,5,3,'#262c3c');
    }
    return cv;
  };
