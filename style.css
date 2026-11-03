@@ -115,3 +115,27 @@ html,body,#app{width:100%;height:100%;height:100dvh;overflow:hidden}
  .enemy-mon{width:25%;left:60%}
  .ally-mon{width:30%;left:10%}
 }
+
+/* 2026-11-03 viewport fix: explicit two-row battle, overrides older media rules */
+#overlay:has(.hg-battle){position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;max-height:100dvh!important;display:flex!important;align-items:stretch!important;justify-content:stretch!important;padding:0!important;overflow:hidden!important}
+#dialog:has(.hg-battle){position:relative!important;inset:auto!important;display:block!important;flex:1 1 auto!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;max-width:100%!important;max-height:100%!important;overflow:hidden!important;margin:0!important;border:0!important;border-radius:0!important;padding:0!important}
+.hg-battle{display:grid!important;grid-template-rows:minmax(0,1fr) clamp(135px,30dvh,250px)!important;width:100%!important;height:100%!important;min-height:0!important;overflow:hidden!important}
+.hg-battle .battle-field{display:block!important;position:relative!important;height:100%!important;min-height:0!important;min-width:0!important;overflow:hidden!important;flex:none!important}
+.hg-battle .battle-bottom{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;flex:none!important}
+.hg-battle .battle-message{height:100%!important;min-height:0!important;overflow:auto!important;border-right:3px solid #dce4d4!important;border-bottom:0!important;align-items:center!important}
+.hg-battle .battle-options{height:100%!important;min-height:0!important;overflow:hidden!important}
+.hg-battle .battle-commands{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;width:100%!important;height:100%!important;min-height:0!important;overflow:auto!important;gap:5px!important}
+.hg-battle .battle-status{z-index:4!important}
+.hg-battle .enemy-mon,.hg-battle .ally-mon{z-index:2!important}
+@media(orientation:portrait){
+ .hg-battle{grid-template-rows:minmax(0,1fr) clamp(180px,27dvh,340px)!important}
+ .hg-battle .battle-bottom{grid-template-columns:minmax(0,42fr) minmax(0,58fr)!important;grid-template-rows:minmax(0,1fr)!important}
+ .hg-battle .battle-message{padding:10px!important;font-size:clamp(13px,3vw,19px)!important;line-height:1.4!important}
+ .hg-battle .battle-options{padding:5px!important}
+ .hg-battle .battle-commands{gap:4px!important}
+ #dialog .hg-battle .battle-commands button{font-size:clamp(11px,3vw,18px)!important;padding:2px!important}
+ .hg-battle .battle-status.enemy{top:6%!important;left:3%!important;width:46%!important;min-width:0!important}
+ .hg-battle .battle-status.ally{bottom:5%!important;right:3%!important;width:46%!important;min-width:0!important}
+ .hg-battle .enemy-mon{left:60%!important;top:23%!important;width:26%!important;height:31%!important}
+ .hg-battle .ally-mon{left:11%!important;bottom:11%!important;width:31%!important;height:37%!important}
+}
