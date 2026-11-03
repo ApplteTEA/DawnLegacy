@@ -1,0 +1,72 @@
+/* Scarlet/Violet inspired self-contained battle UI */
+#overlay:has(.sv-battle){position:fixed!important;inset:0!important;display:flex!important;padding:0!important;align-items:stretch!important;justify-content:stretch!important;background:#101d25!important;overflow:hidden!important}
+#dialog:has(.sv-battle){display:block!important;position:relative!important;flex:1 1 auto!important;inset:auto!important;margin:0!important;padding:0!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;border:0!important;border-radius:0!important;overflow:hidden!important;box-shadow:none!important;background:#152a32!important}
+#dialog:has(.sv-battle)>#close{display:none!important}
+.sv-battle{position:relative;display:grid;grid-template-rows:minmax(0,1fr) clamp(150px,31dvh,250px);width:100%;height:100%;overflow:hidden;color:#f7f9f3;font-family:system-ui,-apple-system,sans-serif}
+.sv-arena{position:relative;min-width:0;min-height:0;overflow:hidden;background:linear-gradient(180deg,#a9d9e7 0%,#e4e9d6 53%,#96b788 54%,#5c9571 100%)}
+.sv-sky{position:absolute;inset:0 0 44%;background:radial-gradient(ellipse at 65% 30%,#fff8 0%,transparent 38%),linear-gradient(180deg,#87b8d4,#d6e4d3)}
+.sv-distant{position:absolute;top:42%;left:-5%;width:110%;height:24%;background:#5e9a85;clip-path:polygon(0 72%,10% 42%,19% 64%,34% 25%,45% 60%,61% 34%,73% 60%,89% 15%,100% 57%,100% 100%,0 100%);opacity:.7}
+.sv-ground{position:absolute;inset:58% 0 0;background:repeating-linear-gradient(165deg,#6a9d77 0 28px,#689a72 28px 33px,#72a47b 33px 65px)}
+.sv-shadow{position:absolute;background:#2b625e66;border-radius:50%;filter:blur(5px)}
+.sv-shadow.enemy{width:31%;height:12%;left:58%;top:63%}
+.sv-shadow.player{width:35%;height:15%;left:6%;bottom:7%}
+.sv-pokemon{position:absolute;display:block;object-fit:contain;filter:drop-shadow(0 10px 7px #183b3655);image-rendering:auto;pointer-events:none;user-select:none;z-index:2;animation:sv-enter .35s ease-out}
+.sv-pokemon.enemy{height:58%;width:32%;top:16%;left:58%}
+.sv-pokemon.player{height:70%;width:37%;left:5%;bottom:0%;transform:scaleX(-1)}
+.sv-status{position:absolute;z-index:4;min-width:0;width:clamp(165px,27%,350px);background:#14252edc;border:1px solid #ffffff55;border-radius:16px;padding:11px 15px;box-shadow:0 7px 25px #0b292755;backdrop-filter:blur(8px)}
+.sv-status.enemy{left:3%;top:8%}
+.sv-status.player{right:3%;bottom:8%}
+.sv-name{display:flex;align-items:center;justify-content:space-between;gap:7px;font-size:clamp(13px,1.8vw,20px)}
+.sv-name strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sv-name span{white-space:nowrap;font-size:.76em;font-weight:700;color:#dbe9e7}
+.sv-hp{display:flex;align-items:center;gap:8px;margin-top:8px}
+.sv-hp-label{font-size:11px;font-weight:900;color:#b5e2c7}
+.sv-hp-track{flex:1;height:9px;border-radius:9px;background:#253c41;overflow:hidden;border:1px solid #ffffff44}
+.sv-hp-track i{display:block;height:100%;border-radius:9px;transition:width .25s}
+.sv-hp-count{text-align:right;font-size:12px;font-weight:700;margin-top:4px;color:#e3ece5}
+.sv-scene-label{position:absolute;left:3%;bottom:4%;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#ffffffa9;font-weight:800}
+.sv-controls{display:grid;grid-template-columns:minmax(0,43fr) minmax(0,57fr);grid-template-rows:minmax(0,1fr);min-width:0;min-height:0;overflow:hidden;background:#152c36;border-top:3px solid #ffffff35}
+.sv-narration{display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:0;padding:clamp(12px,2vw,28px);overflow:auto;background:linear-gradient(145deg,#1d3946,#142a35)}
+.sv-narration-label{font-size:10px;letter-spacing:2px;color:#84c9b8;font-weight:900}
+#dialog .sv-narration p{font-size:clamp(14px,2vw,23px);line-height:1.5;font-weight:800;color:#fff;margin:10px 0!important;overflow-wrap:anywhere}
+.sv-menu{display:flex;flex-direction:column;min-width:0;min-height:0;padding:10px 12px;background:#e9eee8;color:#213a3e}
+.sv-menu-title{flex:none;font-size:clamp(12px,1.4vw,16px);font-weight:900;padding:0 3px 7px}
+.sv-command-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:7px;flex:1;min-height:0;overflow:auto}
+#dialog .sv-command{display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;min-width:0!important;min-height:0!important;width:100%!important;height:100%!important;margin:0!important;padding:5px clamp(7px,1.4vw,17px)!important;border:2px solid #d5ded7!important;border-radius:12px!important;background:#fff!important;color:#263d42!important;box-shadow:0 2px 0 #bac9c1!important;text-align:left!important;font-size:clamp(12px,1.7vw,20px)!important;font-weight:900!important;touch-action:manipulation!important}
+#dialog .sv-command:first-child{border-color:#e4a77f!important;background:#fff8f1!important}
+#dialog .sv-command:active{background:#cde5d9!important;transform:translateY(1px)}
+#dialog .sv-command:disabled{opacity:.45!important}
+#dialog .sv-command b{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#dialog .sv-command small{display:block;font-size:clamp(9px,1vw,12px);font-weight:700;color:#82918c;margin-top:2px}
+.sv-missing{position:absolute;left:50%;top:40%;font-size:22px;color:#fff}
+@keyframes sv-enter{from{opacity:0;translate:0 -12px}to{opacity:1;translate:0 0}}
+@media(orientation:portrait){
+.sv-battle{grid-template-rows:minmax(0,1fr) clamp(190px,30dvh,350px)}
+.sv-controls{grid-template-columns:minmax(0,39fr) minmax(0,61fr)}
+.sv-narration{padding:9px}
+#dialog .sv-narration p{font-size:clamp(13px,3vw,19px)}
+.sv-menu{padding:7px}
+.sv-menu-title{font-size:12px;padding-bottom:5px}
+.sv-command-grid{gap:5px}
+#dialog .sv-command{font-size:clamp(11px,3vw,17px)!important;padding:4px 7px!important}
+.sv-pokemon.enemy{width:48%;height:43%;top:26%;left:49%}
+.sv-pokemon.player{width:55%;height:46%;left:-6%;bottom:7%}
+.sv-status{padding:8px 10px;width:48%}
+.sv-status.enemy{left:3%;top:8%}
+.sv-status.player{right:3%;bottom:7%}
+.sv-name{font-size:clamp(12px,3vw,17px)}
+.sv-hp{margin-top:5px}
+.sv-scene-label{font-size:9px}
+}
+@media(max-height:480px) and (orientation:landscape){
+.sv-battle{grid-template-rows:minmax(0,1fr) clamp(115px,35dvh,160px)}
+.sv-status{padding:6px 11px}
+.sv-name{font-size:13px}
+.sv-hp{margin-top:3px}
+.sv-hp-track{height:7px}
+.sv-menu{padding:5px 8px}
+.sv-menu-title{padding-bottom:3px;font-size:11px}
+.sv-command-grid{gap:4px}
+#dialog .sv-command{font-size:13px!important}
+#dialog .sv-narration p{font-size:14px}
+}
