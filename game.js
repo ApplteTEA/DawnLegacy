@@ -27,7 +27,7 @@ function start(){
       btn('roll',()=>{
         selected=$('typeSelect').value;
         s.type=selected;
-        const pool=DB.filter(p=>p.stage<=2&&(p.types.includes(selected)||evoTypes(p.name).includes(selected)));
+        const evolvedNames=new Set(Object.values(EVOS).map(e=>e[0]));const pool=DB.filter(p=>p.stage<=2&&!evolvedNames.has(p.name)&&(p.types.includes(selected)||evoTypes(p.name).includes(selected)));
         const p=createMon(choose(pool).name,5);
         s.party=[p];s.dex[p.name]=2;save();
         pop('<h1>첫 파트너!</h1><div class="panel"><h2>'+(p.shiny?'✨ ':'')+p.name+'</h2>'+tag(p)+'<p>Lv. 5</p></div><p>마을 아래쪽 풀숲으로 이동해 첫 야생 포켓몬과 싸워보자!</p><button class="primary" id="go">모험 시작</button>',()=>{
