@@ -321,19 +321,42 @@ const WORLD_V2=(()=>{
          ctx.restore();return;
        }
      }
-     if(drawLpc(ctx,key,x,y,dw,dh))return;
      if(key.startsWith('follower')){
-       const name=state.party&&state.party[0]&&state.party[0].name;
-       const type=state.party&&state.party[0]&&state.party[0].types&&state.party[0].types[0];
-       const color=type==='불꽃'?'#d77d4b':type==='물'?'#5b9fca':type==='풀'?'#83b66a':type==='전기'?'#e7c75b':'#c49b78';
+       const mon=state.party&&state.party[0],name=mon&&mon.name||'';
+       const isGrass=/치코리타|베이리프|메가니움|이상해/.test(name);
+       const isFire=/브케인|마그케인|블레이범|파이리|리자드/.test(name);
+       const isWater=/리아코|엘리게이|장크로다일|꼬부기/.test(name);
        ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(dw/32,dh/32);
-       rect(ctx,7,8,18,19,color);rect(ctx,10,4,12,10,color);
-       rect(ctx,5,10,6,10,color);rect(ctx,21,10,6,10,color);
-       rect(ctx,10,25,5,5,'#574c48');rect(ctx,18,25,5,5,'#574c48');
-       rect(ctx,12,14,3,4,'#263c43');rect(ctx,19,14,3,4,'#263c43');
-       rect(ctx,15,21,4,2,'#e7d4b0');
+       const p=(x,y,w,h,col)=>rect(ctx,x,y,w,h,col);
+       if(isGrass){
+         // Leaf-headed green starter: distinct silhouette, not a generic brown box.
+         p(12,1,7,12,'#407e50');p(16,2,10,5,'#62a866');
+         p(7,13,19,15,'#86c96f');p(9,8,15,14,'#a2d885');
+         p(4,22,7,7,'#79b764');p(22,22,7,7,'#79b764');
+         p(10,12,4,4,'#304a42');p(21,12,4,4,'#304a42');
+         p(15,19,5,3,'#e7bb8e');p(9,26,6,4,'#4d9862');p(21,26,6,4,'#4d9862');
+       }else if(isFire){
+         // Long-nosed cream-and-blue fire starter with back flames.
+         p(3,3,7,13,'#e5b548');p(6,0,5,10,'#ef6846');p(9,4,6,11,'#f7d36b');
+         p(8,13,17,15,'#294b62');p(11,8,14,15,'#f2dbb2');
+         p(19,12,10,6,'#f2dbb2');p(25,15,5,3,'#d39b75');
+         p(19,11,3,3,'#263744');p(11,24,6,6,'#3b6171');p(21,24,6,6,'#3b6171');
+       }else if(isWater){
+         // Blue crocodile-like starter with a wide jaw and dorsal spikes.
+         p(8,1,6,11,'#d84e4d');p(14,5,6,9,'#d84e4d');
+         p(8,12,18,16,'#4e9fce');p(10,7,18,15,'#64b4dc');
+         p(21,14,10,7,'#77bce1');p(21,20,10,4,'#f1e3c4');
+         p(12,12,4,4,'#263f53');p(9,25,6,5,'#3a86b5');p(22,25,6,5,'#3a86b5');
+       }else{
+         const color=mon&&mon.types&&mon.types[0]==='전기'?'#efd158':'#bb9b79';
+         p(7,8,18,19,color);p(11,3,12,12,color);
+         p(7,1,6,12,color);p(21,1,6,12,color);
+         p(12,15,3,4,'#263c43');p(21,15,3,4,'#263c43');
+         p(11,26,5,4,'#65514a');p(21,26,5,4,'#65514a');
+       }
        ctx.restore();return;
      }
+     if(drawLpc(ctx,key,x,y,dw,dh))return;
      if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),dw,dh);
    };
    rect(ctx,0,0,W,H,palette.grass);
