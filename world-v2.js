@@ -243,10 +243,10 @@ const WORLD_V2=(()=>{
    const P=(x,y)=>[Math.round(x*T-camX),Math.round(y*T-camY)];
    const img=(key,x,y,w,h)=>{
      const sp=sprites[key],dw=w||(sp?sp.width:32),dh=h||(sp?sp.height:44);
-     if(key.startsWith('player')&&trainerReady&&key.includes('Down')){
+     if(key.startsWith('player')&&trainerReady&&true){
        ctx.save();ctx.imageSmoothingEnabled=false;
        const bob=key.includes('Walk')?Math.floor(Date.now()/100)%2:0;
-       ctx.drawImage(trainerImage,Math.round(x),Math.round(y)+bob,dw,dh);ctx.restore();return;
+       if(key.includes('Left')){ctx.translate(Math.round(x+dw),0);ctx.scale(-1,1);ctx.drawImage(trainerImage,0,Math.round(y)+bob,dw,dh)}else{ctx.drawImage(trainerImage,Math.round(x),Math.round(y)+bob,dw,dh)}ctx.restore();return;
      }
      if(key.startsWith('follower')){
        const name=state.party&&state.party[0]&&state.party[0].name;
@@ -261,6 +261,18 @@ const WORLD_V2=(()=>{
        }
      }
      if(drawLpc(ctx,key,x,y,dw,dh))return;
+     if(key.startsWith('follower')){
+       const name=state.party&&state.party[0]&&state.party[0].name;
+       const type=state.party&&state.party[0]&&state.party[0].types&&state.party[0].types[0];
+       const color=type==='불꽃'?'#d77d4b':type==='물'?'#5b9fca':type==='풀'?'#83b66a':type==='전기'?'#e7c75b':'#c49b78';
+       ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(dw/32,dh/32);
+       rect(ctx,7,8,18,19,color);rect(ctx,10,4,12,10,color);
+       rect(ctx,5,10,6,10,color);rect(ctx,21,10,6,10,color);
+       rect(ctx,10,25,5,5,'#574c48');rect(ctx,18,25,5,5,'#574c48');
+       rect(ctx,12,14,3,4,'#263c43');rect(ctx,19,14,3,4,'#263c43');
+       rect(ctx,15,21,4,2,'#e7d4b0');
+       ctx.restore();return;
+     }
      if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),dw,dh);
    };
    rect(ctx,0,0,W,H,palette.grass);
