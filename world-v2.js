@@ -12,6 +12,28 @@ const WORLD_V2=(()=>{
    paint(r);return cv;
  };
  const sprites={};
+ // Real, independently authored LPC pixel-art sprite sheet, not programmatic character blocks.
+ // Source: Gaurav Munjal / Stephen Challener (Redshrike), CC BY-SA 3.0.
+ const lpc=new Image();
+ let lpcReady=false;
+ lpc.onload=()=>{lpcReady=lpc.naturalWidth>=144&&lpc.naturalHeight>=192;if(lpcReady&&typeof draw==='function')draw()};
+ lpc.onerror=()=>{lpcReady=false};
+ lpc.src='https://lpc.opengameart.org/sites/default/files/universal-lpc-sprite_male_01_walk-3frame_2.png';
+ const drawLpc=(ctx,key,x,y,w,h)=>{
+   if(!lpcReady||!(/^(player|npc|npc2)/).test(key))return false;
+   const direction=key.includes('Up')?0:key.includes('Left')?1:key.includes('Right')?2:3;
+   const moving=key.includes('Walk');
+   const frame=moving?Math.floor(Date.now()/150)%3:1;
+   const fw=lpc.naturalWidth/3,fh=lpc.naturalHeight/4;
+   if(!Number.isInteger(fw)||!Number.isInteger(fh))return false;
+   ctx.save();
+   ctx.imageSmoothingEnabled=false;
+   if(key.startsWith('npc2'))ctx.filter='hue-rotate(105deg) saturate(0.9)';
+   else if(key.startsWith('npc'))ctx.filter='hue-rotate(215deg) saturate(0.9)';
+   ctx.drawImage(lpc,frame*fw,direction*fh,fw,fh,Math.round(x),Math.round(y),w,h);
+   ctx.restore();
+   return true;
+ };
  sprites.tree=sprite(r=>{
    r(17,41,15,20,'#66503a');r(21,42,7,18,'#9c7850');
    r(3,21,43,28,'#244e39');r(6,13,37,31,'#347447');r(12,6,28,29,'#478d51');
@@ -215,7 +237,7 @@ const WORLD_V2=(()=>{
    ctx.imageSmoothingEnabled=false;
    const camX=state.x*T-W/2+T/2,camY=state.y*T-H/2+T/2;
    const P=(x,y)=>[Math.round(x*T-camX),Math.round(y*T-camY)];
-   const img=(key,x,y,w,h)=>{const sp=sprites[key];if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),w||sp.width,h||sp.height)};
+   const img=(key,x,y,w,h)=>{const sp=sprites[key];const dw=w||(sp?sp.width:32),dh=h||(sp?sp.height:44);if(drawLpc(ctx,key,x,y,dw,dh))return;if(sp)ctx.drawImage(sp,Math.round(x),Math.round(y),dw,dh)};
    rect(ctx,0,0,W,H,palette.grass);
    const minX=Math.max(0,Math.floor(camX/T)-2),maxX=Math.min(99,Math.ceil((camX+W)/T)+2);
    const minY=Math.max(0,Math.floor(camY/T)-2),maxY=Math.min(23,Math.ceil((camY+H)/T)+2);
