@@ -25,14 +25,14 @@
     }
   };
   const artScript=document.createElement('script');
-  artScript.src='./field-art.js?fresh='+version;
+  artScript.src='./world-v2.js?fresh='+version;
   artScript.async=false;
   artScript.onload=function(){document.body.appendChild(script)};
   artScript.onerror=function(){
     const body=document.getElementById('dialogBody');
     const overlay=document.getElementById('overlay');
     if(body&&overlay){
-      body.innerHTML='<h2>필드 그래픽을 불러오지 못했어</h2><p>페이지를 다시 열어줘.</p>';
+      body.innerHTML='<h2>새 필드 엔진을 불러오지 못했어</h2><p>페이지를 다시 열어줘.</p>';
       overlay.classList.remove('hidden');
     }
   };
