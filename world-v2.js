@@ -321,7 +321,7 @@ const WORLD_V2=(()=>{
    }
    entities.push({x:state.x,y:state.y,key:'player'+direction+step,priority:2});
    entities.sort((a,b)=>a.y-b.y||a.priority-b.priority);
-   for(const a of entities){const [px,py]=P(a.x,a.y);img(a.key,px-4,py-17,32,44)}
+   for(const a of entities){const [px,py]=P(a.x,a.y);if(a.key.startsWith('follower'))img(a.key,px-9,py-10,42,34);else img(a.key,px-4,py-17,32,44)}
  };
  return {draw,houseList};
 })();
