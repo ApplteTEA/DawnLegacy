@@ -231,69 +231,121 @@ window.addEventListener('resize',resizeField);resizeField();
 function draw(){
  const W=canvas.width,H=canvas.height,T=24;
  const cols=Math.ceil(W/T)+2,rows=Math.ceil(H/T)+2;
- const cx=Math.floor(s.x-cols/2),cy=Math.floor(s.y-rows/2);
+ const cx=s.x-Math.floor(cols/2),cy=s.y-Math.floor(rows/2);
  const ox=Math.floor((W-cols*T)/2),oy=Math.floor((H-rows*T)/2);
- const rect=(x,y,w,h,color)=>{ctx.fillStyle=color;ctx.fillRect(Math.round(x),Math.round(y),w,h)};
- const seed=(x,y)=>Math.abs((x*92821+y*68917+x*y*173)%101);
- const pos=(wx,wy)=>[(wx-cx)*T+ox,(wy-cy)*T+oy];
- const houseAt=(wx,wy)=>wy>=4&&wy<=8&&wx%20>=2&&wx%20<=5;
- const town=wx=>wx<20;
- const road=(wx,wy)=>wy===11||wy===12||(wx%20>=7&&wx%20<=9&&wy>=6&&wy<=12);
- //### Ground tiles, paths, flowers and water
- rect(0,0,W,H,'#93c47c');
- for(let gy=0;gy<rows;gy++)for(let gx=0;gx<cols;gx++){
-   const wx=cx+gx,wy=cy+gy,[x,y]=pos(wx,wy),n=seed(wx,wy);
-   if(wx<0||wx>=100||wy<0||wy>=24){rect(x,y,T,T,'#3f806f');continue}
-   const path=road(wx,wy),wild=isGrass(wx,wy)&&!town(wx);
-   rect(x,y,T,T,path?(n%4?'#d8c9a1':'#d1bf91'):wild?(n%3?'#5eab71':'#69b47b'):(n%3?'#9dcb7f':'#a9d58b'));
-   if(path){if(n%5===0){rect(x+5,y+8,3,2,'#b6a67e');rect(x+17,y+17,2,2,'#b6a67e')}}
-   else if(wild){rect(x+4,y+7,3,11,'#368357');rect(x+10,y+4,3,13,'#367f54');rect(x+16,y+8,4,10,'#398a56');rect(x+8,y+3,4,3,'#8edb86')}
-   else if(n<15){rect(x+7,y+11,3,4,'#72b86b');rect(x+14,y+8,3,5,'#78b86b')}
-   if(!path&&!wild&&n===26){rect(x+9,y+9,5,5,'#f8e6a7');rect(x+10,y+10,2,2,'#f4b8c4')}
-   if(town(wx)&&wy===10&&wx%20>=1&&wx%20<=6){rect(x,y+15,24,9,'#6eac73');rect(x+3,y+15,3,9,'#e4e6b5')}
- }
- //### Village: several distinct small buildings, fenced gardens and a town sign
- for(let z=0;z<5;z++){
-   const base=z*20;
-   const drawHouse=(hx,hy,kind)=>{
-     const [x,y]=pos(hx,hy);
-     if(x>W+100||x< -140||y>H+120||y< -130)return;
-     const wall=kind===1?'#f4e4bc':kind===2?'#cfe3d4':'#f0dfc5';
-     const roof=kind===1?'#cb665d':kind===2?'#4d95a5':'#a46b91';
-     rect(x-2,y+7,79,58,'#7c8467');rect(x,y+4,75,55,wall);
-     rect(x-6,y-17,87,12,'#564e57');rect(x-9,y-26,93,17,roof);
-     rect(x+2,y-27,71,4,'#efb5a3');rect(x+8,y-7,17,19,'#fff3ce');rect(x+11,y-4,11,13,'#80c3cb');
-     rect(x+52,y-7,17,19,'#fff3ce');rect(x+55,y-4,11,13,'#80c3cb');
-     rect(x+29,y+19,19,36,'#715b50');rect(x+32,y+23,13,31,'#a77b63');rect(x+43,y+39,2,3,'#f7d37a');
-     rect(x-2,y+55,79,6,'#d3c39d');rect(x+30,y+61,18,16,'#d7c7a3');
-     if(kind===1){rect(x+20,y-22,35,10,'#e6f5ec');rect(x+26,y-21,22,7,'#d65f62');rect(x+34,y-25,6,14,'#d65f62')}
-   };
-   drawHouse(base+2,5,1);drawHouse(base+12,5,2);
-   for(let j=0;j<4;j++){
-     const [fx,fy]=pos(base+1+j,9);
-     rect(fx,fy+8,3,16,'#e8d7ae');rect(fx,fy+12,24,3,'#c1a77f');
-   }
-   const [tx,ty]=pos(base+17,10);
-   if(tx>-40&&tx<W+40){rect(tx+9,ty+7,4,21,'#8d7456');rect(tx,ty-3,25,15,'#d8bb82');rect(tx+3,ty,19,9,'#7eab96');rect(tx+6,ty+3,12,3,'#e8f1d4')}
-   const [px,py]=pos(base+10,9);
-   if(px>-40&&px<W+40){rect(px+4,py+13,17,8,'#6b9c70');rect(px+9,py+4,7,15,'#7c6d57');rect(px+2,py,20,9,'#3f9567');rect(px+6,py-8,13,12,'#4da674');rect(px+9,py-13,7,10,'#5aaf79')}
- }
- //### NPC sprites
- const person=(wx,wy,hat,shirt)=>{
-   const [x,y]=pos(wx,wy);
-   if(x< -24||x>W+24||y< -24||y>H+24)return;
-   rect(x+5,y+22,15,3,'#47795f');rect(x+6,y+11,13,12,shirt);
-   rect(x+8,y+6,9,9,'#f0c39b');rect(x+6,y+3,13,6,hat);
-   rect(x+7,y+21,4,5,'#304760');rect(x+14,y+21,4,5,'#304760');
+ const R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)};
+ const P=(x,y)=>[(x-cx)*T+ox,(y-cy)*T+oy];
+ const N=(x,y)=>Math.abs((x*7193+y*12497+x*y*43)%113);
+ const road=(x,y)=>y===11||y===12||(x%20>=7&&x%20<=9&&y>=7&&y<=12);
+ const drawTree=(x,y)=>{
+   R(x+7,y+17,12,11,'#65533c');R(x+9,y+17,8,9,'#927447');
+   R(x+1,y+9,24,15,'#235b48');R(x+3,y+3,21,18,'#327a55');
+   R(x+6,y,15,18,'#449765');R(x+2,y+7,9,10,'#3d895b');
+   R(x+10,y+3,9,5,'#71b47c');R(x+4,y+12,4,5,'#65a875');
+   R(x+17,y+11,5,6,'#276b50');R(x+8,y+19,12,3,'#214d3e');
  };
- for(const n of NPCS)person(n.x,n.y,n.badge?'#7c507e':'#4a607d',n.badge?'#af83b0':'#527ca1');
- //### Player sprite with hat, face, jacket, backpack and feet
- const [px,py]=pos(s.x,s.y);
- rect(px+4,py+23,18,4,'#5b8566');
- rect(px+4,py+13,17,10,'#416a9d');rect(px+2,py+14,4,9,'#345a82');
- rect(px+8,py+7,10,9,'#f1c6a4');rect(px+5,py+4,16,6,'#d24c4d');
- rect(px+7,py+1,12,5,'#c73c42');rect(px+11,py+3,6,3,'#f7e6d0');
- rect(px+6,py+22,5,5,'#2b3d57');rect(px+15,py+22,5,5,'#2b3d57');
+ const drawHouse=(hx,hy,kind)=>{
+   const [x,y]=P(hx,hy);
+   if(x>W+120||x< -130||y>H+130||y< -130)return;
+   const roof=kind===1?'#c9565a':kind===2?'#468f9c':'#8b6593';
+   const shade=kind===1?'#983c47':kind===2?'#32687b':'#65496e';
+   const wall=kind===1?'#f4dfb7':kind===2?'#dce9dd':'#eee2c9';
+   R(x-7,y+11,91,57,'#55765a');R(x-3,y+6,83,59,wall);
+   R(x-7,y+51,91,13,'#b2a783');R(x-7,y+62,91,6,'#786f59');
+   R(x-13,y-18,103,11,shade);R(x-10,y-29,97,14,roof);
+   R(x-5,y-33,87,6,'#e7a69a');R(x-8,y-14,93,7,roof);
+   R(x-4,y-7,84,5,'#fff2cf');R(x+5,y+13,19,23,'#c8a87d');
+   R(x+8,y+15,13,16,'#f3e7c5');R(x+10,y+17,9,12,'#6bb5bc');
+   R(x+55,y+13,19,23,'#c8a87d');R(x+58,y+15,13,16,'#f3e7c5');
+   R(x+60,y+17,9,12,'#6bb5bc');R(x+11,y+18,3,4,'#b9e4dc');
+   R(x+32,y+34,19,31,'#654b45');R(x+35,y+37,13,27,'#ad7d61');
+   R(x+45,y+49,2,3,'#f7d36d');R(x+30,y+66,23,8,'#b7ab89');
+   if(kind===1){
+     R(x+25,y-24,29,12,'#fff4df');R(x+36,y-27,7,18,'#d45258');
+     R(x+30,y-20,19,5,'#d45258');
+   }else if(kind===2){
+     R(x+29,y-23,26,9,'#f4e5c2');R(x+32,y-21,20,4,'#4e948b');
+   }
+   R(x-7,y+66,37,3,'#6e9565');R(x+54,y+66,32,3,'#6e9565');
+ };
+ const drawPerson=(wx,wy,hat,shirt,player=false)=>{
+   const [x,y]=P(wx,wy);if(x< -24||x>W+24||y< -30||y>H+30)return;
+   R(x+4,y+24,18,3,'#416c54');R(x+5,y+12,16,12,'#253f5b');
+   R(x+7,y+13,12,10,shirt);R(x+4,y+14,4,9,'#d4a27c');
+   R(x+18,y+14,4,9,'#d4a27c');
+   R(x+8,y+7,10,8,'#e9b78e');R(x+6,y+4,14,5,'#453d42');
+   R(x+5,y+2,17,5,hat);R(x+8,y,12,4,hat);
+   R(x+10,y+10,2,2,'#383c40');R(x+16,y+10,2,2,'#383c40');
+   R(x+7,y+22,5,5,'#29344c');R(x+15,y+22,5,5,'#29344c');
+   if(player){R(x+3,y+13,4,9,'#ad6b48');R(x+10,y+2,7,2,'#f7e7d3')}
+ };
+ R(0,0,W,H,'#83b87b');
+ //### Ground: coherent village plaza and distinct grass-route transitions
+ for(let gy=0;gy<rows;gy++)for(let gx=0;gx<cols;gx++){
+   const wx=cx+gx,wy=cy+gy,[x,y]=P(wx,wy),n=N(wx,wy);
+   if(wx<0||wx>=100||wy<0||wy>=24){R(x,y,24,24,'#326a56');continue}
+   const isRoad=road(wx,wy);
+   const wild=isGrass(wx,wy)&&wx>=20;
+   const village=wx<20;
+   R(x,y,24,24,isRoad?(n%4?'#dccba1':'#d5bf8f'):wild?(n%2?'#73b57c':'#65a972'):(n%3?'#91c481':'#9acc88'));
+   if(isRoad){
+     R(x,y,24,2,'#e6d7b0');if(n%3===0){R(x+4,y+8,4,2,'#c2ad80');R(x+17,y+17,3,2,'#c2ad80')}
+   }else if(wild){
+     R(x+3,y+8,3,12,'#347c56');R(x+8,y+4,3,15,'#418c5b');
+     R(x+15,y+7,4,13,'#347b54');R(x+20,y+5,2,8,'#559b64');
+     R(x+5,y+3,5,3,'#a2d68c');
+   }else if(n<16){
+     R(x+7,y+13,2,4,'#64a96b');R(x+12,y+10,2,5,'#70ae71');
+   }
+   if(!isRoad&&!wild&&n===27){R(x+9,y+10,6,6,'#f7e8ad');R(x+11,y+12,2,2,'#e69caa')}
+   if(village&&wy===9&&wx%20>=0&&wx%20<=6){
+     R(x,y+16,24,3,'#c9b48a');R(x+2,y+13,3,11,'#eee0b5');
+   }
+ }
+ //### Tree clusters frame the village and connect visually to the route
+ for(let yy=Math.max(2,cy-2);yy<Math.min(23,cy+rows+2);yy+=2)
+   for(let xx=Math.max(0,cx-2);xx<Math.min(100,cx+cols+2);xx+=2){
+     const n=N(xx,yy),village=xx<20;
+     const edge=yy<=3||yy>=21||(village&&(xx%20===0||xx%20===19)&&yy<10);
+     const route=xx>=20&&yy>=4&&yy<=9&&n<36;
+     if((edge||route)&&!road(xx,yy)&&!NPCS.some(p=>Math.abs(p.x-xx)<2&&Math.abs(p.y-yy)<2)){
+       const [x,y]=P(xx,yy);drawTree(x,y);
+     }
+   }
+ //### Town buildings placed on the original gameplay map, not randomly
+ for(const z of ZONES){
+   const base=z.x0;
+   drawHouse(base+2,5,2);drawHouse(base+12,5,1);
+   for(let j=0;j<4;j++){
+     const [x,y]=P(base+1+j,9);
+     if(x>-24&&x<W+24){R(x+2,y+6,4,17,'#b7a074');R(x+2,y+11,24,3,'#e6d2a2')}
+   }
+   const [tx,ty]=P(base+16,10);
+   if(tx>-30&&tx<W+30){R(tx+10,ty+7,5,20,'#7d6449');R(tx,ty-3,26,15,'#b18c60');R(tx+3,ty,20,9,'#e7d5a5');R(tx+6,ty+3,14,3,'#5e9882')}
+ }
+ //### Decorative village flowers and small shrubs
+ for(let yy=Math.max(3,cy);yy<Math.min(20,cy+rows);yy++)
+ for(let xx=Math.max(0,cx);xx<Math.min(100,cx+cols);xx++){
+   const n=N(xx,yy);if(xx>=20||road(xx,yy)||n>8||yy>=5&&yy<=9)continue;
+   const [x,y]=P(xx,yy);
+   R(x+5,y+12,7,7,'#4b9b67');R(x+12,y+9,7,9,'#42895f');
+   if(n<3){R(x+11,y+9,3,3,'#f9d5a2');R(x+14,y+13,3,3,'#f5f1d2')}
+ }
+ //### Trainer characters, follower Pokémon-inspired shadow and player
+ for(const npc of NPCS)drawPerson(npc.x,npc.y,npc.badge?'#775e98':'#466b89',npc.badge?'#ac78a2':'#5b8c9e');
+ if(s.party.length){
+   const fx=s.x+(s.face===1?-1:s.face===3?1:0),fy=s.y+(s.face===2?-1:s.face===0?1:1);
+   if(!NPCS.some(n=>n.x===fx&&n.y===fy)){
+     const [x,y]=P(fx,fy);
+     if(x>=-24&&x<W&&y>=-24&&y<H){
+       R(x+6,y+22,14,3,'#527a59');R(x+7,y+10,12,12,'#d8a46d');
+       R(x+5,y+6,6,8,'#e5b67b');R(x+15,y+6,6,8,'#e5b67b');
+       R(x+10,y+13,3,3,'#313d42');R(x+16,y+13,3,3,'#313d42');
+       R(x+8,y+22,4,3,'#926e57');R(x+17,y+22,4,3,'#926e57');
+     }
+   }
+ }
+ drawPerson(s.x,s.y,'#c74752','#3b75ad',true);
 }
 let lastFrame=0;function frame(t){if(t-lastFrame>33){draw();lastFrame=t}requestAnimationFrame(frame)}requestAnimationFrame(frame);
 function updateHud(){$('area').textContent=zone().name;$('hudInfo').textContent='배지 '+s.badges+'/4 · '+(s.type||'모험 준비')}updateHud();setInterval(()=>{if(mode==='world'&&s.type)s.playSeconds+=5;updateHud();if(s.playSeconds%30===0)save()},5000);
