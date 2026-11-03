@@ -400,6 +400,16 @@ function draw(){
        const [px,py]=P(x,y);tree(px,py);
      }
    }
+   //### Curated grove pockets and bushes around houses, without blocking the central path
+   for(const [tx,ty] of [[1,4],[6,4],[10,3],[17,4],[1,8],[18,8],[1,16],[18,16],[1,20],[9,21],[17,20]]){
+     const [px,py]=P(tx,ty);tree(px,py);
+   }
+   for(const [bx,by] of [[6,7],[7,7],[10,7],[11,7],[4,17],[8,20],[16,18]]){
+     const [px,py]=P(bx,by);
+     R(px+2,py+17,23,6,'#487e53');R(px,py+10,25,11,'#367d50');
+     R(px+4,py+5,18,13,'#4c9c62');R(px+7,py+7,6,4,'#8cc887');
+     R(px+17,py+11,4,4,'#2d6b48');
+   }
    for(const h of FIELD_HOUSES)house(h);
    for(const [fx,fy] of [[3,9],[4,9],[5,9],[12,9],[13,9],[14,9],[2,13],[3,13],[14,13],[15,13]]){
      const [x,y]=P(fx,fy);R(x+3,y+11,4,13,'#bfa77d');R(x+3,y+14,24,3,'#e4d3a8');
