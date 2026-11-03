@@ -72,7 +72,7 @@ function start(){
   typeScreen();
 }
 function nearby(){return NPCS.find(n=>Math.abs(n.x-s.x)+Math.abs(n.y-s.y)<=1)}function interact(){if(mode!=='world'||dialogOpen)return;let n=nearby();if(n){if(n.type==='intro'){pop('<h2>여명 연구소</h2><p>여명지방에 온 걸 환영해! 풀숲을 탐험하고 관장들에게 도전해 봐.</p><p>회복은 각 마을의 빨간 지붕 건물에서 가능해.</p><button id="ok">확인</button>',()=>btn('ok',close));return}if(s.defeated.includes(n.name)){toast(n.name+': 멋진 승부였어!');return}if(n.badge&&s.badges<n.badge-1){toast('이전 체육관 배지를 먼저 획득해!');return}if(n.champion&&s.badges<4){toast('배지 4개를 모아야 도전할 수 있어!');return}pop('<h2>'+n.name+'</h2><p>포켓몬 승부를 시작할까?</p><p class="muted">상대 레벨 '+n.level+' · '+n.team.length+'마리</p><button class="primary" id="challenge">승부!</button><button id="cancel">나중에</button>',()=>{btn('challenge',()=>beginBattle(n));btn('cancel',close)});return}let house=houseAt(s.x,s.y);if(house){s.party.forEach(p=>{p.hp=p.max;p.moves.forEach(m=>m.pp=m.maxpp)});save();pop('<h2>포켓몬 센터</h2><p>포켓몬들의 체력과 기술 PP가 모두 회복되었어!</p><button id="ok">고마워!</button>',()=>btn('ok',close));return}toast('주변을 살펴보았어.')}
-function houseAt(x,y){return ZONES.some(z=>{let a=z.x0+8;return x>=a-2&&x<=a+3&&y>=5&&y<=10})}
+function houseAt(x,y){return x<20?(x>=12&&x<=16&&y>=8&&y<=10):ZONES.some(z=>{let a=z.x0+8;return x>=a-2&&x<=a+3&&y>=5&&y<=10})}
 function move(dx,dy){if(mode!=='world'||dialogOpen||!s.type)return;let nx=Math.max(1,Math.min(98,s.x+dx)),ny=Math.max(3,Math.min(20,s.y+dy));if(NPCS.some(n=>n.x===nx&&n.y===ny))return;if(fieldHouse(nx,ny))return;if(nx===s.x&&ny===s.y)return;s.x=nx;s.y=ny;s.face=dx?dx>0?1:3:dy>0?2:0;s.steps++;if(s.steps%10===0)save();if(isGrass(nx,ny)){s.grassSteps=(s.grassSteps||0)+1;if(s.grassSteps===3||Math.random()<.16)wild()}if(s.steps%45===0)save()}
 function isGrass(x,y){return y>=10&&y<=19&&((x*7+y*11)%5<3)||y>=3&&y<=6&&x%13>=8}
 function wild(){let z=zone(),name=choose(z.enc),l=s.wins===0?2:z.level+rand(3);let p=createMon(name,l);s.dex[p.name]=Math.max(s.dex[p.name]||0,1);beginBattle(null,p)}
@@ -292,7 +292,7 @@ function draw(){
    if(x<20)return y===11||y===12||(x>=8&&x<=9&&y>=5&&y<=17)||(y===18&&x>=8&&x<=17);
    return y===11||y===12||(x%20>=7&&x%20<=9&&y>=6&&y<=12);
  };
- const water=(x,y)=>x>=2&&x<=6&&y>=16&&y<=19&&!((x===2||x===6)&&(y===16||y===19));
+ const water=(x,y)=>x>=2&&x<=6&&y>=18&&y<=21&&!((x===2||x===6)&&(y===18||y===21));
  const forest=(x,y)=>x<20?(y<=2||y>=22||x===0||x===19&&y<11||x===19&&y>15):((y<=3||y>=21)&&N(x,y)%3!==0);
  const tree=(x,y)=>{
    R(x+7,y+19,11,9,'#6a5039');R(x+10,y+19,6,7,'#9b7750');
