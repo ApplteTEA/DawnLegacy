@@ -37,5 +37,5 @@
 ## 작업 인계 — 필드 재구축
 - 구현 커밋: 73f50f533260023e164c73ebcb442836f604df16
 - 변경: field-actors.js, field-manifest.js, world-v2.js, game.js 연결부, bootstrap.js, assets/field, 테스트/문서/CI.
-- 테스트: tests/README.md 참조. 배포 검증은 진행 중이며 Android 실기기는 미확인.
+- 테스트: tests/README.md 참조. 첫 GitHub Pages 배포/CI 성공(실행 41627514538). 실제 URL에서 구형 bootstrap 캐시 잔존을 발견해 index.html의 버전 URL을 함께 갱신. Android 실기기는 미확인.
 - 다음 작업: 실기기 시각/터치 확인 후 기획된 라이벌 시스템 분석.
