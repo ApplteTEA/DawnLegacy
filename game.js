@@ -268,7 +268,7 @@ function battleUI(page='main'){
 function resizeField(){
  const portrait=window.innerHeight>window.innerWidth;
  canvas.width=portrait?320:480;
- canvas.height=portrait?288:320;
+ canvas.height=portrait?440:320;
  ctx.imageSmoothingEnabled=false;
 }
 window.addEventListener('resize',resizeField);resizeField();
@@ -281,7 +281,7 @@ function fieldHouse(x,y){
  return FIELD_HOUSES.some(h=>x>=h.x&&x<=h.x+3&&y>=h.y&&y<=h.y+2);
 }
 function draw(){
- const W=canvas.width,H=canvas.height,T=32;
+ const W=canvas.width,H=canvas.height,T=24;
  const cameraX=s.x*T-W/2+T/2,cameraY=s.y*T-H/2+T/2;
  const P=(x,y)=>[Math.round(x*T-cameraX),Math.round(y*T-cameraY)];
  const R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(Math.round(x),Math.round(y),w,h)};
@@ -296,17 +296,17 @@ function draw(){
    const [px,py]=P(x,y),n=N(x,y),road=path(x,y),pond=water(x,y),wild=x>=20&&isGrass(x,y);
    R(px,py,T,T,road?'#d7c69c':pond?'#60a9b4':wild?'#75ad76':n%4?'#91c483':'#9dcc8b');
    if(road){
-     if(!path(x,y-1)){R(px,py,32,5,'#b8a77e');R(px,py+5,32,2,'#eee0b9')}
-     if(!path(x,y+1))R(px,py+28,32,4,'#b8a77e');
-     if(!path(x-1,y))R(px,py,4,32,'#b8a77e');
-     if(!path(x+1,y))R(px+28,py,4,32,'#b8a77e');
+     if(!path(x,y-1)){R(px,py,24,4,'#b8a77e');R(px,py+4,24,2,'#eee0b9')}
+     if(!path(x,y+1))R(px,py+21,24,3,'#b8a77e');
+     if(!path(x-1,y))R(px,py,3,24,'#b8a77e');
+     if(!path(x+1,y))R(px+21,py,3,24,'#b8a77e');
      if(n%3===0){R(px+9,py+13,5,2,'#c0ad84');R(px+23,py+23,3,2,'#eadbb4')}
    }else if(pond){
-     R(px+2,py+2,28,28,n%2?'#54a2b4':'#69b5be');
-     if(!water(x,y-1))R(px,py,32,5,'#9cc48b');
-     if(!water(x,y+1))R(px,py+27,32,5,'#9cc48b');
-     if(!water(x-1,y))R(px,py,5,32,'#9cc48b');
-     if(!water(x+1,y))R(px+27,py,5,32,'#9cc48b');
+     R(px+2,py+2,20,20,n%2?'#54a2b4':'#69b5be');
+     if(!water(x,y-1))R(px,py,24,4,'#9cc48b');
+     if(!water(x,y+1))R(px,py+20,24,4,'#9cc48b');
+     if(!water(x-1,y))R(px,py,4,24,'#9cc48b');
+     if(!water(x+1,y))R(px+20,py,4,24,'#9cc48b');
      R(px+8,py+13,12,2,'#a4d9d5');
    }else if(wild){
      for(let k=0;k<4;k++){R(px+4+k*7,py+8+(k%2)*4,4,19,'#438a58');R(px+6+k*7,py+5+(k%2)*4,3,8,'#65ac70')}
@@ -320,19 +320,19 @@ function draw(){
    for(let y=1;y<=23;y+=2)for(let x=0;x<=19;x+=2){
      const edge=y<=3||y>=22||x===0||x===18&&y<11;
      if(edge&&!path(x,y)&&N(x,y)%5!==0){
-       const [px,py]=P(x,y);art('tree',px-13,py-36,61,75);
+       const [px,py]=P(x,y);art('tree',px-8,py-23,44,53);
      }
    }
    for(const h of FIELD_HOUSES){
-     const [px,py]=P(h.x,h.y);art(h.kind,px-9,py-66,144,144);
+     const [px,py]=P(h.x,h.y);art(h.kind,px-6,py-47,105,105);
    }
    for(const [x,y] of [[3,10],[5,10],[12,10],[15,10],[4,14],[14,14],[9,19],[12,19]]){
-     const [px,py]=P(x,y);art('flower',px,py,32,32);
+     const [px,py]=P(x,y);art('flower',px,py,24,24);
    }
    for(const [x,y] of [[6,10],[16,10],[7,17]]){
-     const [px,py]=P(x,y);art('lamp',px,py-9,32,40);
+     const [px,py]=P(x,y);art('lamp',px,py-7,24,30);
    }
-   const [bx,by]=P(13,10);art('bench',bx,by,32,32);
+   const [bx,by]=P(13,10);art('bench',bx,by,24,24);
  }else{
    for(let y=minY;y<=maxY;y+=2)for(let x=minX;x<=maxX;x+=2){
      if((y<=4||y>=20||N(x,y)<12)&&!path(x,y)){
@@ -340,7 +340,7 @@ function draw(){
      }
    }
    for(const z of ZONES.slice(1)){
-     const [px,py]=P(z.x0+6,5);art('lab',px-9,py-66,144,144);
+     const [px,py]=P(z.x0+6,5);art('lab',px-6,py-47,105,105);
    }
  }
  // Actors are actual image sprites; render sorted by feet position.
@@ -350,7 +350,7 @@ function draw(){
  actors.sort((a,b)=>a.y-b.y);
  for(const a of actors){
    const [px,py]=P(a.x,a.y);
-   art(a.key,px-8,py-18,48,60);
+   art(a.key,px-5,py-10,34,42);
  }
 }
 let lastFrame=0;function frame(t){if(t-lastFrame>33){draw();lastFrame=t}requestAnimationFrame(frame)}requestAnimationFrame(frame);
