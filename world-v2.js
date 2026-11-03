@@ -19,30 +19,36 @@ const WORLD_V2=(()=>{
  const makeTrainerFrame=(direction,frame)=>{
    const cv=document.createElement('canvas');cv.width=32;cv.height=40;
    const c=cv.getContext('2d');c.imageSmoothingEnabled=false;
-   c.drawImage(trainerImage,0,0,32,40);
-   if(direction==='Up'){
-     // Retain the same trainer silhouette, but paint the back of the cap,
-     // hair and backpack over facial details.
-     c.fillStyle='#c73d4c';c.fillRect(7,5,18,9);
-     c.fillStyle='#383038';c.fillRect(6,14,20,10);
-     c.fillStyle='#353c53';c.fillRect(8,23,16,10);
-     c.fillStyle='#b84952';c.fillRect(12,25,9,8);
-     c.fillStyle='#f4d8b5';c.fillRect(13,8,6,3);
-   }else if(direction==='Left'||direction==='Right'){
-     // Profile is derived from the same PNG so it retains the same art style.
-     c.clearRect(0,0,32,40);
-     c.save();
+   const p=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(x,y,w,h)};
+   if(direction==='Down'){
+     c.drawImage(trainerImage,0,0,32,40);
+   }else{
+     // Separate back and side silhouettes, never show the front-facing face.
+     const side=direction==='Left'||direction==='Right';
      if(direction==='Left'){c.translate(32,0);c.scale(-1,1)}
-     c.drawImage(trainerImage,4,0,24,40,5,0,23,40);
-     c.fillStyle='#39313b';c.fillRect(19,13,7,12);
-     c.fillStyle='#edbb99';c.fillRect(18,17,4,7);
-     c.fillStyle='#252b38';c.fillRect(18,17,2,2);
-     c.restore();
+     p(10,34,6,5,'#293344');p(19,34,6,5,'#293344');
+     p(10,30,6,6,'#314b79');p(19,30,6,6,'#314b79');
+     p(7,20,21,13,'#23374d');p(10,21,15,11,'#397bb2');
+     p(side?7:5,22,5,9,'#efbc98');p(26,22,4,9,'#e7af89');
+     p(8,10,19,13,'#46383a');
+     p(10,12,16,10,side?'#e9b68f':'#433538');
+     p(8,6,21,8,'#c83e4b');p(11,3,16,5,'#e55c65');
+     p(10,4,13,2,'#f19a91');
+     if(side){
+       p(23,12,5,3,'#c83e4b');
+       p(23,16,2,3,'#253442');
+       p(24,19,4,3,'#d99b78');
+       p(10,23,5,9,'#a9464c');
+     }else{
+       p(9,14,18,8,'#4c3a3b');
+       p(12,24,11,8,'#c44d56');
+       p(14,25,7,5,'#e2c4a4');
+     }
    }
-   if(frame!==0){
-     c.fillStyle='#292c42';
-     c.fillRect(frame===1?9:18,34,5,3);
-     c.clearRect(frame===1?18:9,37,5,2);
+   if(frame){
+     const left=frame===1;
+     c.clearRect(left?19:10,34,6,6);
+     p(left?9:20,35,6,4,'#293344');
    }
    return cv;
  };
