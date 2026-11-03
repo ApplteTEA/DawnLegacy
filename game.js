@@ -268,7 +268,7 @@ function battleUI(page='main'){
 function resizeField(){
  const portrait=window.innerHeight>window.innerWidth;
  canvas.width=portrait?320:480;
- canvas.height=portrait?440:320;
+ canvas.height=portrait?Math.max(440,Math.min(740,Math.round(320*(window.innerHeight-110)/window.innerWidth))):320;
  ctx.imageSmoothingEnabled=false;
 }
 window.addEventListener('resize',resizeField);resizeField();
