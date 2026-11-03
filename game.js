@@ -22,21 +22,54 @@ function guide(){pop('<h2>타입 챌린지 규칙</h2><p>① 시작 시 17개 �
 function record(){pop('<h2>모험 기록</h2><p>타입: '+s.type+'</p><p>배지: '+s.badges+'/4 · 승리: '+s.wins+'회 · 이동: '+s.steps+'걸음</p><p>플레이 시간: '+Math.floor(s.playSeconds/60)+'분</p><p>포켓몬: 파티 '+s.party.length+'마리 / 박스 '+s.box.length+'마리</p><p>'+(s.champion?'🏆 여명지방 챔피언 등극!':'아직 모험이 진행 중이야.')+'</p><button id="back">메뉴</button>',()=>btn('back',menu))}
 function start(){
   let selected='불꽃';
-  const showType=()=>{
-    pop('<h1>여명의 유산</h1><p>도전할 타입을 골라줘.</p><select id="typeSelect">'+TYPES.map(t=>'<option '+(t===selected?'selected':'')+'>'+t+'</option>').join('')+'</select><p class="muted">선택 타입 또는 해당 타입으로 진화하는 포켓몬이 파트너 후보야.</p><button class="primary" id="roll">파트너 룰렛</button>',()=>{
-      btn('roll',()=>{
-        selected=$('typeSelect').value;
-        s.type=selected;
-        const evolvedNames=new Set(Object.values(EVOS).map(e=>e[0]));const pool=DB.filter(p=>p.stage<=2&&!evolvedNames.has(p.name)&&(p.types.includes(selected)||evoTypes(p.name).includes(selected)));
-        const p=createMon(choose(pool).name,5);
-        s.party=[p];s.dex[p.name]=2;save();
-        pop('<h1>첫 파트너!</h1><div class="panel"><h2>'+(p.shiny?'✨ ':'')+p.name+'</h2>'+tag(p)+'<p>Lv. 5</p></div><p>마을 아래쪽 풀숲으로 이동해 첫 야생 포켓몬과 싸워보자!</p><button class="primary" id="go">모험 시작</button>',()=>{
-          btn('go',()=>{close();toast('방향키로 풀숲까지 이동해 보세요!')});
-        });
+  const SYMBOLS={'노말':'◈','불꽃':'♨','물':'◉','풀':'❀','전기':'ϟ','얼음':'❄','격투':'✊','독':'☣','땅':'◆','비행':'➤','에스퍼':'✦','벌레':'❖','바위':'⬟','고스트':'☾','드래곤':'♜','악':'☯','강철':'⬡'};
+  const PALETTE={'노말':'#a2a49c','불꽃':'#e16c4e','물':'#5c99d9','풀':'#69aa68','전기':'#dfb64e','얼음':'#7ac4c7','격투':'#c15b4e','독':'#9969b6','땅':'#c3a15b','비행':'#849bc7','에스퍼':'#d86e9c','벌레':'#8ca74c','바위':'#a08d6a','고스트':'#736aab','드래곤':'#696bc8','악':'#646675','강철':'#77969b'};
+  const poolFor=t=>{const evolved=new Set(Object.values(EVOS).map(e=>e[0]));return DB.filter(p=>p.stage<=2&&!evolved.has(p.name)&&(p.types.includes(t)||evoTypes(p.name).includes(t)))};
+  const typeScreen=()=>{
+    pop('<div class="intro"><div class="intro-eyebrow">DAWN LEGACY · NEW ADVENTURE</div><h1>너의 모험은 어떤 타입?</h1><p>단 하나의 타입으로 여명지방에 도전해 봐.</p><div class="type-grid">'+TYPES.map(t=>'<button class="type-card '+(selected===t?'active':'')+'" data-type="'+t+'" style="--type-color:'+PALETTE[t]+'"><span class="type-symbol">'+SYMBOLS[t]+'</span><span>'+t+'</span></button>').join('')+'</div><div class="type-choice"><div><span class="eyebrow">CHALLENGE TYPE</span><h2 id="selectedType">'+SYMBOLS[selected]+' '+selected+'</h2><span id="poolCount">파트너 후보 '+poolFor(selected).length+'마리</span></div><button class="intro-main" id="confirmType">이 타입으로 도전 →</button></div><p class="intro-footnote">선택 타입으로 진화하는 포켓몬도 출전 가능 · 이로치는 타입 제한 면제</p></div>',()=>{
+      document.querySelectorAll('[data-type]').forEach(button=>button.onclick=()=>{
+        selected=button.dataset.type;
+        document.querySelectorAll('[data-type]').forEach(item=>item.classList.toggle('active',item===button));
+        $('selectedType').textContent=SYMBOLS[selected]+' '+selected;
+        $('poolCount').textContent='파트너 후보 '+poolFor(selected).length+'마리';
+      });
+      btn('confirmType',()=>rouletteIntro());
+    });
+  };
+  const rouletteIntro=()=>{
+    const pool=poolFor(selected);
+    pop('<div class="intro roulette"><div class="intro-eyebrow">PARTNER SELECTION</div><h1>운명의 첫 파트너</h1><p><b>'+selected+' 타입 챌린지</b>에 함께할 포켓몬을 뽑아봐!</p><div class="roulette-stage"><div class="roulette-halo"></div><div class="roulette-ball">?</div><div class="roulette-name" id="rouletteName">누가 나올까?</div><div class="roulette-sub">후보 '+pool.length+'마리 · Lv. 5</div></div><button class="intro-main wide" id="spin">룰렛 돌리기</button><button class="intro-secondary" id="changeType">타입 다시 고르기</button></div>',()=>{
+      btn('changeType',typeScreen);
+      btn('spin',()=>{
+        const chosen=createMon(choose(pool).name,5);
+        $('spin').disabled=true;
+        $('changeType').disabled=true;
+        $('spin').textContent='운명의 파트너를 찾는 중…';
+        const stage=document.querySelector('.roulette-stage');
+        stage.classList.add('spinning');
+        let tick=0;
+        const timer=setInterval(()=>{
+          const candidate=choose(pool);
+          $('rouletteName').textContent=candidate.name;
+          tick++;
+          if(tick>=22){
+            clearInterval(timer);
+            s.type=selected;
+            s.party=[chosen];
+            s.dex[chosen.name]=2;
+            save();
+            reveal(chosen);
+          }
+        },85);
       });
     });
   };
-  showType();
+  const reveal=p=>{
+    pop('<div class="intro reveal"><div class="intro-eyebrow">YOUR FIRST PARTNER</div><div class="reveal-sparkles">✦ ✧ ✦</div><h1>새로운 파트너를 만났어!</h1><div class="partner-hero"><div class="partner-emblem">'+(p.shiny?'✦':'◈')+'</div><div class="partner-name">'+(p.shiny?'✨ ':'')+p.name+'</div><div class="partner-meta">'+tag(p)+'</div><div class="partner-level">LEVEL 05 · '+selected+' 챌린지</div></div><p>이제 첫 모험이 시작돼! 풀숲에서 야생 포켓몬을 만나보자.</p><button class="intro-main wide" id="go">모험 시작하기 →</button></div>',()=>{
+      btn('go',()=>{close();toast('방향키로 풀숲까지 이동해 보세요!')});
+    });
+  };
+  typeScreen();
 }
 function nearby(){return NPCS.find(n=>Math.abs(n.x-s.x)+Math.abs(n.y-s.y)<=1)}function interact(){if(mode!=='world'||dialogOpen)return;let n=nearby();if(n){if(n.type==='intro'){pop('<h2>여명 연구소</h2><p>여명지방에 온 걸 환영해! 풀숲을 탐험하고 관장들에게 도전해 봐.</p><p>회복은 각 마을의 빨간 지붕 건물에서 가능해.</p><button id="ok">확인</button>',()=>btn('ok',close));return}if(s.defeated.includes(n.name)){toast(n.name+': 멋진 승부였어!');return}if(n.badge&&s.badges<n.badge-1){toast('이전 체육관 배지를 먼저 획득해!');return}if(n.champion&&s.badges<4){toast('배지 4개를 모아야 도전할 수 있어!');return}pop('<h2>'+n.name+'</h2><p>포켓몬 승부를 시작할까?</p><p class="muted">상대 레벨 '+n.level+' · '+n.team.length+'마리</p><button class="primary" id="challenge">승부!</button><button id="cancel">나중에</button>',()=>{btn('challenge',()=>beginBattle(n));btn('cancel',close)});return}let house=houseAt(s.x,s.y);if(house){s.party.forEach(p=>{p.hp=p.max;p.moves.forEach(m=>m.pp=m.maxpp)});save();pop('<h2>포켓몬 센터</h2><p>포켓몬들의 체력과 기술 PP가 모두 회복되었어!</p><button id="ok">고마워!</button>',()=>btn('ok',close));return}toast('주변을 살펴보았어.')}
 function houseAt(x,y){return ZONES.some(z=>{let a=z.x0+8;return x>=a-2&&x<=a+3&&y>=5&&y<=10})}
