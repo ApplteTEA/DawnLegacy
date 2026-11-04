@@ -64,6 +64,7 @@ const CAMPAIGN = (() => {
   // Compact event dependency graph; flags/cutscenes may be refined without changing IDs.
   const EVENTS = Object.freeze([
     e('EV_00_CHOOSE_STARTER','M00',[],['STARTER_CHOSEN','RIVAL_STARTER_FIXED'],'첫 파트너를 받고 여행 시작'),
+    e('RIV_01','M00',['STARTER_CHOSEN'],['RIV_01_WON'],'라이벌 시온 첫 대결'),
     e('EV_01_ROAD_TUTORIAL','R01',['STARTER_CHOSEN'],['ROAD_TUTORIAL_DONE'],'1번도로의 포획과 탐험'),
     e('EV_02_CITY_01','M01',['ROAD_TUTORIAL_DONE'],['CITY_01_VISITED'],'푸른잎시티에서 숲 소식 듣기'),
     e('GYM_01','M01',['CITY_01_VISITED'],['GYM_1_WON'],'솔비에게 도전'),
@@ -73,6 +74,7 @@ const CAMPAIGN = (() => {
     e('EV_06_PORT_CARGO','M02',['CLUE_RING'],['CARGO_INVESTIGATION'],'은빛항구 화물 수색'),
     e('EV_07_WAREHOUSE','D02',['CARGO_INVESTIGATION'],['CLUE_CARGO','WAREHOUSE_SAFE'],'창고의 단서 확보'),
     e('GYM_02','M02',['WAREHOUSE_SAFE'],['GYM_2_WON'],'해진에게 도전'),
+    e('RIV_02','F01',['GYM_2_WON'],['RIV_02_WON'],'시온 등대 재대결'),
     e('EV_08_PORT_EXIT','M02',['GYM_2_WON','CLUE_CARGO'],['R03_OPEN'],'해안도로 개방'),
     e('EV_09_POWER_ALERT','M03',['R03_OPEN'],['POWER_ALERT'],'발전소 정전'),
     e('EV_10_RESTORE_POWER','D03',['POWER_ALERT'],['POWER_RESTORED'],'발전소 안전 복구'),
@@ -82,6 +84,7 @@ const CAMPAIGN = (() => {
     e('EV_13_RUINS_INVITE','M04',['R04_OPEN'],['RUINS_RESEARCH_STARTED'],'루나와 유적 조사'),
     e('GYM_04','M04',['RUINS_RESEARCH_STARTED'],['GYM_4_WON'],'연우에게 도전'),
     e('EV_14_DAWN_STONE','D04',['GYM_4_WON'],['DAWN_STONE_OBTAINED'],'여명석 확보'),
+    e('RIV_03','D04',['DAWN_STONE_OBTAINED'],['RIV_03_WON'],'시온 유적 재대결'),
     e('EV_15_OPEN_R05','M04',['DAWN_STONE_OBTAINED'],['R05_OPEN'],'홍염시티로 출발'),
     e('EV_16_HEAT_ALERT','M05',['R05_OPEN'],['HEAT_ALERT'],'홍염시티의 이상 현상'),
     e('EV_17_FACTORY_SAFE','M05',['HEAT_ALERT'],['FACTORY_SAFE'],'시민 안전 확보'),
@@ -91,6 +94,7 @@ const CAMPAIGN = (() => {
     e('EV_20_SNOW_RESCUE','R06',['R06_OPEN'],['SNOW_RESCUED'],'봉화와 주민 구조'),
     e('GYM_06','M06',['SNOW_RESCUED'],['GYM_6_WON'],'서리에게 도전'),
     e('EV_21_HISTORY','D06',['GYM_6_WON'],['CLUE_HISTORY','ECLIPSE_TRUTH_KNOWN'],'긴 밤의 진실'),
+    e('RIV_04','D06',['CLUE_HISTORY'],['RIV_04_WON'],'시온 설산 재대결'),
     e('EV_22_STEEL_ROAD','M06',['CLUE_HISTORY'],['R07_OPEN'],'철벽시티로'),
     e('EV_23_STEEL_REPORT','M07',['R07_OPEN'],['STEEL_REPORT'],'조직 본거지 조사'),
     e('GYM_07','M07',['STEEL_REPORT'],['GYM_7_WON'],'준철에게 도전'),
@@ -99,6 +103,7 @@ const CAMPAIGN = (() => {
     e('EV_26_OPEN_R08','M07',['CONTROL_KEY','CHAMP_CONFESSED'],['R08_OPEN'],'천공시티로'),
     e('EV_27_WIND_TRIAL','M08',['R08_OPEN'],['WIND_TRIAL_DONE'],'고산 바람길'),
     e('GYM_08','M08',['WIND_TRIAL_DONE'],['GYM_8_WON'],'승천에게 도전'),
+    e('RIV_05','M08',['GYM_8_WON'],['RIV_05_WON'],'시온 천공 재대결'),
     e('EV_28_SHRINE_APPROACH','D08',['GYM_8_WON','CONTROL_KEY','DAWN_STONE_OBTAINED'],['D09_OPEN','SHRINE_PREPARED'],'신전으로 진입'),
     e('EV_29_ECLIPSE','D09',['D09_OPEN'],['ECLIPSE_STARTED'],'길어진 밤'),
     e('EV_30_NODE_FOREST','D09',['ECLIPSE_STARTED'],['NODE_FOREST_OFF'],'숲 공명기 분리'),
@@ -108,6 +113,7 @@ const CAMPAIGN = (() => {
     e('EV_34_ARCEUS','D09',['KAIRON_DEFEATED'],['ARCEUS_TRIAL_COMPLETE'],'아르세우스의 시련'),
     e('EV_35_DAWN','D09',['ARCEUS_TRIAL_COMPLETE'],['ECLIPSE_RESOLVED'],'새로운 아침'),
     e('EV_36_LEAGUE_ROAD','R09',['GYM_8_WON','ECLIPSE_RESOLVED'],['LEAGUE_REGISTERED'],'챔피언로드와 리그'),
+    e('RIV_06','R09',['LEAGUE_REGISTERED'],['RIV_06_WON'],'시온 챔피언로드 승부'),
     e('E4_01','L01',['LEAGUE_REGISTERED'],['E4_1_CLEAR'],'사천왕 유담'),
     e('E4_02','L01',['E4_1_CLEAR'],['E4_2_CLEAR'],'사천왕 소미'),
     e('E4_03','L01',['E4_2_CLEAR'],['E4_3_CLEAR'],'사천왕 해령'),
@@ -171,7 +177,7 @@ const CAMPAIGN = (() => {
 
   function next(save) {
     const p=ensure(save);
-    return EVENTS.find(event=>!p.events[event.id] && event.requiresAll.every(flag=>p.flags[flag]===true) && !event.id.startsWith('PG_'))||null;
+    return EVENTS.find(event=>!p.events[event.id] && event.requiresAll.every(flag=>p.flags[flag]===true) && !event.id.startsWith('PG_') && !event.id.startsWith('RIV_'))||null;
   }
 
   function check() {
