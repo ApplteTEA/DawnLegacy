@@ -45,6 +45,13 @@ const BATTLE_ENGINE = (() => {
     move('물기','악',60,25),move('메탈클로','강철',50,25),
     move('요정의바람','페어리',40,30,'special'),
     move('전광석화','노말',40,30,'physical',100,{priority:1}),
+    move('매지컬리프','풀',60,20,'special'),
+    move('아쿠아제트','물',40,20,'physical',100,{priority:1}),
+    move('방전','전기',80,15,'special',100,{inflict:'paralysis',chance:30}),
+    move('섀도펀치','고스트',60,20),
+    move('얼음숨결','얼음',60,10,'special'),
+    move('금속음','강철',0,40,'status',85,{boost:{spd:-2}}),
+    move('용의춤','드래곤',0,20,'status',100,{boost:{atk:1,spe:1},self:true}),
     move('화염방사','불꽃',90,15,'special',100,{inflict:'burn',chance:10}),
     move('불꽃엄니','불꽃',65,15,'physical',95,{inflict:'burn',chance:10}),
     move('열풍','불꽃',95,10,'special',90,{inflict:'burn',chance:10}),
@@ -120,9 +127,9 @@ const BATTLE_ENGINE = (() => {
     return [...new Set(choices)].slice(-4).map(name=>freshMove(name));
   }
   const GYM_TMS=Object.freeze({
-    'GYM_01':'잎날가르기','GYM_02':'거품광선','GYM_03':'스파크',
-    'GYM_04':'섀도클로','GYM_05':'불꽃엄니','GYM_06':'눈사태',
-    'GYM_07':'아이언헤드','GYM_08':'용의파동'
+    'GYM_01':'매지컬리프','GYM_02':'아쿠아제트','GYM_03':'방전',
+    'GYM_04':'섀도펀치','GYM_05':'도깨비불','GYM_06':'얼음숨결',
+    'GYM_07':'금속음','GYM_08':'용의춤'
   });
   function availableMoves(mon,earnedGymIds=[],dex=[]){
     const species=dex.find(p=>p.name===mon.name);
