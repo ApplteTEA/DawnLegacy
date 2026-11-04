@@ -245,7 +245,7 @@ async function battleEXP(p,oldXP,oldLevel,amount){
    await battleWait(900);
    if(!fight)return;
    remaining-=portion;currentXP+=portion;
-   if(currentXP>=need&&level<70){
+   if(currentXP>=need&&level<100){
      level++;currentXP=0;
      battleMessage(p.name+'의 레벨이 '+level+'이(가) 되었다!');
      if(levelLabel)levelLabel.textContent='Lv. '+level;
