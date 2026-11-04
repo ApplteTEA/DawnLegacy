@@ -55,6 +55,13 @@
 - `node tests/campaign-rival.test.cjs`: 엔딩 이후 봉인서고·신전 이벤트의 페이지형 대화 통과를 확인.
 - 검증 범위: 데이터/임시 메뉴 UI의 자동 검사. 실제 애니메이션 컷신·Android/iOS 실기기 확인을 대체하지 않음.
 
+## Campaign puzzles and dialogue — 2026-11-04
+- `node tests/campaign-puzzles.test.cjs`: 체육관 퍼즐 8개·신전 공명기 퍼즐 3개. 정답/오답→처음부터, 체크포인트 직렬화/복원, 반복 완료/보상 중복 및 관장전 잠금 검사.
+- `node tests/campaign-core.test.cjs`: 전체 39개 사건 상태 전이 중 세 공명기 퍼즐을 해결하고 8개 관장 퍼즐 완료 이후에만 배지 획득하는 경로 시뮬레이션.
+- `node tests/campaign-ui.test.cjs`: 첫 체육관 퍼즐 실제 버튼 콜백, 틀린 순서·재도전, 신전 공명기 분리 퍼즐 버튼→사건 완료 플래그 연결.
+- `node tests/campaign-scenes.test.cjs`: 모든 39개 메인 스토리 사건의 대사 페이지 존재·변수 치환·필수 텍스트 검증. `node tests/campaign-rival.test.cjs`: 스토리 대사 페이지가 추가된 뒤에도 라이벌/2회차 진행 확인.
+- GitHub Actions 최신 성공: `41787592989`. 테스트는 Node 기반 자동 검증이며 Android 실기기에서 게임 전체를 플레이한 증거가 아니다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
