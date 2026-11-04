@@ -34,6 +34,9 @@
 | `docs/ARCHITECTURE.md` | 실제 코드 구조·데이터 흐름·저장/렌더링/테스트 구조 |
 | `docs/GAME_DESIGN.md` | 확정된 게임 규칙 및 구체적 설계 |
 | `docs/WORLD_LORE.md`, `docs/STORY.md` | 세계관·스토리: 확정과 제안 구분 |
+| `docs/WORLD_MAP.md` | 승인 전 다중 맵 그래프, NPC, 서식지, 포털·게이트 기획 |
+| `docs/STORY_EVENTS.md` | 승인 전 이벤트 ID, 대사, 트리거, 보상 및 안전 재진입 조건 |
+| `docs/IMPLEMENTATION_PLAN.md` | 현재 프로토타입에서 완성형 8체육관 RPG로 이행하는 단계·의존성·마이그레이션 계획 |
 | `tests/README.md` | 테스트 실행 및 재현 절차 |
 | `CHARACTER_ASSET_CREDITS.md`, `assets/field/source/LICENSE.md` | 에셋 저작권/출처 및 이용 조건 |
 
