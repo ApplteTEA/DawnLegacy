@@ -8,6 +8,9 @@ const CAMPAIGN_CORE = (() => {
   const DATA = typeof CAMPAIGN_DATA !== 'undefined'
     ? CAMPAIGN_DATA : (typeof require === 'function' ? require('./campaign-data.js') : null);
   if (!DATA) throw new Error('campaign-data.js must be loaded first');
+  const PUZZLES = typeof CAMPAIGN_PUZZLES !== 'undefined'
+    ? CAMPAIGN_PUZZLES : (typeof require === 'function' ? require('./campaign-puzzles.js') : null);
+  if (!PUZZLES) throw new Error('campaign-puzzles.js must be loaded first');
   const SAVE_VERSION = 1;
   const GYM_GATES = Object.freeze({
     GYM_01:['CITY_01_VISITED'],GYM_02:['WAREHOUSE_SAFE'],
@@ -131,7 +134,7 @@ const CAMPAIGN_CORE = (() => {
     c.cutsceneSeen[id]=true;
     return {ok:true,id,flags:event.flags.slice()};
   }
-  function canFightGym(save,gymId) {
+  function canStartGymPuzzle(save,gymId) {
     const idx=DATA.GYMS.findIndex(x=>x.id===gymId);
     if(idx<0)return {ok:false,reason:'존재하지 않는 체육관'};
     const gym=DATA.GYMS[idx],c=ensure(save);
@@ -140,6 +143,12 @@ const CAMPAIGN_CORE = (() => {
     if(idx>0 && !c.gymWins[DATA.GYMS[idx-1].id])return {ok:false,reason:'앞선 체육관 배지가 필요해'};
     const missing=GYM_GATES[gymId].filter(x=>!flag(save,x));
     if(missing.length)return {ok:false,reason:'먼저 지역 사건을 해결해야 해'};
+    return {ok:true,reason:''};
+  }
+  function canFightGym(save,gymId) {
+    const ready=canStartGymPuzzle(save,gymId);
+    if(!ready.ok)return ready;
+    if(!PUZZLES.isSolved(save,gymId))return {ok:false,reason:'체육관 퍼즐을 먼저 해결해야 해'};
     return {ok:true,reason:''};
   }
   function canFightRival(save,id) {
@@ -301,7 +310,7 @@ const CAMPAIGN_CORE = (() => {
     return {ok:!problems.length,problems,unavailableSpecies:unavailable};
   }
 
-  return Object.freeze({DATA,SAVE_VERSION,ensure,flag,badgeCount,isChampion,canEnter,canTravel,travel,
+  return Object.freeze({DATA,SAVE_VERSION,ensure,flag,badgeCount,isChampion,canEnter,canTravel,travel,canStartGymPuzzle,
     canStartEvent,completeEvent,canFightGym,canFightRival,canFightLeague,canStartPostgame,completePostgame,completeBattle,defeat,availableEvents,
     nextObjective,missingSpecies,validate});
 })();
