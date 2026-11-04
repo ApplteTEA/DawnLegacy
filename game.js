@@ -18,8 +18,8 @@ function party(){pop('<h2>내 파티 ('+s.party.length+'/6)</h2>'+s.party.map(ca
 function box(){pop('<h2>포켓몬 박스 ('+s.box.length+')</h2><p class="muted">박스에서 파티로 이동할 수 있어. 출전 규칙은 그대로 적용돼.</p>'+(!s.box.length?'<p>아직 보관한 포켓몬이 없어.</p>':'')+s.box.map((p,i)=>'<div class="panel"><b>'+(p.shiny?'✨ ':'')+p.name+' Lv.'+p.level+'</b> '+tag(p)+'<button data-take="'+i+'" '+(s.party.length>=6?'disabled':'')+'>파티로 이동</button></div>').join('')+'<button id="back">메뉴</button>',()=>{document.querySelectorAll('[data-take]').forEach(b=>b.onclick=()=>{s.party.push(s.box.splice(+b.dataset.take,1)[0]);save();box()});btn('back',menu)})}
 function bag(){pop('<h2>가방 / 상점</h2><p>소지금: '+s.money+'원</p><div class="panel">몬스터볼 ×'+s.balls+' · 슈퍼볼 ×'+s.great+' · 상처약 ×'+s.potions+'</div><button id="heal">상처약 사용 (HP 20 회복)</button><div class="separator"></div><h3>상점</h3><button id="buyBall">몬스터볼 200원</button><button id="buyGreat">슈퍼볼 600원</button><button id="buyPotion">상처약 300원</button><button id="back">메뉴</button>',()=>{btn('heal',()=>{if(!s.potions)return toast('상처약이 없어');let p=s.party.find(p=>p.hp<p.max);if(!p)return toast('모두 건강해!');s.potions--;p.hp=Math.min(p.max,p.hp+20);save();bag()});[['buyBall','balls',200],['buyGreat','great',600],['buyPotion','potions',300]].forEach(([id,k,c])=>btn(id,()=>{if(s.money<c)return toast('돈이 부족해');s.money-=c;s[k]++;save();bag()}));btn('back',menu)})}
 function dex(){let found=Object.keys(s.dex);pop('<h2>포켓몬 도감</h2><p>발견 '+found.length+' / '+DB.length+'종 · 포획 '+found.filter(k=>s.dex[k]>1).length+'종</p><div class="grid">'+found.sort().map(n=>'<div class="panel"><b>'+n+'</b><div class="muted">'+(s.dex[n]>1?'포획 완료':'발견')+'</div></div>').join('')+'</div><button id="back">메뉴</button>',()=>btn('back',menu))}
-function guide(){pop('<h2>타입 챌린지 규칙</h2><p>① 시작 시 17개 타입 중 하나를 선택하고 룰렛으로 첫 파트너를 받아.</p><p>② 선택 타입을 가진 포켓몬과 진화하면 해당 타입이 되는 포켓몬만 전투에 사용할 수 있어.</p><p>③ <b>이로치 포켓몬은 타입과 상관없이 출전 가능</b>하고 진화해도 예외가 유지돼.</p><p>④ 다른 타입도 포획·도감 등록·박스 보관은 가능해.</p><p>⑤ 숲길에서 배틀하고 관장 4명에게 승리한 뒤 챔피언을 이겨봐.</p><p>⑥ 방향키 이동 / A 대화 / B 닫기. 메뉴에서 파티, 상점, 박스를 관리해.</p><button id="back">메뉴</button>',()=>btn('back',menu))}
-function record(){pop('<h2>모험 기록</h2><p>타입: '+s.type+'</p><p>배지: '+s.badges+'/4 · 승리: '+s.wins+'회 · 이동: '+s.steps+'걸음</p><p>플레이 시간: '+Math.floor(s.playSeconds/60)+'분</p><p>포켓몬: 파티 '+s.party.length+'마리 / 박스 '+s.box.length+'마리</p><p>'+(s.champion?'🏆 여명지방 챔피언 등극!':'아직 모험이 진행 중이야.')+'</p><button id="back">메뉴</button>',()=>btn('back',menu))}
+function guide(){pop('<h2>타입 챌린지 규칙</h2><p>① 시작 시 17개 타입 중 하나를 선택하고 룰렛으로 첫 파트너를 받아.</p><p>② 선택 타입을 가진 포켓몬과 진화하면 해당 타입이 되는 포켓몬만 전투에 사용할 수 있어.</p><p>③ <b>이로치 포켓몬은 타입과 상관없이 출전 가능</b>하고 진화해도 예외가 유지돼.</p><p>④ 다른 타입도 포획·도감 등록·박스 보관은 가능해.</p><p>⑤ 숲길에서 배틀하고 관장 4명에게 승리한 뒤 챔피언을 이겨봐.</p><p>⑥ 방향키 이동 / A 대화 / B 닫기. 메뉴에서 파티, 상점, 박스를 관리해.</p><p>⑦ 라이벌은 네 선택 타입에 강한 타입의 포켓몬을 무작위로 받고, 첫 선택을 계속 유지해.</p><button id="back">메뉴</button>',()=>btn('back',menu))}
+function record(){pop('<h2>모험 기록</h2><p>타입: '+s.type+'</p><p>라이벌: '+(s.rival?s.rival.type+' 타입 · '+s.rival.starter:'미정')+'</p><p>배지: '+s.badges+'/4 · 승리: '+s.wins+'회 · 이동: '+s.steps+'걸음</p><p>플레이 시간: '+Math.floor(s.playSeconds/60)+'분</p><p>포켓몬: 파티 '+s.party.length+'마리 / 박스 '+s.box.length+'마리</p><p>'+(s.champion?'🏆 여명지방 챔피언 등극!':'아직 모험이 진행 중이야.')+'</p><button id="back">메뉴</button>',()=>btn('back',menu))}
 function start(){
   let selected='불꽃';
   const SYMBOLS={'노말':'◈','불꽃':'♨','물':'◉','풀':'❀','전기':'ϟ','얼음':'❄','격투':'✊','독':'☣','땅':'◆','비행':'➤','에스퍼':'✦','벌레':'❖','바위':'⬟','고스트':'☾','드래곤':'♜','악':'☯','강철':'⬡'};
@@ -54,8 +54,14 @@ function start(){
           tick++;
           if(tick>=22){
             clearInterval(timer);
+            // Rival result is decided once from the selected challenge type, not from a later reroll.
+            const rival=RIVAL_SYSTEM.pick({
+              playerType:selected,playerStarter:chosen.name,types:TYPES,
+              dex:DB,evolutions:EVOS,match:MATCH
+            });
             s.type=selected;
             s.party=[chosen];
+            s.rival=rival;
             s.dex[chosen.name]=2;
             save();
             reveal(chosen);
@@ -65,8 +71,36 @@ function start(){
     });
   };
   const reveal=p=>{
-    pop('<div class="intro reveal"><div class="intro-eyebrow">YOUR FIRST PARTNER</div><div class="reveal-sparkles">✦ ✧ ✦</div><h1>새로운 파트너를 만났어!</h1><div class="partner-hero"><div class="partner-emblem">'+(p.shiny?'✦':'◈')+'</div><div class="partner-name">'+(p.shiny?'✨ ':'')+p.name+'</div><div class="partner-meta">'+tag(p)+'</div><div class="partner-level">LEVEL 05 · '+selected+' 챌린지</div></div><p>이제 첫 모험이 시작돼! 풀숲에서 야생 포켓몬을 만나보자.</p><button class="intro-main wide" id="go">모험 시작하기 →</button></div>',()=>{
-      btn('go',()=>{close();toast('방향키로 풀숲까지 이동해 보세요!')});
+    pop('<div class="intro reveal"><div class="intro-eyebrow">YOUR FIRST PARTNER</div><div class="reveal-sparkles">✦ ✧ ✦</div><h1>새로운 파트너를 만났어!</h1><div class="partner-hero"><div class="partner-emblem">'+(p.shiny?'✦':'◈')+'</div><div class="partner-name">'+(p.shiny?'✨ ':'')+p.name+'</div><div class="partner-meta">'+tag(p)+'</div><div class="partner-level">LEVEL 05 · '+selected+' 챌린지</div></div><p>이제 첫 모험이 시작돼! 풀숲에서 야생 포켓몬을 만나보자.</p><button class="intro-main wide" id="go">라이벌의 파트너 확인 →</button></div>',()=>{
+      btn('go',rivalRoulette);
+    });
+  };
+  const rivalRoulette=()=>{
+    const rival=s.rival;
+    if(!rival){close();return}
+    const options=RIVAL_SYSTEM.poolFor(rival.type,DB,EVOS);
+    const pool=options.filter(p=>p.name!==s.party[0].name);
+    const names=(pool.length?pool:options).map(p=>p.name);
+    pop('<div class="intro roulette"><div class="intro-eyebrow">RIVAL PARTNER SELECTION</div><h1>라이벌의 첫 파트너</h1><p>네가 <b>'+selected+'</b> 타입을 선택하자 라이벌은 상성에 유리한 <b>'+rival.type+'</b> 타입을 골랐어.</p><div class="roulette-stage"><div class="roulette-halo"></div><div class="roulette-ball">?</div><div class="roulette-name" id="rouletteName">누가 나올까?</div><div class="roulette-sub">후보 '+names.length+'마리 · Lv. 5</div></div><button class="intro-main wide" id="spinRival">라이벌 룰렛 돌리기</button></div>',()=>{
+      btn('spinRival',()=>{
+        const button=$('spinRival');
+        button.disabled=true;
+        button.textContent='라이벌의 파트너를 찾는 중…';
+        document.querySelector('.roulette-stage').classList.add('spinning');
+        let tick=0;
+        const timer=setInterval(()=>{
+          $('rouletteName').textContent=choose(names);
+          tick++;
+          if(tick>=22){
+            clearInterval(timer);
+            document.querySelector('.roulette-stage').classList.remove('spinning');
+            $('rouletteName').textContent=rival.starter;
+            button.disabled=false;
+            button.textContent='모험 시작하기 →';
+            btn('spinRival',()=>{close();toast('라이벌의 '+rival.starter+'와 승부할 날을 기대해!')});
+          }
+        },85);
+      });
     });
   };
   typeScreen();
@@ -288,4 +322,14 @@ function draw(){WORLD_V2.draw(ctx,canvas,s,NPCS,isGrass)}
 
 let lastFrame=0;function frame(t){if(t-lastFrame>33){draw();lastFrame=t}requestAnimationFrame(frame)}requestAnimationFrame(frame);
 function updateHud(){$('area').textContent=zone().name;$('hudInfo').textContent='배지 '+s.badges+'/4 · '+(s.type||'모험 준비')}updateHud();setInterval(()=>{if(mode==='world'&&s.type)s.playSeconds+=5;updateHud();if(s.playSeconds%30===0)save()},5000);
-let hold=null;document.querySelectorAll('[data-dir]').forEach(b=>{const step=()=>{let [dx,dy]=b.dataset.dir.split(',').map(Number);move(dx,dy)};b.addEventListener('pointerdown',e=>{e.preventDefault();step();clearInterval(hold);hold=setInterval(step,145)});for(const ev of ['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>{clearInterval(hold);hold=null})});$('keyA').onclick=()=>{if(!dialogOpen)interact()};$('keyB').onclick=()=>{if(mode==='world')close()};$('keyMenu').onclick=menu;document.addEventListener('keydown',e=>{let dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};if(dirs[e.key]){e.preventDefault();move(...dirs[e.key])}if(e.key==='Escape'&&mode==='world')close();if(e.key==='Enter'&&!dialogOpen)interact();if(e.key==='m')menu()});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});window.addEventListener('beforeunload',save);if(!s.type)start();else toast('모험이 이어집니다!');
+let hold=null;document.querySelectorAll('[data-dir]').forEach(b=>{const step=()=>{let [dx,dy]=b.dataset.dir.split(',').map(Number);move(dx,dy)};b.addEventListener('pointerdown',e=>{e.preventDefault();step();clearInterval(hold);hold=setInterval(step,145)});for(const ev of ['pointerup','pointercancel','pointerleave'])b.addEventListener(ev,()=>{clearInterval(hold);hold=null})});$('keyA').onclick=()=>{if(!dialogOpen)interact()};$('keyB').onclick=()=>{if(mode==='world')close()};$('keyMenu').onclick=menu;document.addEventListener('keydown',e=>{let dirs={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};if(dirs[e.key]){e.preventDefault();move(...dirs[e.key])}if(e.key==='Escape'&&mode==='world')close();if(e.key==='Enter'&&!dialogOpen)interact();if(e.key==='m')menu()});document.addEventListener('visibilitychange',()=>{if(document.hidden)save()});window.addEventListener('beforeunload',save);// Existing save files have no rival field; create and save one without resetting progress.
+if(s.type&&s.party.length&&!s.rival&&typeof RIVAL_SYSTEM!=='undefined'){
+  try{
+    s.rival=RIVAL_SYSTEM.pick({
+      playerType:s.type,playerStarter:s.party[0].name,types:TYPES,
+      dex:DB,evolutions:EVOS,match:MATCH
+    });
+    save();
+  }catch(error){console.warn('라이벌 저장 데이터 이전 실패:',error)}
+}
+if(!s.type)start();else toast('모험이 이어집니다!');
