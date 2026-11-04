@@ -6,7 +6,7 @@ const {MAPS,GYMS,EVENTS} = CAMPAIGN;
 
 assert.equal(MAPS.length,34);
 assert.equal(GYMS.length,8);
-assert.equal(EVENTS.length,54);
+assert.equal(EVENTS.length,60);
 assert.deepEqual(CAMPAIGN.check(),[],'World links, event dependencies, and gym references must be coherent');
 assert.equal(GYMS[0].leader,'솔비');
 assert.equal(GYMS.at(-1).leader,'승천');
