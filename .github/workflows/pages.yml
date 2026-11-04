@@ -27,6 +27,7 @@ jobs:
           node --check world-v2.js
           node --check battle-engine.js
           node tests/battle-engine.test.cjs
+          node tests/battle-runtime.test.cjs
           node --check game.js
           node --check rival-system.js
           node tests/field-actors.test.cjs
