@@ -11,6 +11,14 @@
 - **범위 제한:** 실제 맵 위 인물 동선·카메라 연출·전용 아트/애니메이션을 포함한 컷신은 미구현. 현재는 임시 캠페인 메뉴의 순차 대사. Work가 맡은 이동/충돌·그래픽 코드는 수정하지 않음.
 - **추가 수정 파일:** `campaign-scenes.js`, `campaign-ui.js`, `bootstrap.js`, `index.html`, `tests/campaign-scenes.test.cjs`, `tests/campaign-ui.test.cjs`, `tests/campaign-rival.test.cjs`, CI 워크플로.
 
+## 2026-11-04 — High 추가 구현: 8체육관·3개 신전 퍼즐, 39개 스토리 대화
+- **코드 구현:** `campaign-puzzles.js`에 체육관별 고유 순서 조작 퍼즐 8종과 공명 신호를 안전하게 분리하는 신전 장치 퍼즐 3종. 퍼즐 진행은 `s.campaign.questStates.PUZZLE_*`에 저장. 오답 시 퍼즐 순서만 리셋하며 배지/포켓몬/기존 스토리 플래그는 보존.
+- **게임 진행 연계:** `campaign-core.js`는 관장전 전에 해당 퍼즐 완료를 요구하고, `EV_30_NODE_FOREST`·`EV_31_NODE_POWER`·`EV_32_NODE_SKY`의 사건 플래그는 안전 분리 퍼즐 완료 전에 지급하지 않음. 완료·보상 중복 차단.
+- **대사 연출:** `campaign-scenes.js`에 39개 메인 사건별 인물 대사 2~4줄과 스타팅/선택 타입 문구 치환을 정의. `campaign-ui.js`에서 페이지별 진행 및 최종 확정 후 플래그 기록. 대화 도중 뒤로가기는 보상/사건을 완료하지 않음.
+- **검증:** `tests/campaign-puzzles.test.cjs`, `tests/campaign-core.test.cjs`, `tests/campaign-ui.test.cjs`, `tests/campaign-scenes.test.cjs`, `tests/campaign-rival.test.cjs` 및 기존 회귀 검사가 GitHub Actions `41787592989`에서 통과. 자동 테스트와 실기기 수동 플레이는 구별.
+- **미완성:** 퍼즐·대사는 현재 **임시 모험 지도/대화 패널**에서 동작. 실제 지도 타일·NPC 동작·장치 애니메이션/컷신 카메라·환경 효과·퍼즐 전용 공간은 아직 구현되지 않음. PC 및 Android 전체 실플레이 미검증.
+- **Work 인계:** 필드 이동·충돌·그래픽 개선 작업은 별도 대기. Work가 필드 시스템을 이관할 때 `campaign-puzzles.js`의 저장/보상 불변 규칙과 `campaign-scenes.js` 대화 원본을 유지해 월드 NPC/오브젝트에 연결할 것.
+
 ## 2026-11-04 — High 개발: 8체육관 캠페인 실행 기반 및 임시 플레이 경로
 - **상태:** 부분 구현. 8개 체육관부터 엔딩까지 **최종 2D 필드형 RPG로 완성된 것은 아님**. 사용자 요청대로 수동 플레이테스트는 최종 통합 단계까지 미실시.
 - **실제 코드 추가:** `campaign-data.js` (34개 지도 ID/인접 경로, 8관장·사천왕·챔피언·이클립스단 보스 팀, 39개 메인 이벤트·7개 라이벌 단계·2회차 정의), `campaign-core.js` (포털/배지 게이트, 1회 보상, 승리 플래그, 엔딩/리그 전적, 기존 저장 데이터 보존), `campaign-ui.js` (임시 모험 지도/퀘스트 일지, 인접 지역 이동, 이벤트 대화, 야생 포켓몬·관장/리그 전투 진입·회복).
