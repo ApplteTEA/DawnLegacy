@@ -1,6 +1,6 @@
 'use strict';
 (async function(){
- const version='reset-rival-20261104';
+ const version='rival-growth-20261104';
  for(const href of ['style.css','battle-v2.css']){
   const link=document.createElement('link');link.rel='stylesheet';link.href='./'+href+'?v='+version;document.head.appendChild(link);
  }
