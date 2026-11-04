@@ -11,7 +11,7 @@
 
 ## 작업 시작
 1. GitHub 최신 기본 브랜치를 읽는다. 이전 대화나 과거 커밋을 현재 코드로 가정하지 않는다.
-2. `docs/WORKFLOW.md`, `docs/PROJECT_STATUS.md`, `docs/TODO.md`, `docs/IMPROVEMENTS.md`, `docs/CHANGELOG.md`, `docs/ARCHITECTURE.md`, `docs/GAME_DESIGN.md`, `docs/STORY.md`, `docs/WORLD_LORE.md`를 읽는다. Work의 집중 개선 작업 시작/재개 시에는 저장소의 다른 모든 MD(에셋 라이선스와 테스트 문서 포함)도 읽는다.
+2. `docs/WORKFLOW.md`, `docs/PROJECT_STATUS.md`, `docs/TODO.md`, `docs/IMPROVEMENTS.md`, `docs/CHANGELOG.md`, `docs/ARCHITECTURE.md`, `docs/GAME_DESIGN.md`, `docs/STORY.md`, `docs/WORLD_LORE.md`, `docs/WORLD_MAP.md`, `docs/STORY_EVENTS.md`, `docs/IMPLEMENTATION_PLAN.md`를 읽는다. Work의 집중 개선 작업 시작/재개 시에는 저장소의 다른 모든 MD(에셋 라이선스와 테스트 문서 포함)도 읽는다.
 3. **확정 기획**, **제안**, **실제 구현**, **검증**을 구분한다. 문서와 소스가 다르면 실제 코드를 확인하고 차이를 기록한다.
 4. 한 번에 여러 기능을 고칠 때는 기존 게임의 이동, 전투, 포획, 파티, 저장, NPC 상호작용, 모바일 조작을 회귀 테스트한다.
 
@@ -25,6 +25,8 @@
 - 변경 후 PROJECT_STATUS, TODO 또는 IMPROVEMENTS(해당하는 문서), CHANGELOG를 갱신하고, 시스템/설정 변경 시 해당 설계 문서도 갱신한다.
 - 최신 GitHub 코드/문서를 확인한 뒤 수정한다. 다른 에이전트가 추가한 기록을 통째로 덮어쓰지 않는다.
 - 코드 구현, 테스트 통과, 브라우저 검증, Android/iOS 실기기 검증을 명확하게 구분한다.
+
+- 신규 스토리·지도·전투 규칙은 문서에 작성되었더라도 사용자 승인 전에는 **제안**이다. 기획에 등장한 콘텐츠를 게임 코드 구현 완료로 기록하지 않는다.
 
 ## 문서 상태 표기
 - **확정**: 사용자와 합의된 기획
