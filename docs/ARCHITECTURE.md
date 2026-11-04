@@ -2,6 +2,13 @@
 
 기준: 2026-11-03 필드 재구축 코드 및 브라우저 검증.
 
+## 2026-11-04 — 캠페인 대사/페이지 엔진
+- `campaign-scenes.js`: `CAMPAIGN_SCENES.SCRIPTS`에 실제 메인 이벤트 39개별 대사 배열을 정의. `pages(eventId,save)`는 플레이어/스타팅 타입/라이벌 정보만 치환하는 **순수 데이터 처리**; 보상·플래그를 변경하지 않음.
+- `campaign-ui.js`: `scene(event,index)`에서 화자/대사를 한 페이지씩 보여 주고 마지막 확인 시에만 `CAMPAIGN_CORE.completeEvent()/completePostgame()`를 호출. 페이지 넘기기·나중에 버튼은 게임 저장의 사건 완료 상태를 바꾸지 않음.
+- `bootstrap.js`: `campaign-data.js` 이후 `campaign-scenes.js`를 로드한 다음 UI를 로드. `index.html` 로더 버전도 함께 변경해야 캐시가 꼬이지 않음.
+- `tests/campaign-scenes.test.cjs`는 전체 39개 스크립트와 치환 변수를, `tests/campaign-ui.test.cjs`는 대사 종료 후 이벤트 플래그를 검증.
+- 이번 변경은 NPC의 실제 필드 걷기/카메라 컷신을 뜻하지 않음. Work 담당 타일 렌더러·충돌 기능을 덮어쓰지 않는다.
+
 ## 2026-11-04 — 확장 캠페인 런타임 구성 (부분 구현)
 - `campaign-data.js`: `CAMPAIGN_DATA` 고유 ID 표, 지도 34개 및 양방향 연결, 8관장/리그/보스, 39개 메인 사건, 라이벌 7개 회차와 포스트게임 이벤트. **타일 그래픽 데이터나 현재 게임의 지도 충돌 데이터는 아님**.
 - `campaign-core.js`: `CAMPAIGN_CORE` 순수 저장·규칙 엔진. `s.campaign`에 `mapId`, `visited`, `flags`, `gymWins`, `rivalWins`, `rewardClaims`, `cutsceneSeen`, `leagueRun`, `legacy`를 버전과 함께 보관한다. `ensure(s)`는 구형 저장의 원래 `s.badges`, `s.champion`, `s.x/y`, `s.rival`을 보존하고 과거 4배지/챔피언을 새 스토리 8배지 완료로 간주하지 않는다.
