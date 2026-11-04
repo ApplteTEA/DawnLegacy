@@ -120,6 +120,51 @@ const RIVAL_SYSTEM = (() => {
     return names.map(name => evolvedSpecies(name, round.level, dex, evolutions));
   }
 
-  return Object.freeze({ COUNTER_TYPES, poolFor, counterType, pick, ROUNDS, withSupport, evolvedSpecies, nextRound, canChallenge, teamForRound });
+  // Campaign story rounds are separate from the four existing prototype encounters.
+  // Never reuse legacy '시온 N차전' defeated entries as completion markers for these IDs.
+  const CAMPAIGN_ROUNDS = Object.freeze([
+    Object.freeze({id:'RIV_01',badges:0,level:5,size:1,mapId:'M00'}),
+    Object.freeze({id:'RIV_02',badges:2,level:22,size:2,mapId:'F01'}),
+    Object.freeze({id:'RIV_03',badges:4,level:37,size:3,mapId:'D04'}),
+    Object.freeze({id:'RIV_04',badges:6,level:50,size:4,mapId:'D06'}),
+    Object.freeze({id:'RIV_05',badges:8,level:60,size:5,mapId:'M08'}),
+    Object.freeze({id:'RIV_06',badges:8,level:64,size:5,mapId:'R09'}),
+    Object.freeze({id:'PG_02_RIVAL_FINAL',badges:8,level:78,size:6,mapId:'P02'})
+  ]);
+
+  function fullRoster(rival, dex, evolutions) {
+    const prepared=withSupport(rival,dex,evolutions);
+    const used=new Set([prepared.starter,...prepared.support]);
+    const evolved=new Set(Object.values(evolutions).map(entry=>entry[0]));
+    const names=dex.filter(mon=>mon.stage<=2&&!evolved.has(mon.name)).map(mon=>mon.name);
+    const candidates=names.filter(name=>!used.has(name));
+    const reserve=[];
+    for(const name of Array.isArray(rival.reserve)?rival.reserve:[]) {
+      if(candidates.includes(name)&&!reserve.includes(name))reserve.push(name);
+      if(reserve.length===2)break;
+    }
+    const seed=Array.from(prepared.starter).reduce((sum,c)=>sum+c.charCodeAt(0),0)+prepared.type.length;
+    for(let i=0;reserve.length<2&&i<candidates.length;i++) {
+      const name=candidates[(seed+i)%candidates.length];
+      if(!reserve.includes(name))reserve.push(name);
+    }
+    if(reserve.length!==2)throw new Error('라이벌 6인 파티 후보가 부족합니다.');
+    return {...prepared,reserve};
+  }
+
+  function campaignTeam(rival,round,dex,evolutions) {
+    if(!CAMPAIGN_ROUNDS.includes(round))throw new Error('알 수 없는 본편 라이벌 회차입니다.');
+    const roster=fullRoster(rival,dex,evolutions);
+    const names=[...roster.support,...roster.reserve].slice(0,round.size-1);
+    names.push(roster.starter);
+    return names.map(name=>evolvedSpecies(name,round.level,dex,evolutions));
+  }
+
+  function campaignNext(save) {
+    const events=save?.campaign?.events||{};
+    return CAMPAIGN_ROUNDS.find(round=>!events[round.id])||null;
+  }
+
+  return Object.freeze({ COUNTER_TYPES, poolFor, counterType, pick, ROUNDS, withSupport, evolvedSpecies, nextRound, canChallenge, teamForRound, CAMPAIGN_ROUNDS, fullRoster, campaignTeam, campaignNext });
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports = RIVAL_SYSTEM;
