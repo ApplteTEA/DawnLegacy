@@ -39,7 +39,7 @@ const CAMPAIGN_CORE = (() => {
     const old = save.campaign && typeof save.campaign === 'object' && !Array.isArray(save.campaign)
       ? save.campaign : {};
     if(old.version===SAVE_VERSION && DATA.MAPS[old.mapId] &&
-      ['visited','flags','gymWins','rewardClaims','questStates','cutsceneSeen','leagueRun','legacy'].every(k=>old[k]&&typeof old[k]==='object'&&!Array.isArray(old[k]))){
+      ['visited','flags','gymWins','rivalWins','rewardClaims','questStates','cutsceneSeen','leagueRun','legacy'].every(k=>old[k]&&typeof old[k]==='object'&&!Array.isArray(old[k]))){
       if(save.type && Array.isArray(save.party) && save.party.length){
         old.flags.STARTER_CHOSEN=true;
         if(save.rival?.starter){old.flags.RIVAL_STARTER_FIXED=true;old.flags.EV_00_CHOOSE_STARTER=true}
@@ -53,6 +53,7 @@ const CAMPAIGN_CORE = (() => {
       visited:normalize(old.visited),
       flags:normalize(old.flags),
       gymWins:normalize(old.gymWins),
+      rivalWins:normalize(old.rivalWins),
       rewardClaims:normalize(old.rewardClaims),
       questStates:normalize(old.questStates),
       cutsceneSeen:normalize(old.cutsceneSeen),
@@ -141,6 +142,42 @@ const CAMPAIGN_CORE = (() => {
     if(missing.length)return {ok:false,reason:'먼저 지역 사건을 해결해야 해'};
     return {ok:true,reason:''};
   }
+  function canFightRival(save,id) {
+    const rival=DATA.RIVALS?.find(x=>x.id===id);
+    if(!rival)return {ok:false,reason:'존재하지 않는 라이벌 회차'};
+    const c=ensure(save);
+    if(!save.rival?.starter)return {ok:false,reason:'라이벌의 첫 파트너 기록이 없어'};
+    if(c.mapId!==rival.mapId)return {ok:false,reason:'라이벌이 있는 지역에 가야 해'};
+    if(c.rivalWins[id])return {ok:false,reason:'이미 승리한 라이벌전'};
+    const missing=rival.requires.filter(x=>!flag(save,x));
+    if(missing.length)return {ok:false,reason:'선행 사건: '+missing.join(', ')};
+    return {ok:true,reason:''};
+  }
+  const POSTGAME_FLAGS=Object.freeze({
+    PG_01_ARCHIVE:'ARCHIVE_RESTORED',
+    PG_03_SHRINE_RETURN:'ARCEUS_RETURN_VISITED'
+  });
+  function canStartPostgame(save,id) {
+    const event=DATA.POSTGAME.find(x=>x.id===id);
+    if(!event)return {ok:false,reason:'존재하지 않는 2회차 이벤트'};
+    if(!POSTGAME_FLAGS[id])return {ok:false,reason:'전용 전투/시설 구현 후 개방 예정'};
+    const c=ensure(save);
+    if(c.mapId!==event.mapId)return {ok:false,reason:'해당 장소에서 진행해야 해'};
+    if(c.flags[id])return {ok:false,reason:'이미 완료한 이벤트'};
+    const missing=event.requires.filter(x=>!flag(save,x));
+    if(missing.length)return {ok:false,reason:'선행 사건: '+missing.join(', ')};
+    return {ok:true,reason:''};
+  }
+  function completePostgame(save,id) {
+    const access=canStartPostgame(save,id);
+    if(!access.ok)return access;
+    const c=ensure(save);
+    c.flags[id]=true;
+    c.flags[POSTGAME_FLAGS[id]]=true;
+    c.rewardClaims[id]=true;
+    return {ok:true,id};
+  }
+
   function canFightLeague(save,id) {
     const c=ensure(save),idx=DATA.LEAGUE.findIndex(x=>x.id===id);
     if(idx<0)return {ok:false,reason:'존재하지 않는 리그 도전자'};
@@ -168,6 +205,15 @@ const CAMPAIGN_CORE = (() => {
       c.flags['GYM_'+index+'_WON']=true;
       c.rewardClaims[id]=true;
       return {ok:true,id,badge:gym.badge};
+    }
+    const rival=DATA.RIVALS?.find(x=>x.id===id);
+    if(rival){
+      const access=canFightRival(save,id);
+      if(!access.ok)return access;
+      c.rivalWins[id]=true;
+      c.flags[id+'_WON']=true;
+      c.rewardClaims[id]=true;
+      return {ok:true,id};
     }
     const league=DATA.LEAGUE.find(x=>x.id===id);
     if(league){
@@ -237,6 +283,11 @@ const CAMPAIGN_CORE = (() => {
     }
     DATA.GYMS.forEach((x,i)=>{producers.add('GYM_'+(i+1)+'_WON');if(!ids.has(x.mapId))problems.push('Invalid gym map '+x.id)});
     DATA.LEAGUE.forEach((x,i)=>{if(i<4)producers.add('E4_'+(i+1)+'_CLEAR')});
+    Object.values(POSTGAME_FLAGS).forEach(flag=>producers.add(flag));
+    for(const rival of DATA.RIVALS||[]){
+      if(!ids.has(rival.mapId))problems.push('Invalid rival map '+rival.id);
+      for(const flag of rival.requires)if(!producers.has(flag))problems.push('Invalid rival prerequisite '+rival.id+': '+flag);
+    }
     const missing=new Set();
     for(const ev of DATA.STORY)for(const key of ev.require)if(!producers.has(key))missing.add(key);
     if(missing.size)problems.push('Undefined prerequisite flags: '+[...missing].join(', '));
@@ -251,7 +302,7 @@ const CAMPAIGN_CORE = (() => {
   }
 
   return Object.freeze({DATA,SAVE_VERSION,ensure,flag,badgeCount,isChampion,canEnter,canTravel,travel,
-    canStartEvent,completeEvent,canFightGym,canFightLeague,completeBattle,defeat,availableEvents,
+    canStartEvent,completeEvent,canFightGym,canFightRival,canFightLeague,canStartPostgame,completePostgame,completeBattle,defeat,availableEvents,
     nextObjective,missingSpecies,validate});
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports=CAMPAIGN_CORE;
