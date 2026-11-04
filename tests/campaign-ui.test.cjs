@@ -5,9 +5,10 @@ const path=require('node:path');
 const vm=require('node:vm');
 const DATA=require('../campaign-data.js');
 const CORE=require('../campaign-core.js');
+const PUZZLES=require('../campaign-puzzles.js');
 
 const source=fs.readFileSync(path.join(__dirname,'..','campaign-ui.js'),'utf8');
-const UI=vm.runInNewContext(source+'\nCAMPAIGN_UI', {CAMPAIGN_CORE:CORE,CAMPAIGN_DATA:DATA,console});
+const UI=vm.runInNewContext(source+'\nCAMPAIGN_UI', {CAMPAIGN_CORE:CORE,CAMPAIGN_DATA:DATA,CAMPAIGN_PUZZLES:PUZZLES,console});
 const game=fs.readFileSync(path.join(__dirname,'..','game.js'),'utf8');
 const {DB}=vm.runInNewContext(game.slice(game.indexOf('const TYPES='),game.indexOf('const ZONES='))+'\n({DB})');
 
@@ -45,6 +46,14 @@ assert.equal(CORE.flag(state,'ROAD_TUTORIAL_DONE'),true);
 button('go_M01');
 button('event_EV_02_CITY_01');
 button('campaignAccept');
+assert.match(dialog,/체육관 퍼즐 풀기/);
+assert.equal(CORE.canFightGym(state,'GYM_01').ok,false);
+button('campaignPuzzle');
+assert.match(dialog,/숲의 덩굴 수로/);
+button('puzzle_roots'); // Mistake resets the sequence without losing other game progress.
+assert.match(dialog,/순서가 맞지 않아/);
+for(const step of PUZZLES.GYMS.GYM_01.steps)button('puzzle_'+step);
+assert.equal(PUZZLES.isSolved(state,'GYM_01'),true);
 assert.match(dialog,/관장에게 도전/);
 button('gym_GYM_01');
 assert.match(dialog,/솔비/);
@@ -72,7 +81,7 @@ assert.equal(CORE.missingSpecies(missing,DB).length,0,'Late-game opponent specie
 // No DOM substitution should modify old movement code or replace sprite renderer.
 const bootstrap=fs.readFileSync(path.join(__dirname,'..','bootstrap.js'),'utf8');
 const index=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-assert.match(bootstrap,/'campaign-data\.js','campaign-core\.js'/);
+assert.match(bootstrap,/'campaign-data\.js','campaign-puzzles\.js','campaign-core\.js'/);
 assert.match(bootstrap,/'game\.js','campaign-ui\.js'/);
 const ver=bootstrap.match(/const version='([^']+)'/)?.[1];
 assert.ok(ver&&index.includes('bootstrap.js?v='+ver));
