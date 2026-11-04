@@ -7,6 +7,13 @@
 - `node --check`: bootstrap, manifest, actors, world renderer, game.
 - `git diff --check`.
 
+## Rival starter tests — 2026-11-04
+
+- `node tests/rival-system.test.cjs`: 실제 `game.js`의 17개 선택 타입·포켓몬 DB·진화·타입 상성을 읽어 라이벌 후보가 항상 존재하며 2배 이상 공격 상성인지 검사.
+- 균등 후보 인덱스 양끝 및 중간 난수, 동일 종 중복 회피, JSON으로 직렬화 가능한 저장 결과, 잘못된 타입·난수 예외를 검사.
+- GitHub Pages workflow에서 `node --check rival-system.js`와 함께 실행.
+- 이 자동 테스트는 실제 브라우저의 룰렛 표시/터치/저장·복원 전체 흐름이나 실기기 검증을 대신하지 않는다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
