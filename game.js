@@ -61,7 +61,7 @@ function start(){
             });
             s.type=selected;
             s.party=[chosen];
-            s.rival=rival?RIVAL_SYSTEM.withSupport(rival,DB,EVOS):null;
+            s.rival=rival?RIVAL_SYSTEM.fullRoster(rival,DB,EVOS):null;
             s.dex[chosen.name]=2;
             if(s.rival&&typeof CAMPAIGN!=='undefined')CAMPAIGN.complete(s,'EV_00_CHOOSE_STARTER');
             save();
@@ -381,8 +381,8 @@ if(s.type&&s.party.length&&!s.rival&&typeof RIVAL_SYSTEM!=='undefined'){
 }
 if(s.rival&&typeof RIVAL_SYSTEM!=='undefined'){
   try{
-    const prepared=RIVAL_SYSTEM.withSupport(s.rival,DB,EVOS);
-    if(JSON.stringify(prepared.support)!==JSON.stringify(s.rival.support)){
+    const prepared=RIVAL_SYSTEM.fullRoster(s.rival,DB,EVOS);
+    if(JSON.stringify(prepared.support)!==JSON.stringify(s.rival.support)||JSON.stringify(prepared.reserve)!==JSON.stringify(s.rival.reserve)){
       s.rival=prepared;
       save();
     }
