@@ -48,6 +48,15 @@
 - `game.js`의 `draw()`는 렌더러 호출 후 플레이어 샘플 좌표에서 NPC 위치를 화면으로 환산해 '라이벌 시온' 이름표를 오버레이한다. Work가 카메라/타일 구조를 변경할 경우 마커 연산도 함께 업데이트해야 한다.
 - 필드 지형·이동·충돌 재설계는 Work 대기 작업으로 유지한다.
 
+## 완성형 캠페인 진행 기반 — 2026-11-04
+- **단일 기준 모듈:** `campaign-data.js`(34 지역·8 관장·리그·39 스토리 이벤트·7 라이벌 회차) → `campaign-core.js`(저장·맵 게이트·이벤트·배지·보상·라이벌/보스/리그 승패·2회차) → `campaign-ui.js`(현재 **임시** 모험 지도/퀘스트/전투 메뉴), 뒤이어 `game.js` 실행. `bootstrap.js` 로더 순서를 따른다.
+- 이전에 실험적으로 생성된 `campaign-system.js` 및 대응 테스트는 중복 상태 모델을 만들 수 있어 제거했다. 다른 AI는 **`CAMPAIGN_CORE`만** 사용한다.
+- `s.campaign.version=1`: `mapId`, `visited`, `flags`, `gymWins`, `rivalWins`, `rewardClaims`, `questStates`, `cutsceneSeen`, `leagueRun`, `legacy`로 구성. 기존 `s.x/y`, `s.badges`, `s.defeated`, `s.champion` 값 자체는 강제 덮어쓰지 않는다.
+- 승리 시 `npc.campaignBattleId`가 있으면 `CAMPAIGN_CORE.completeBattle()`로 처리하고, 없으면 기존 프로토타입의 전투 기록 경로를 보존. 캠페인 라이벌은 `RIVAL_SYSTEM.CAMPAIGN_ROUNDS`의 팀을 사용하고, 현재 `rival-system.js`의 구형 4회 기록과 별도로 저장.
+- **계약상 미완성:** `campaign-ui.js`는 텍스트 패널 지도에서 지역 전환 및 사건 진행을 제공하는 임시 브리지로, 타일맵 렌더링·상하좌우 필드 포털·건물 내부·지역별 픽셀아트/퍼즐을 제공하지 않는다.
+- Work의 공통 맵 렌더/충돌 재구축과 충돌하지 않도록 현행 `world-v2.js`/ `field-actors.js`를 이 작업에서 수정하지 않았다. Work 완료 후 `campaign-data.js` map ID와 현장 타일 데이터/포털을 연결하며 임시 UI를 정식 지도/퀘스트 저널로 전환해야 한다.
+- 신규 이벤트 플래그는 현재 코드 실행/CI에서 계산되었더라도 실제 스토리 컷신을 플레이해 검증한 것은 아니다. 실환경 E2E 검증과 별도로 관리.
+
 ## 저장 호환
 - 키 dawnLegacyCompleteV2 / 기존 version 유지.
 - fieldFollower: x, y, face를 추가 저장. 구형 followerTrail은 인접·충돌 검사 후 이관하고 없으면 안전한 인접 칸에서 시작.
