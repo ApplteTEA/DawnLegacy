@@ -126,11 +126,13 @@ const CAMPAIGN_UI = (() => {
       });
     };
 
-    const openPuzzle=(gym,notice='')=>{
-      const access=CORE.canStartGymPuzzle(state,gym.id);
+    const openPuzzle=(source,notice='')=>{
+      const gymPuzzle=!!PUZZLES.GYMS[source.id];
+      const access=gymPuzzle?CORE.canStartGymPuzzle(state,source.id):CORE.canStartEvent(state,source.id);
       if(!access.ok){toast(access.reason);render();return}
-      const puzzle=PUZZLES.GYMS[gym.id],progress=PUZZLES.status(state,gym.id);
-      if(progress.solved){render();return}
+      const puzzle=(gymPuzzle?PUZZLES.GYMS:PUZZLES.EVENTS)[source.id],progress=PUZZLES.status(state,source.id);
+      const finished=()=>gymPuzzle?render():scene(source);
+      if(progress.solved){finished();return}
       pop('<section class="campaign-journal"><h2>'+safe(puzzle.title)+'</h2>'+
         '<p>'+safe(puzzle.clue)+'</p>'+
         '<p class="muted">진행 '+progress.step+'/'+progress.total+' · 틀리면 순서만 초기화돼.</p>'+
@@ -141,18 +143,19 @@ const CAMPAIGN_UI = (() => {
         '<button id="campaignPuzzleExit">나중에</button></section>',()=>{
           btn('campaignPuzzleExit',render);
           btn('campaignPuzzleReset',()=>{
-            PUZZLES.reset(state,gym.id);saveGame();openPuzzle(gym,'퍼즐 순서를 처음으로 되돌렸어.');
+            PUZZLES.reset(state,source.id);saveGame();openPuzzle(source,'퍼즐 순서를 처음으로 되돌렸어.');
           });
           for(const choice of puzzle.choices)btn(gid('puzzle',choice.id),()=>{
-            const result=PUZZLES.attempt(state,gym.id,choice.id);
+            const result=PUZZLES.attempt(state,source.id,choice.id);
             saveGame();
-            if(result.solved){toast(result.message);render()}
-            else openPuzzle(gym,result.message);
+            if(result.solved){toast(result.message);finished()}
+            else openPuzzle(source,result.message);
           });
         });
     };
 
     const scene=event=>{
+      if(PUZZLES.EVENTS[event.id]&&!PUZZLES.isSolved(state,event.id)){openPuzzle(event);return}
       const needsChoice=event.id==='EV_34_ARCEUS';
       const isEnding=event.id==='EV_38_CREDITS';
       pop('<div class="campaign-journal"><h2>'+safe(event.title)+'</h2><p>'+safe(event.text)+'</p>'+
