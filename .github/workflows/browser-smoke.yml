@@ -1,0 +1,43 @@
+name: Browser gameplay smoke (optional QA)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'game.js'
+      - 'battle-engine.js'
+      - 'campaign-ui.js'
+      - 'bootstrap.js'
+      - 'index.html'
+      - 'tests/browser-smoke.mjs'
+      - '.github/workflows/browser-smoke.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser runner
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Serve the real production game
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/dawnlegacy-http.log 2>&1 &
+          echo $! >/tmp/dawnlegacy-http.pid
+      - name: Chromium mobile and landscape smoke
+        run: node tests/browser-smoke.mjs
+      - name: Preserve browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dawnlegacy-browser-smoke-screenshots
+          path: /tmp/dawnlegacy-battle-*.png
+          if-no-files-found: ignore
