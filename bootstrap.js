@@ -1,11 +1,11 @@
 'use strict';
 (async function(){
- const version='rival-growth-20261104';
+ const version='campaign-core-20261104';
  for(const href of ['style.css','battle-v2.css']){
   const link=document.createElement('link');link.rel='stylesheet';link.href='./'+href+'?v='+version;document.head.appendChild(link);
  }
  try{
-  for(const src of ['field-manifest.js','field-actors.js','world-v2.js','game.js']){
+  for(const src of ['field-manifest.js','field-actors.js','world-v2.js','campaign-system.js','game.js']){
    await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='./'+src+'?v='+version;script.onload=resolve;script.onerror=()=>reject(new Error(src));document.body.appendChild(script)});
   }
  }catch(error){
