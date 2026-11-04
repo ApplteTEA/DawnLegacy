@@ -28,6 +28,15 @@
 6. game.js: 기존 충돌/인카운터/전투/진행 로직을 유지하고 이동 성공 후 FIELD_ACTORS.move 호출. 빠른 입력은 보간 중 제한하여 경로 유실 방지.
 7. assets/field/: 인물 5종, 포켓몬 84종, 그림자, manifest.json, 원본 및 라이선스. 필드의 외부 이미지 요청 없음. 기존 배틀 이미지 외부 로딩은 유지.
 
+## 8체육관·신전 퍼즐 및 스토리 대사 연계 (2026-11-04)
+- `campaign-puzzles.js`의 `GYMS`(8개)와 `EVENTS`(신전 3개)가 조작 순서·힌트·피드백을 보유. 엔진 `status/attempt/reset/isSolved`는 순수 저장 상태 조작.
+- 퍼즐 저장 위치: `s.campaign.questStates['PUZZLE_'+id]` = `{step:number,solved:boolean}`. 기존 캠페인 세이브 스키마에 이미 존재하는 맵을 사용하므로 기존 캐릭터/도감/4배지·라이벌 데이터 초기화 불필요.
+- `campaign-core.js`는 관장 대결 조건 확인 전에 `canStartGymPuzzle()`로 지역·배지·선행 사건을 검사하고 `canFightGym()`에서 해당 퍼즐 완료를 추가 확인. 신전 사건 `completeEvent()`는 공명기 퍼즐 완료를 검사하므로 UI 버튼 우회로 사건/보상 직접 획득 불가.
+- `campaign-ui.js`는 캠페인 일지 내 버튼 기반 퍼즐 UI·중간 단계 자동 저장을 제공하며, 월드 타일 렌더러나 `game.js`의 `move()`를 재구축하지 않음.
+- `campaign-scenes.js`는 39개 메인 사건의 인물 대사 페이지와 `chosenType/starterName/rivalStarter` 치환. UI는 모든 대사를 확인한 뒤에만 `CORE.completeEvent()`를 호출. UI 취소/중단/퍼즐 실패에 사건 승리 플래그를 쓰지 않음.
+- 전투/보상 상태는 여전히 `campaign-core.js`만 변경. 새 기능은 Work 담당인 필드 배경·충돌 코드와 별도다.
+- 후속: 이 패널 UI를 실제 타일 맵 NPC/오브젝트/컷신에 결합할 때 이벤트 ID/세이브 키/완료 규칙을 유지하고 스폰 안정성을 확인할 것.
+
 ## 라이벌 스타팅 모듈 — 2026-11-04
 - `rival-system.js`: DOM/필드 이동과 독립된 타입 상성 기반 라이벌 포켓몬 추첨, 실제 포켓몬 DB/진화 규칙 재사용. 기본 17타입 매핑 및 후보 선택 함수 제공.
 - `game.js`: 플레이어 스타팅 룰렛 최종 결정 시 라이벌 타입·종을 함께 한 번 추첨해 `s.rival`에 저장. 결과를 별도의 라이벌 룰렛 화면에서 공개하며 모험 기록에 표시.
