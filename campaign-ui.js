@@ -9,7 +9,9 @@ const CAMPAIGN_UI = (() => {
   const DATA = typeof CAMPAIGN_DATA !== 'undefined' ? CAMPAIGN_DATA : (typeof require==='function'?require('./campaign-data.js'):null);
   const PUZZLES = typeof CAMPAIGN_PUZZLES !== 'undefined'
     ? CAMPAIGN_PUZZLES : (typeof require==='function'?require('./campaign-puzzles.js'):null);
-  if (!CORE || !DATA || !PUZZLES) throw new Error('Load campaign-data/core/puzzles before campaign-ui');
+  const SCENES = typeof CAMPAIGN_SCENES !== 'undefined'
+    ? CAMPAIGN_SCENES : (typeof require==='function'?require('./campaign-scenes.js'):null);
+  if (!CORE || !DATA || !PUZZLES || !SCENES) throw new Error('Load campaign-data/core/puzzles/scenes before campaign-ui');
   const WILD = Object.freeze({
     R01:['구구','꼬렛','캐터피','뿔충이','메리프'],
     D01:['모다피','주뱃','통통코','피콘','고오스'],
@@ -154,17 +156,36 @@ const CAMPAIGN_UI = (() => {
         });
     };
 
-    const scene=event=>{
-      if(PUZZLES.EVENTS[event.id]&&!PUZZLES.isSolved(state,event.id)){openPuzzle(event);return}
+    // Page-by-page dialogue: no story flags or rewards are awarded until confirmation.
+    const scene=(event,pageIndex=0)=>{
+      if(PUZZLES.EVENTS[event.id]&&!PUZZLES.isSolved(state,event.id)){
+        openPuzzle(event);
+        return;
+      }
+      const pages=event.postgame
+        ?[{speaker:'나레이션',text:event.text}]
+        :SCENES.pages(event.id,state);
+      if(pageIndex<pages.length){
+        const page=pages[pageIndex];
+        pop('<section class="campaign-journal"><h2>'+safe(event.title)+'</h2>'+
+          '<p class="muted">이야기 '+(pageIndex+1)+'/'+pages.length+'</p>'+
+          '<div class="panel"><strong>'+safe(page.speaker)+'</strong><p>'+safe(page.text)+'</p></div>'+
+          '<button id="campaignNext">'+(pageIndex===pages.length-1?'다음 단계':'계속 듣기')+'</button>'+
+          '<button id="campaignCancel">나중에</button></section>',()=>{
+            btn('campaignCancel',render);
+            btn('campaignNext',()=>scene(event,pageIndex+1));
+          });
+        return;
+      }
       const needsChoice=event.id==='EV_34_ARCEUS';
       const isEnding=event.id==='EV_38_CREDITS';
-      pop('<div class="campaign-journal"><h2>'+safe(event.title)+'</h2><p>'+safe(event.text)+'</p>'+
+      pop('<section class="campaign-journal"><h2>'+safe(event.title)+'</h2>'+
         (needsChoice?'<p>아르세우스는 누구의 명령도 따르지 않아. 진정한 여명에 필요한 것은 무엇일까?</p>'+
         '<button id="campaignAccept">서로의 의지를 존중한다</button><button id="campaignReject">힘으로 따르게 한다</button>':
-        isEnding?'<p>8개의 배지, 신전의 결전, 사천왕과 챔피언전. 너와 포켓몬이 함께 걸어온 길 위에 새로운 아침이 찾아온다.</p>'+
+        isEnding?'<p>8개의 배지와 함께 걸어온 길을 명예의 전당에 기록할까?</p>'+
         '<button id="campaignAccept">명예의 전당에 기록하기</button>':
-        '<button id="campaignAccept">조사 결과 기록하기</button>')+
-        '<button id="campaignCancel">나중에</button></div>',()=>{
+        '<p>이번 사건을 모험 기록에 남길까?</p><button id="campaignAccept">조사 결과 기록하기</button>')+
+        '<button id="campaignCancel">나중에</button></section>',()=>{
           btn('campaignCancel',render);
           btn('campaignAccept',()=>{
             const result=event.postgame?CORE.completePostgame(state,event.id):CORE.completeEvent(state,event.id);
@@ -173,7 +194,7 @@ const CAMPAIGN_UI = (() => {
             render();
           });
           if(needsChoice)btn('campaignReject',()=>pop('<h2>아르세우스의 시련</h2><p>명령으로는 신뢰를 얻을 수 없어. 다시 생각해 봐.</p><button id="campaignTryAgain">다시 선택</button>',
-            ()=>btn('campaignTryAgain',()=>scene(event))));
+            ()=>btn('campaignTryAgain',()=>scene(event,pages.length))));
         });
     };
 
