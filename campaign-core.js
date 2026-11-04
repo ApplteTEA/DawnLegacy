@@ -38,6 +38,14 @@ const CAMPAIGN_CORE = (() => {
     if (!save || typeof save !== 'object' || Array.isArray(save)) throw new Error('Invalid save state');
     const old = save.campaign && typeof save.campaign === 'object' && !Array.isArray(save.campaign)
       ? save.campaign : {};
+    if(old.version===SAVE_VERSION && DATA.MAPS[old.mapId] &&
+      ['visited','flags','gymWins','rewardClaims','questStates','cutsceneSeen','leagueRun','legacy'].every(k=>old[k]&&typeof old[k]==='object'&&!Array.isArray(old[k]))){
+      if(save.type && Array.isArray(save.party) && save.party.length){
+        old.flags.STARTER_CHOSEN=true;
+        if(save.rival?.starter){old.flags.RIVAL_STARTER_FIXED=true;old.flags.EV_00_CHOOSE_STARTER=true}
+      }
+      return old;
+    }
     // Never turn the old prototype's four badges or champion flag into story wins.
     const campaign = {
       version:SAVE_VERSION,
@@ -58,7 +66,10 @@ const CAMPAIGN_CORE = (() => {
     // advance story boss/leader/badge flags.
     if (save.type && Array.isArray(save.party) && save.party.length) {
       campaign.flags.STARTER_CHOSEN = true;
-      if (save.rival && save.rival.starter) campaign.flags.RIVAL_STARTER_FIXED = true;
+      if (save.rival && save.rival.starter) {
+        campaign.flags.RIVAL_STARTER_FIXED = true;
+        campaign.flags.EV_00_CHOOSE_STARTER = true;
+      }
     }
     save.campaign=campaign;
     return campaign;
@@ -143,6 +154,7 @@ const CAMPAIGN_CORE = (() => {
     const c=ensure(save);
     // Only the current League attempt resets; story, badges, dex, team stay.
     c.leagueRun=EMPTY_OBJECT();
+    for(let index=1;index<=4;index++) delete c.flags['E4_'+index+'_CLEAR'];
     return true;
   }
   function completeBattle(save,id) {
