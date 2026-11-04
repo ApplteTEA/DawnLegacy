@@ -1,5 +1,15 @@
 # 변경 기록 / 작업 인계
 
+## 2026-11-04 — High: 8체육관 퍼즐·신전 공명기 차단·39개 스토리 대사
+- `campaign-puzzles.js` 신설: 관장 8개 고유 순서 조작 퍼즐 + 하늘신전 3개 공명 장치 안전 해제 퍼즐. 기존 `s.campaign.questStates`로 체크포인트 저장/복원, 오답 재시도 및 완료 상태 유지.
+- `campaign-core.js`: 퍼즐 완료 전 관장전 접근 제한 및 신전 공명선 사건 플래그 기록 방지. 기존 4배지 세이브와 새 캠페인 배지/보상은 별도로 유지.
+- `campaign-ui.js`: 퍼즐 조작·힌트·진행 상태·재도전·관장 도전과 결합. `campaign-scenes.js`에 정의한 39개 메인 사건 대사를 페이지별 출력하고 최종 확인 전에는 사건 보상을 지급하지 않음.
+- `bootstrap.js`, `index.html`: 새 스크립트 로딩 및 캐시 버전 변경.
+- 자동 테스트: `tests/campaign-puzzles.test.cjs`, `tests/campaign-core.test.cjs`, `tests/campaign-ui.test.cjs`, `tests/campaign-scenes.test.cjs`, `tests/campaign-rival.test.cjs`와 `.github/workflows/pages.yml` 갱신. **최신 통과:** GitHub Actions `41787592989`.
+- 관련 코드 커밋 예시: 퍼즐 모듈 `e42471ee`, 관장 접근 조건 `9f6a1603`, 퍼즐 UI `032e43d4`, 신전 퍼즐 `df72e6e4`, 신전 사건 연동 `da25d7c6`, 대사 모듈 `fe01732d`, 대사 패널 `11f5493e`, 대사 회귀 최종 수정 `7b433137`.
+- **진행 한계:** 현행 화면은 패널 기반 조작/대화. 실제 34개 픽셀아트 지역/실물 지도 퍼즐/그래픽 컷신/전투 시스템 전체 완성은 아님. 사용자 최종 수동 테스트는 요청대로 수행하지 않음.
+- Work 재개 시 지도/충돌 작업과 위 퍼즐·대사 플래그/모듈을 최신 HEAD에서 병합할 것.
+
 ## 2026-11-04 — High: 39개 본편 스토리 장면 순차 대화 구현
 - `campaign-scenes.js`: 39개 모든 `CAMPAIGN_DATA.STORY` 이벤트에 화자와 실제 대사 스크립트 작성. 기존 원칙(타입 고정, 아르세우스의 자율성, 라이벌 성장, 카이론 책임)을 유지.
 - `campaign-ui.js`: 사건 확인창을 순차 대사 페이지로 변경. 최종 확인 전 사건 플래그/보상 지급 금지. 신전 공명기 안전 퍼즐의 기존 진입 규칙 유지.
