@@ -28,6 +28,12 @@
 - 플레이어 위치와 라이벌 NPC의 월드 좌표를 입력한 경우 '라이벌 시온' 이름표가 화면 안에서 표시되고 오프스크린에서는 표시되지 않는지 검사.
 - 브라우저 자동 인터랙션/모바일 실기기를 직접 실행한 결과는 아니므로, 실제 사용자가 메뉴 초기화·지도 표시를 확인할 필요가 있다.
 
+## Rival rematch progression — 2026-11-04
+- `node tests/rival-growth.test.cjs`: 17개 타입별 최초 랜덤 스타팅 종 고정, 추가 3명 저장·복원, 단계별 1~4명 팀 구성·종 중복 방지·현재 DB 기준 진화/레벨 검증.
+- 배지 0/1/2/3개에서 순차 해금, 재대결마다 승리 플래그가 구분되고 최종 완료 시 반복 도전하지 않는지 확인.
+- `node tests/rival-encounter.test.cjs`: 새벽마을 시온 NPC와 1차전 및 배지 1개를 획득했을 때 2차전 대화와 저장된 팀 2마리 등장 조건 검사.
+- GitHub Pages CI에 해당 테스트를 연결. 이 자동 검사는 **실제 UI를 눌러 플레이한 테스트가 아니다**. 사용자 요청대로 실기기/통합 플레이 테스트는 추후 일괄 진행.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
