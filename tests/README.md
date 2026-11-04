@@ -69,6 +69,13 @@
 - `node --check battle-engine.js`, `node --check game.js` 포함 CI. 기존 이동/필드·라이벌·캠페인·신규게임 테스트는 그대로 유지.
 - **검증하지 않은 것:** 실제 PC 브라우저 그래픽 애니메이션/Android 터치·프레임, 전체 8배지 플레이, 105종별 포획/연속 전투/진화 전체 조합. 이 자동 테스트를 사용자 실기기 QA로 표현하지 않는다.
 
+## Real Chromium automated smoke — 2026-11-05
+- Workflow: `.github/workflows/browser-smoke.yml`. Code: `node tests/browser-smoke.mjs`, Playwright 1.56.1 + Chromium, production files via local HTTP server.
+- First clean start renders 17 starter type choices, then runtime seeded Fire save tests the real party move/one badge TM replacement flow, trainer victory UI, winning money/record, reload persistence, wide screen and reset back to starter choices.
+- Viewports: **390×844** portrait (touch-capable Chromium) and **760×680** larger screen. Screenshots for moves, victory, and larger-screen layout are retained as artifact.
+- Success evidence: GitHub Actions run `41922407145` and Pages run `41922407113`; 3 screenshots saved in artifact `dawnlegacy-browser-smoke-screenshots`.
+- **Important limitation:** The 390px Chromium viewport is not a Galaxy Fold / Android OS browser. The actual handset touch, fold/unfold resize, performance, and 8-gym-to-ending end-to-end gameplay remain outstanding. This test is stronger than Node mock tests but not a substitute for final device QA.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
