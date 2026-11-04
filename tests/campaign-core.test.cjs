@@ -56,6 +56,11 @@ function travel(id){
 function event(id){
   const allowed=CORE.canStartEvent(state,id);
   assert.equal(allowed.ok,true,'Cannot start '+id+': '+allowed.reason);
+  if(PUZZLES.EVENTS[id]){
+    assert.equal(CORE.completeEvent(state,id).ok,false,'Shrine event must require a safe shutdown puzzle');
+    for(const action of PUZZLES.EVENTS[id].steps)assert.equal(PUZZLES.attempt(state,id,action).ok,true);
+    assert.equal(PUZZLES.isSolved(state,id),true);
+  }
   const out=CORE.completeEvent(state,id);
   assert.equal(out.ok,true);
   assert.equal(CORE.flag(state,id),true);
