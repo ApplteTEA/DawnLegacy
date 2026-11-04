@@ -55,7 +55,7 @@ function start(){
           if(tick>=22){
             clearInterval(timer);
             // Rival result is decided once from the selected challenge type, not from a later reroll.
-            const rival=RIVAL_SYSTEM.pick({
+            const rival=typeof RIVAL_SYSTEM==='undefined'?null:RIVAL_SYSTEM.pick({
               playerType:selected,playerStarter:chosen.name,types:TYPES,
               dex:DB,evolutions:EVOS,match:MATCH
             });
@@ -77,7 +77,7 @@ function start(){
   };
   const rivalRoulette=()=>{
     const rival=s.rival;
-    if(!rival){close();return}
+    if(!rival){close();toast('라이벌 데이터를 불러오지 못했어. 새로고침해 줘.');return}
     const options=RIVAL_SYSTEM.poolFor(rival.type,DB,EVOS);
     const pool=options.filter(p=>p.name!==s.party[0].name);
     const names=(pool.length?pool:options).map(p=>p.name);
@@ -89,6 +89,7 @@ function start(){
         document.querySelector('.roulette-stage').classList.add('spinning');
         let tick=0;
         const timer=setInterval(()=>{
+          if(!$('rouletteName')){clearInterval(timer);return}
           $('rouletteName').textContent=choose(names);
           tick++;
           if(tick>=22){
