@@ -28,6 +28,17 @@
 6. game.js: 기존 충돌/인카운터/전투/진행 로직을 유지하고 이동 성공 후 FIELD_ACTORS.move 호출. 빠른 입력은 보간 중 제한하여 경로 유실 방지.
 7. assets/field/: 인물 5종, 포켓몬 84종, 그림자, manifest.json, 원본 및 라이선스. 필드의 외부 이미지 요청 없음. 기존 배틀 이미지 외부 로딩은 유지.
 
+## 전투 엔진·기술/진화·파티 API (2026-11-05)
+- **독립 모듈:** `battle-engine.js`는 canvas/DOM/필드 이동 코드에 의존하지 않는 전투 계산 및 데이터·진화/기술 함수 모음. `BATTLE_ENGINE` 전역과 Node CommonJS를 동시 지원. `bootstrap.js`에서 `game.js`보다 먼저 로드.
+- **전투 입출력:** `round(player,enemy,playerMoveIndex,dex,{trainer,random})`와 `enemyOnly()`는 양 포켓몬의 현재 HP/PP/상태를 변경하고 선공·상성/피해·상태 이벤트 배열을 반환한다. UI 애니메이션은 `game.js`의 `animateBattleEvents()`가 담당. `settleBattleTurn()`은 승패/교체/XP/보상을 기존 `win()/lose()`로 연결.
+- **타입:** 사용자 선택 17종은 `game.js` 그대로 유지, 전투 방어 상성은 엔진에 페어리까지 18타입/복합 타입의 곱셈. 이로치 예외/선택 타입 출전 검사 `eligible()`는 기존 게임에서 담당.
+- **기술과 배지:** `learnset`은 타입/레벨별 기본 기술 목록. `availableMoves/learnMove`는 레벨/정식 캠페인 관장 `GYM_01..08` 승리 기록으로 재사용 TM 허용 및 4개 기술 선택 교체. 파티 화면 `manageMoves()`가 UI/저장을 담당.
+- **저장 호환:** `ensureMon()`이 구형 HP/PP/종/ID/이로치/레벨을 보존하며 빠진 새 필드 `status`, `stages`, category/accuracy 등을 보강. 정식 배지는 `campaign.gymWins`를 기준으로 하며 구형 네 배지를 TM 보상으로 오인하지 않는다.
+- **능력치:** 105개 종이 기존 HP/ATK/DEF 데이터에서 시작. 스피드 표가 없는 종은 임시 기본값, 특수/방어는 기존 ATK/DEF 기반 fallback. 이 부분은 원작의 정확한 능력치가 **아직 아니다**.
+- **진화:** 현재 `EVOS`와 추가 연쇄 진화에 등록된 레벨 기준만 자동 처리. 일부 진화석/교환 진화도 게임 진행을 위한 임시 레벨 기준이며 공식 조건으로 표시하지 않음. 기존 이로치 플래그와 포켓몬 ID를 계승.
+- **전투 후 처리:** 버프/디버프 stage는 승리/패배/포획/도주 및 새 전투 시 0으로 초기화. 독/화상/마비/수면 등 상태는 포켓몬센터에서 제거, 전투 도중에는 턴에 따라 반영.
+- **경계:** Work는 `world-v2.js/field-actors.js/field-manifest.js` 및 `game.js`의 필드·이동·카메라를 담당. 이 모듈 수정 사항과 `bootstrap.js` 로딩 순서, 전투 함수의 새 사용처를 덮어쓰지 않고 병합.
+
 ## 8체육관·신전 퍼즐 및 스토리 대사 연계 (2026-11-04)
 - `campaign-puzzles.js`의 `GYMS`(8개)와 `EVENTS`(신전 3개)가 조작 순서·힌트·피드백을 보유. 엔진 `status/attempt/reset/isSolved`는 순수 저장 상태 조작.
 - 퍼즐 저장 위치: `s.campaign.questStates['PUZZLE_'+id]` = `{step:number,solved:boolean}`. 기존 캠페인 세이브 스키마에 이미 존재하는 맵을 사용하므로 기존 캐릭터/도감/4배지·라이벌 데이터 초기화 불필요.
