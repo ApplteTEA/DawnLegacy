@@ -22,6 +22,12 @@
 - 라이벌 정보가 손상되거나 누락됐을 때 전투를 만들지 않는지 검사.
 - 자동 테스트는 브라우저/Android/iOS 화면에서 접근성 및 조작을 시각적으로 확인한 것이 아니다.
 
+## New game reset and rival visibility — 2026-11-04
+- `node tests/restart-rival-visibility.test.cjs`: 일반 save 정상 동작 확인, 메뉴 → 새 게임 확인 → 삭제 → `beforeunload` 시뮬레이션에서 옛 저장 데이터가 부활하지 않는지 확인.
+- `index.html`과 `bootstrap.js`에서 모듈 캐시 버전이 일치하는지 확인해 게임의 옛 버전을 실행하는 문제 회귀 방지.
+- 플레이어 위치와 라이벌 NPC의 월드 좌표를 입력한 경우 '라이벌 시온' 이름표가 화면 안에서 표시되고 오프스크린에서는 표시되지 않는지 검사.
+- 브라우저 자동 인터랙션/모바일 실기기를 직접 실행한 결과는 아니므로, 실제 사용자가 메뉴 초기화·지도 표시를 확인할 필요가 있다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
