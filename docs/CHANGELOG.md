@@ -9,7 +9,7 @@
 - 신규 `docs/STORY_EVENTS.md`: 이벤트 ID/조건/전투 분기/보상/컷신 대사/서브퀘스트/실패 복구·2회차.
 - 신규 `docs/IMPLEMENTATION_PLAN.md`: Phase 0–8 구현 순서, Work 맵 재구축 의존성, 구형 저장/라이벌/배지 안전 이관, 테스트·릴리즈 수용 조건.
 - `AGENTS.md` 및 `docs/WORKFLOW.md`에 새 문서의 필독·책임 규칙 추가; `docs/TODO.md`와 `docs/PROJECT_STATUS.md`에 기획 완료/승인 대기 상태 반영.
-- 대표 문서 커밋: STORY `a3f9be40`, WORLD_LORE `2d2d8167`, GAME_DESIGN `26541c2d`, WORLD_MAP `47528ffe`(게이트 정정 `f3e9ba42`), STORY_EVENTS `3baaf448`, IMPLEMENTATION_PLAN `02929d57`.
+- 대표 문서 커밋: STORY `a3f9be40`, WORLD_LORE `2d2d8167`, GAME_DESIGN `26541c2d`(실제 타입 검증·간부/일반 트레이너 팀 추가 `2454efd3`), WORLD_MAP `47528ffe`(신전 진입 조건 정정 `f3e9ba42`, 리그 전투 맵 정의 `5f591c6a`), STORY_EVENTS `3baaf448`, IMPLEMENTATION_PLAN `02929d57`.
 - **기존 확정 사항은 유지. 새 고유명사·스토리·8개 체육관의 구체 규칙은 사용자 승인 전 제안안.**
 - 게임 소스코드/에셋 및 실행/수동 테스트는 이 작업 범위에서 변경·수행하지 않음. Work의 DL-001~003 대기 상태 유지.
 
