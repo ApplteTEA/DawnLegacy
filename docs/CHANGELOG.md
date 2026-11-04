@@ -1,5 +1,12 @@
 # 변경 기록 / 작업 인계
 
+## 2026-11-05 — Playwright Chromium 스모크 테스트 추가·통과
+- `tests/browser-smoke.mjs`: 실제 게임 페이지(프로덕션 index.html/JS)를 HTTP로 로드하고 신규 화면 17타입 표시, 세로 화면 기술 교체, 트레이너전 승리, 상금·저장 새로고침, 넓은 화면 레이아웃, 새 게임 데이터 초기화까지 자동 확인.
+- `.github/workflows/browser-smoke.yml`: 별도 Playwright Chromium 설치/실행 워크플로. 모바일 390×844와 넓은 화면 760×680 스크린샷을 artifact로 보관. 메인 Pages 배포 워크플로와 분리하여 외부 설치 문제에 의한 배포 차단 방지.
+- **증거:** GitHub Actions 브라우저 `41922407145` success, 3장 스크린샷 artifact. Pages `41922407113` success.
+- 브라우저는 Chromium/가상 터치 환경이며 **삼성 갤럭시 폴드 물리 기기 실제 실행 및 장시간 E2E는 아직 미검증**.
+- 관련 커밋: 브라우저 테스트 `a577e26c`, 워크플로 `da5c7ebd`.
+
 ## 2026-11-05 — High: 포켓몬 전투/육성 독립 엔진 및 기존 게임 연동
 - **코드:** `battle-engine.js` 신규. 복합 타입·면역/페어리 방어 포함 상성표, 물리/특수·명중·급소·PP·우선도/속도 순서·상태/버프·트레이너 AI·포획 확률·경험치/진화·기술 습득/교체 API 제공.
 - **기존 연결:** `game.js`의 `beginBattle/attack/enemyAction/settleBattleTurn/capture/gain/createMon` 사용 코드 갱신. 배틀 애니메이션/HP UI/리그 보상/라이벌/기존 세이브/필드 동작 구조는 유지. 배틀 스테이지 리셋, Lv.70~100 EXP 애니메이션 수정.
