@@ -63,6 +63,7 @@ function start(){
             s.party=[chosen];
             s.rival=rival?RIVAL_SYSTEM.withSupport(rival,DB,EVOS):null;
             s.dex[chosen.name]=2;
+            if(s.rival&&typeof CAMPAIGN!=='undefined')CAMPAIGN.complete(s,'EV_00_CHOOSE_STARTER');
             save();
             reveal(chosen);
           }
@@ -386,5 +387,15 @@ if(s.rival&&typeof RIVAL_SYSTEM!=='undefined'){
       save();
     }
   }catch(error){console.warn('라이벌 지원 포켓몬 데이터 생성 실패:',error)}
+}
+// Campaign v3 metadata remains separate from legacy four-badge history.
+if(typeof CAMPAIGN!=='undefined'){
+  try{
+    const progress=CAMPAIGN.ensure(s);
+    if(s.type&&s.party.length&&s.rival&&!progress.events.EV_00_CHOOSE_STARTER){
+      CAMPAIGN.complete(s,'EV_00_CHOOSE_STARTER');
+      save();
+    }
+  }catch(error){console.error('스토리 진행 데이터 초기화 실패:',error)}
 }
 if(!s.type)start();else toast('모험이 이어집니다!');
