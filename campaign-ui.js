@@ -122,7 +122,7 @@ const CAMPAIGN_UI = (() => {
           saveGame();startBattle(null,wild);
         });
         if(map.kind==='town'||map.kind==='city')btn('campaignHeal',()=>{
-          for(const mon of state.party){mon.hp=mon.max;for(const move of mon.moves||[])move.pp=move.maxpp}
+          for(const mon of state.party){mon.hp=mon.max;mon.status=null;mon.statusTurns=0;mon.stages={atk:0,def:0,spa:0,spd:0,spe:0};for(const move of mon.moves||[])move.pp=move.maxpp}
           saveGame();toast('파티의 HP와 PP를 회복했어.');render();
         });
       });
