@@ -32,6 +32,8 @@ jobs:
           node tests/rival-encounter.test.cjs
           node tests/rival-growth.test.cjs
           node --check campaign-data.js
+          node --check campaign-scenes.js
+          node tests/campaign-scenes.test.cjs
           node --check campaign-puzzles.js
           node --check campaign-core.js
           node tests/campaign-puzzles.test.cjs
