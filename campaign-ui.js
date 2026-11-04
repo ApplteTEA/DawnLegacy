@@ -7,7 +7,9 @@
 const CAMPAIGN_UI = (() => {
   const CORE = typeof CAMPAIGN_CORE !== 'undefined' ? CAMPAIGN_CORE : (typeof require==='function'?require('./campaign-core.js'):null);
   const DATA = typeof CAMPAIGN_DATA !== 'undefined' ? CAMPAIGN_DATA : (typeof require==='function'?require('./campaign-data.js'):null);
-  if (!CORE || !DATA) throw new Error('Load campaign-data/core before campaign-ui');
+  const PUZZLES = typeof CAMPAIGN_PUZZLES !== 'undefined'
+    ? CAMPAIGN_PUZZLES : (typeof require==='function'?require('./campaign-puzzles.js'):null);
+  if (!CORE || !DATA || !PUZZLES) throw new Error('Load campaign-data/core/puzzles before campaign-ui');
   const WILD = Object.freeze({
     R01:['구구','꼬렛','캐터피','뿔충이','메리프'],
     D01:['모다피','주뱃','통통코','피콘','고오스'],
@@ -39,6 +41,8 @@ const CAMPAIGN_UI = (() => {
       const events=CORE.availableEvents(state);
       const gym=DATA.GYMS.find(x=>x.mapId===c.mapId);
       const gymOK=gym ? CORE.canFightGym(state,gym.id) : null;
+      const gymReady=gym ? CORE.canStartGymPuzzle(state,gym.id) : null;
+      const gymPuzzle=gym ? PUZZLES.status(state,gym.id) : null;
       const bossEvent=DATA.STORY.find(x=>x.mapId===c.mapId&&x.battleId&&!c.flags[x.id]);
       const bossOK=bossEvent && bossEvent.require.every(x=>CORE.flag(state,x));
       const rival=DATA.RIVALS?.find(x=>x.mapId===c.mapId&&!c.rivalWins[x.id])||null;
@@ -62,8 +66,10 @@ const CAMPAIGN_UI = (() => {
           '<div class="panel"><b>'+safe(e.title)+'</b><p>'+safe(e.text)+'</p><button id="'+gid('event',e.id)+'">사건 조사하기</button></div>').join(''):'')+
         (gym?'<h3>체육관</h3><div class="panel"><b>'+safe(gym.name)+' · '+safe(gym.type)+'</b>'+
           '<p>'+safe(gym.puzzle)+'</p><p class="muted">상대 '+gym.team.length+'마리 · Lv.'+gym.level+'</p>'+
-          (gymOK.ok?'<button id="'+gid('gym',gym.id)+'">관장에게 도전</button>':
-          '<p class="muted">'+safe(gymOK.reason)+'</p>')+'</div>':'')+
+          (gymReady.ok&&!gymPuzzle.solved?
+            '<p class="muted">퍼즐 진행 '+gymPuzzle.step+'/'+gymPuzzle.total+' · 기록은 자동 저장돼.</p><button id="campaignPuzzle">체육관 퍼즐 풀기</button>':
+           gymOK.ok?'<p class="muted">퍼즐 완료!</p><button id="'+gid('gym',gym.id)+'">관장에게 도전</button>':
+           '<p class="muted">'+safe(gymOK.reason)+'</p>')+'</div>':'')+
         (rival?'<div class="panel"><b>라이벌 시온 · '+safe(rival.id)+'</b>'+
           '<p>고정된 파트너와 성장한 팀 '+rival.size+'마리 · Lv.'+rival.level+'</p>'+
           (rivalOK.ok?'<button id="campaignRival">시온과 대결하기</button>':
@@ -92,6 +98,7 @@ const CAMPAIGN_UI = (() => {
           });
         }
         for(const event of events)btn(gid('event',event.id),()=>scene(event));
+        if(gym && gymReady.ok && !gymPuzzle.solved)btn('campaignPuzzle',()=>openPuzzle(gym));
         if(gym && gymOK.ok)btn(gid('gym',gym.id),()=>showFight(gym,'gym'));
         if(rival && rivalOK.ok)btn('campaignRival',()=>{
           const round=typeof RIVAL_SYSTEM!=='undefined'
@@ -117,6 +124,32 @@ const CAMPAIGN_UI = (() => {
           saveGame();toast('파티의 HP와 PP를 회복했어.');render();
         });
       });
+    };
+
+    const openPuzzle=(gym,notice='')=>{
+      const access=CORE.canStartGymPuzzle(state,gym.id);
+      if(!access.ok){toast(access.reason);render();return}
+      const puzzle=PUZZLES.GYMS[gym.id],progress=PUZZLES.status(state,gym.id);
+      if(progress.solved){render();return}
+      pop('<section class="campaign-journal"><h2>'+safe(puzzle.title)+'</h2>'+
+        '<p>'+safe(puzzle.clue)+'</p>'+
+        '<p class="muted">진행 '+progress.step+'/'+progress.total+' · 틀리면 순서만 초기화돼.</p>'+
+        (notice?'<p role="status">'+safe(notice)+'</p>':'')+
+        '<div class="grid">'+puzzle.choices.map(choice=>
+          '<button id="'+gid('puzzle',choice.id)+'">'+safe(choice.label)+'</button>').join('')+'</div>'+
+        '<button id="campaignPuzzleReset">처음부터</button>'+
+        '<button id="campaignPuzzleExit">나중에</button></section>',()=>{
+          btn('campaignPuzzleExit',render);
+          btn('campaignPuzzleReset',()=>{
+            PUZZLES.reset(state,gym.id);saveGame();openPuzzle(gym,'퍼즐 순서를 처음으로 되돌렸어.');
+          });
+          for(const choice of puzzle.choices)btn(gid('puzzle',choice.id),()=>{
+            const result=PUZZLES.attempt(state,gym.id,choice.id);
+            saveGame();
+            if(result.solved){toast(result.message);render()}
+            else openPuzzle(gym,result.message);
+          });
+        });
     };
 
     const scene=event=>{
