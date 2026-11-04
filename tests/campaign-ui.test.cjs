@@ -6,9 +6,10 @@ const vm=require('node:vm');
 const DATA=require('../campaign-data.js');
 const CORE=require('../campaign-core.js');
 const PUZZLES=require('../campaign-puzzles.js');
+const SCENES=require('../campaign-scenes.js');
 
 const source=fs.readFileSync(path.join(__dirname,'..','campaign-ui.js'),'utf8');
-const UI=vm.runInNewContext(source+'\nCAMPAIGN_UI', {CAMPAIGN_CORE:CORE,CAMPAIGN_DATA:DATA,CAMPAIGN_PUZZLES:PUZZLES,console});
+const UI=vm.runInNewContext(source+'\nCAMPAIGN_UI', {CAMPAIGN_CORE:CORE,CAMPAIGN_DATA:DATA,CAMPAIGN_PUZZLES:PUZZLES,CAMPAIGN_SCENES:SCENES,console});
 const game=fs.readFileSync(path.join(__dirname,'..','game.js'),'utf8');
 const {DB}=vm.runInNewContext(game.slice(game.indexOf('const TYPES='),game.indexOf('const ZONES='))+'\n({DB})');
 
@@ -33,6 +34,14 @@ function button(id){
  assert.equal(typeof cb,'function','Expected button '+id+' in dialog: '+dialog.slice(0,140));
  cb();
 }
+function acceptScene(){
+  let pageCount=0;
+  while(buttons.has('campaignNext')){
+    button('campaignNext');
+    if(++pageCount>30)throw new Error('Story dialog never reached its confirmation');
+  }
+  button('campaignAccept');
+}
 UI.open(api);
 assert.match(dialog,/모험 지도/);
 assert.match(dialog,/새벽마을/);
@@ -41,11 +50,11 @@ button('go_R01');
 assert.match(dialog,/1번도로/);
 button('event_EV_01_ROAD_TUTORIAL');
 assert.match(dialog,/첫 여행/);
-button('campaignAccept');
+acceptScene();
 assert.equal(CORE.flag(state,'ROAD_TUTORIAL_DONE'),true);
 button('go_M01');
 button('event_EV_02_CITY_01');
-button('campaignAccept');
+acceptScene();
 assert.match(dialog,/체육관 퍼즐 풀기/);
 assert.equal(CORE.canFightGym(state,'GYM_01').ok,false);
 button('campaignPuzzle');
@@ -66,7 +75,7 @@ assert.equal(CORE.completeBattle(state,battle.npc.campaignBattleId).ok,true);
 UI.open(api);
 assert.equal(CORE.badgeCount(state),1);
 button('event_EV_03_FOREST_PERMIT');
-button('campaignAccept');
+acceptScene();
 button('go_D01');
 assert.match(dialog,/이슬숲/);
 button('campaignWild');
@@ -91,7 +100,7 @@ assert.match(dialog,/순서가 맞지 않아/);
 for(const step of PUZZLES.EVENTS.EV_30_NODE_FOREST.steps)button('puzzle_'+step);
 assert.match(dialog,/숲의 신호 차단/);
 assert.equal(CORE.flag(shrineState,'NODE_FOREST_OFF'),false,'Puzzle alone must not grant event rewards');
-button('campaignAccept');
+acceptScene();
 assert.equal(CORE.flag(shrineState,'NODE_FOREST_OFF'),true);
 assert.equal(CORE.completeEvent(shrineState,'EV_30_NODE_FOREST').ok,false);
 
@@ -101,7 +110,7 @@ assert.equal(CORE.missingSpecies(missing,DB).length,0,'Late-game opponent specie
 // No DOM substitution should modify old movement code or replace sprite renderer.
 const bootstrap=fs.readFileSync(path.join(__dirname,'..','bootstrap.js'),'utf8');
 const index=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-assert.match(bootstrap,/'campaign-data\.js','campaign-puzzles\.js','campaign-core\.js'/);
+assert.match(bootstrap,/'campaign-data\.js','campaign-scenes\.js','campaign-puzzles\.js','campaign-core\.js'/);
 assert.match(bootstrap,/'game\.js','campaign-ui\.js'/);
 const ver=bootstrap.match(/const version='([^']+)'/)?.[1];
 assert.ok(ver&&index.includes('bootstrap.js?v='+ver));
