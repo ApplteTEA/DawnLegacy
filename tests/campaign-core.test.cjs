@@ -15,7 +15,7 @@ assert.equal(Object.keys(DATA.MAPS).length,34);
 assert.equal(DATA.GYMS.length,8);
 assert.equal(DATA.LEAGUE.length,5);
 assert.equal(DATA.STORY.length,39);
-assert.ok(report.unavailableSpecies.some(x=>x.id==='GYM_08'),'Missing dragon species must be reported, never substituted silently');
+assert.deepEqual(report.unavailableSpecies,[],'Every planned gym, Elite Four and boss team must have a valid battle species');
 
 function legacySave(){
   return {version:1,type:'불꽃',party:[{id:'saved-starter',name:'브케인',level:9,hp:22,shiny:false}],
@@ -132,4 +132,4 @@ assert.equal(rr.flags.LEAGUE_REGISTERED,true);
 assert.equal(replay.party[0].id,'saved-starter');
 
 console.log('Campaign data & state passed: 34 maps, 8 gyms, 39 events, full simulated story/league progression, old-save preservation, no duplicate rewards.');
-console.log('Unimplemented species detected in: '+report.unavailableSpecies.map(x=>x.id).join(', '));
+console.log('All planned campaign opponent species now have battle data; field sprites for new species still need work.');
