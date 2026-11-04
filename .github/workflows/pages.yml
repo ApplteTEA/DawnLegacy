@@ -30,6 +30,7 @@ jobs:
           node tests/field-actors.test.cjs
           node tests/rival-system.test.cjs
           node tests/rival-encounter.test.cjs
+          node tests/rival-growth.test.cjs
           node tests/restart-rival-visibility.test.cjs
       - name: Configure Pages and initialize site
         uses: actions/configure-pages@v5
