@@ -14,6 +14,14 @@
 - GitHub Pages workflow에서 `node --check rival-system.js`와 함께 실행.
 - 이 자동 테스트는 실제 브라우저의 룰렛 표시/터치/저장·복원 전체 흐름이나 실기기 검증을 대신하지 않는다.
 
+## Rival first encounter tests — 2026-11-04
+
+- `node tests/rival-encounter.test.cjs`: 실제 게임의 NPC 목록에 시온이 새벽마을 (10,12)에 단독으로 존재하는지 검증.
+- (9,12) 플레이어 기준 A 버튼 대화 생성 및 버튼으로 저장된 '리아코 Lv.5' 팀을 사용한 첫 대결 진입 확인.
+- 첫 승부 후에는 같은 보상을 위한 재대결 버튼이 노출되지 않는지 확인.
+- 라이벌 정보가 손상되거나 누락됐을 때 전투를 만들지 않는지 검사.
+- 자동 테스트는 브라우저/Android/iOS 화면에서 접근성 및 조작을 시각적으로 확인한 것이 아니다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
