@@ -119,6 +119,46 @@ const BATTLE_ENGINE = (() => {
     if(level>=45)choices.push(primary[3]);
     return [...new Set(choices)].slice(-4).map(name=>freshMove(name));
   }
+  const GYM_TMS=Object.freeze({
+    'GYM_01':'잎날가르기','GYM_02':'거품광선','GYM_03':'스파크',
+    'GYM_04':'섀도클로','GYM_05':'불꽃엄니','GYM_06':'눈사태',
+    'GYM_07':'아이언헤드','GYM_08':'용의파동'
+  });
+  function availableMoves(mon,earnedGymIds=[],dex=[]){
+    const species=dex.find(p=>p.name===mon.name);
+    const types=species?.types||mon.types||[];
+    const candidates=[];
+    for(const level of [1,8,14,20,24,33,45]){
+      if(level>mon.level)break;
+      for(const move of learnset(types,level)){
+        if(!candidates.includes(move.name))candidates.push(move.name);
+      }
+    }
+    for(const id of earnedGymIds){
+      const name=GYM_TMS[id];
+      if(name&&types.includes(MOVES[name].type)&&!candidates.includes(name))candidates.push(name);
+    }
+    return candidates;
+  }
+  function learnMove(mon,name,index,{earnedGymIds=[],dex=[]}={}){
+    if(!MOVES[name])return {ok:false,reason:'등록되지 않은 기술이야.'};
+    if(!availableMoves(mon,earnedGymIds,dex).includes(name))
+      return {ok:false,reason:'아직 배울 수 없는 기술이야.'};
+    ensureMon(mon,dex);
+    if(mon.moves.some(m=>m.name===name))return {ok:false,reason:'이미 배운 기술이야.'};
+    if(mon.moves.length>=4&&(!Number.isInteger(index)||index<0||index>=mon.moves.length))
+      return {ok:false,reason:'잊을 기술을 골라야 해.'};
+    const learned=freshMove(name);
+    const forgotten=mon.moves.length>=4?mon.moves[index].name:null;
+    if(mon.moves.length<4)mon.moves.push(learned);
+    else mon.moves[index]=learned;
+    return {ok:true,name,forgot:forgotten};
+  }
+  function clearBattleStages(mon){
+    if(!mon||typeof mon!=='object')return mon;
+    mon.stages={atk:0,def:0,spa:0,spd:0,spe:0};
+    return mon;
+  }
   function freshMove(name){
     const found=MOVES[name];
     if(!found)throw new Error('등록되지 않은 기술: '+name);
@@ -191,13 +231,13 @@ const BATTLE_ENGINE = (() => {
   function calculateDamage(attacker,defender,moveLike,dex,random=Math.random) {
     const m=MOVES[moveLike.name]||moveLike;
     if(!m.power||m.category==='status')return {value:0,mult:1,critical:false};
-    const multi=effectiveness(m.type,defender.types);
+    const multi=m.name==='발버둥'?1:effectiveness(m.type,defender.types);
     if(multi===0)return {value:0,mult:0,critical:false};
     let atk=stat(attacker,m.category==='special'?'spa':'atk',dex);
     const def=stat(defender,m.category==='special'?'spd':'def',dex);
     if(attacker.status==='burn'&&m.category!=='special')atk=Math.max(1,Math.floor(atk/2));
     const core=Math.floor((2*attacker.level/5+2)*m.power*atk/Math.max(1,def)/50)+2;
-    const stab=attacker.types.includes(m.type)?1.5:1;
+    const stab=m.name!=='발버둥'&&attacker.types.includes(m.type)?1.5:1;
     const critical=randomValue(random)<1/16;
     const variation=0.85+randomValue(random)*0.15;
     const value=Math.max(1,Math.floor(core*multi*stab*(critical?1.5:1)*variation));
@@ -391,7 +431,7 @@ const BATTLE_ENGINE = (() => {
     const status=target.status==='sleep'||target.status==='freeze'?.18:target.status?.10:0;
     return Math.min(.95,Math.max(.05,(kind==='great'?.35:.2)+.6*missing+status+(target.shiny?.02:0)));
   }
-  return Object.freeze({CHART,MOVES,tiers,learnset,freshMove,normalizeMove,ensureMon,createMon,
+  return Object.freeze({CHART,MOVES,tiers,GYM_TMS,learnset,availableMoves,learnMove,clearBattleStages,freshMove,normalizeMove,ensureMon,createMon,
     effectiveness,calculateDamage,stat,speed,chooseAI,moveResult,round,enemyOnly,statusLabel,
     experienceAward,expNeed,evolveName,gain,captureChance});
 })();
