@@ -75,6 +75,26 @@ assert.ok(DB.some(x=>x.name===battle.wild.name));
 assert.ok(saved>=5);
 assert.equal(state.party[0].id,'starter');
 
+// Shrine nodes require an actual safe-disconnect sequence, not a one-click story flag.
+const shrineState=JSON.parse(JSON.stringify(state));
+const shrineProgress=CORE.ensure(shrineState);
+shrineProgress.mapId='D09';
+shrineProgress.visited.D09=true;
+shrineProgress.flags.ECLIPSE_STARTED=true;
+const shrineApi={...api,getState:()=>shrineState};
+assert.equal(CORE.completeEvent(shrineState,'EV_30_NODE_FOREST').ok,false);
+UI.open(shrineApi);
+button('event_EV_30_NODE_FOREST');
+assert.match(dialog,/숲의 공명 신호 분리/);
+button('puzzle_record');
+assert.match(dialog,/순서가 맞지 않아/);
+for(const step of PUZZLES.EVENTS.EV_30_NODE_FOREST.steps)button('puzzle_'+step);
+assert.match(dialog,/숲의 신호 차단/);
+assert.equal(CORE.flag(shrineState,'NODE_FOREST_OFF'),false,'Puzzle alone must not grant event rewards');
+button('campaignAccept');
+assert.equal(CORE.flag(shrineState,'NODE_FOREST_OFF'),true);
+assert.equal(CORE.completeEvent(shrineState,'EV_30_NODE_FOREST').ok,false);
+
 const missing=DATA.GYMS.find(x=>x.id==='GYM_08');
 assert.equal(CORE.missingSpecies(missing,DB).length,0,'Late-game opponent species must be available for battle');
 
