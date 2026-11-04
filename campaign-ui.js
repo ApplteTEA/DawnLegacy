@@ -5,8 +5,8 @@
  * The original field, controls and NPC renderer stay intact while Work upgrades them.
  */
 const CAMPAIGN_UI = (() => {
-  const CORE = typeof CAMPAIGN_CORE !== 'undefined' ? CAMPAIGN_CORE : null;
-  const DATA = typeof CAMPAIGN_DATA !== 'undefined' ? CAMPAIGN_DATA : null;
+  const CORE = typeof CAMPAIGN_CORE !== 'undefined' ? CAMPAIGN_CORE : (typeof require==='function'?require('./campaign-core.js'):null);
+  const DATA = typeof CAMPAIGN_DATA !== 'undefined' ? CAMPAIGN_DATA : (typeof require==='function'?require('./campaign-data.js'):null);
   if (!CORE || !DATA) throw new Error('Load campaign-data/core before campaign-ui');
   const WILD = Object.freeze({
     R01:['구구','꼬렛','캐터피','뿔충이','메리프'],
@@ -25,7 +25,7 @@ const CAMPAIGN_UI = (() => {
   const safe = value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const gid=(group,id)=>group+'_'+id.replace(/[^a-zA-Z0-9_]/g,'_');
   function open(api) {
-    const {getState,saveGame,pop,btn,back,toast,startBattle,createMon,dex}=api;
+    const {getState,saveGame,pop,btn,back,toast,startBattle,createMon,dex,evolutions}=api;
     const state=getState();
     if(!state.type || !state.party?.length){
       pop('<h2>모험을 시작해 줘</h2><p>첫 포켓몬을 받은 뒤 아우라 지방의 지도를 사용할 수 있어.</p><button id="campaignBack">돌아가기</button>',()=>btn('campaignBack',back));
@@ -41,6 +41,9 @@ const CAMPAIGN_UI = (() => {
       const gymOK=gym ? CORE.canFightGym(state,gym.id) : null;
       const bossEvent=DATA.STORY.find(x=>x.mapId===c.mapId&&x.battleId&&!c.flags[x.id]);
       const bossOK=bossEvent && bossEvent.require.every(x=>CORE.flag(state,x));
+      const rival=DATA.RIVALS?.find(x=>x.mapId===c.mapId&&!c.rivalWins[x.id])||null;
+      const rivalOK=rival?CORE.canFightRival(state,rival.id):null;
+      const postgames=DATA.POSTGAME.filter(x=>x.mapId===c.mapId && CORE.canStartPostgame(state,x.id).ok);
       const league=map.id==='L01' ? DATA.LEAGUE.find(x=>CORE.canFightLeague(state,x.id).ok) : null;
       const encountered=Array.isArray(WILD[map.id]) ? WILD[map.id].filter(x=>dex.some(mon=>mon.name===x)) : [];
       const neighbors=map.neighbors.map(id=>{
@@ -61,6 +64,13 @@ const CAMPAIGN_UI = (() => {
           '<p>'+safe(gym.puzzle)+'</p><p class="muted">상대 '+gym.team.length+'마리 · Lv.'+gym.level+'</p>'+
           (gymOK.ok?'<button id="'+gid('gym',gym.id)+'">관장에게 도전</button>':
           '<p class="muted">'+safe(gymOK.reason)+'</p>')+'</div>':'')+
+        (rival?'<div class="panel"><b>라이벌 시온 · '+safe(rival.id)+'</b>'+
+          '<p>고정된 파트너와 성장한 팀 '+rival.size+'마리 · Lv.'+rival.level+'</p>'+
+          (rivalOK.ok?'<button id="campaignRival">시온과 대결하기</button>':
+          '<p class="muted">'+safe(rivalOK.reason)+'</p>')+'</div>':'')+
+        (postgames.length?'<h3>엔딩 이후의 이야기</h3>'+postgames.map(x=>
+          '<div class="panel"><b>'+safe(x.id)+'</b><p>'+safe(x.text)+'</p>'+
+          '<button id="'+gid('post',x.id)+'">조사하기</button></div>').join(''):'')+
         (bossEvent?'<div class="panel"><b>결전 · '+safe(bossEvent.title)+'</b><p>'+
           safe(bossEvent.text)+'</p>'+(bossOK?'<button id="campaignBoss">카이론과 대결</button>':
           '<p class="muted">선행 사건을 먼저 진행해 줘.</p>')+'</div>':'')+
@@ -83,6 +93,16 @@ const CAMPAIGN_UI = (() => {
         }
         for(const event of events)btn(gid('event',event.id),()=>scene(event));
         if(gym && gymOK.ok)btn(gid('gym',gym.id),()=>showFight(gym,'gym'));
+        if(rival && rivalOK.ok)btn('campaignRival',()=>{
+          const round=typeof RIVAL_SYSTEM!=='undefined'
+            ?RIVAL_SYSTEM.CAMPAIGN_ROUNDS.find(x=>x.id===rival.id)
+            :require('./rival-system.js').CAMPAIGN_ROUNDS.find(x=>x.id===rival.id);
+          const rivalLib=typeof RIVAL_SYSTEM!=='undefined'?RIVAL_SYSTEM:require('./rival-system.js');
+          if(!round||!state.rival?.starter){toast('라이벌 저장 데이터가 없어.');return}
+          const team=rivalLib.campaignTeam(state.rival,round,dex,evolutions);
+          showFight({id:rival.id,name:'시온',level:rival.level,team,prize:rival.prize},'rival');
+        });
+        for(const post of postgames)btn(gid('post',post.id),()=>scene({...post,title:post.id,postgame:true}));
         if(bossEvent&&bossOK)btn('campaignBoss',()=>showFight(DATA.BOSS[bossEvent.battleId],'boss'));
         if(league)btn('campaignLeague',()=>showFight(league,'league'));
         if(encountered.length)btn('campaignWild',()=>{
@@ -111,7 +131,7 @@ const CAMPAIGN_UI = (() => {
         '<button id="campaignCancel">나중에</button></div>',()=>{
           btn('campaignCancel',render);
           btn('campaignAccept',()=>{
-            const result=CORE.completeEvent(state,event.id);
+            const result=event.postgame?CORE.completePostgame(state,event.id):CORE.completeEvent(state,event.id);
             if(!result.ok){toast(result.reason);render();return}
             saveGame();
             render();
@@ -131,7 +151,7 @@ const CAMPAIGN_UI = (() => {
       }
       const eligibility=kind==='gym'?CORE.canFightGym(state,opponent.id):
         kind==='league'?CORE.canFightLeague(state,opponent.id):
-        {ok:true};
+        kind==='rival'?CORE.canFightRival(state,opponent.id):{ok:true};
       if(!eligibility.ok){toast(eligibility.reason);render();return}
       pop('<h2>'+safe(opponent.name)+'에게 도전!</h2><p>'+safe(opponent.team.join(' / '))+
         '</p><p class="muted">상대 레벨 Lv.'+opponent.level+'</p>'+
@@ -141,7 +161,7 @@ const CAMPAIGN_UI = (() => {
             const team=opponent.team.slice();
             startBattle({
               name:opponent.name,level:opponent.level,team,
-              type:'campaign',campaignBattleId:opponent.id,prize:opponent.prize||0
+              type:kind==='rival'?'rival':'campaign',campaignBattleId:opponent.id,prize:opponent.prize||0
             });
           });
         });
