@@ -65,8 +65,42 @@ const CAMPAIGN_PUZZLES = (() => {
     })
   ])));
 
+  // Shrine nodes are separate from the eight gym trials. The player must
+  // safely disconnect each circuit, not simply click a completion button.
+  const storyDefinitions = [
+    {
+      id:'EV_30_NODE_FOREST',title:'숲의 공명 신호 분리',
+      clue:'먼저 포켓몬의 원래 생태 신호를 듣고, 강제 동조를 해제한 뒤, 분리 상태를 기록해야 해.',
+      steps:['observe','release','record'],
+      choices:[['record','분리 결과 기록'],['observe','생태 신호 관측'],['release','동조 신호 해제']],
+      complete:'숲의 생명 신호가 각자의 리듬을 되찾았어.'
+    },
+    {
+      id:'EV_31_NODE_POWER',title:'발전소 공명 신호 분리',
+      clue:'위험한 잔류 전류를 접지한 뒤 송신선을 분리하고, 마지막으로 비상 회로의 안전을 확인해.',
+      steps:['ground','unplug','verify'],
+      choices:[['unplug','송신선 분리'],['verify','비상 회로 확인'],['ground','잔류 전류 접지']],
+      complete:'발전소의 공명 신호가 안전하게 차단됐어.'
+    },
+    {
+      id:'EV_32_NODE_SKY',title:'하늘신전 증폭기 분리',
+      clue:'증폭 출력을 먼저 낮추고, 세 거점의 연결을 분리한 다음, 증폭기 전원을 정지해야 해.',
+      steps:['reduce','separate','stop'],
+      choices:[['stop','증폭기 정지'],['reduce','증폭 출력 줄이기'],['separate','연결 주파수 분리']],
+      complete:'마지막 증폭기가 멈추며 하늘의 어둠이 옅어졌어.'
+    }
+  ];
+  const EVENTS=Object.freeze(Object.fromEntries(storyDefinitions.map(def=>[
+    def.id,Object.freeze({
+      id:def.id,title:def.title,clue:def.clue,
+      steps:Object.freeze(def.steps.slice()),
+      choices:Object.freeze(def.choices.map(([id,label])=>Object.freeze({id,label}))),
+      complete:def.complete
+    })
+  ])));
+
   function getPuzzle(id) {
-    const puzzle=GYMS[id];
+    const puzzle=GYMS[id]||EVENTS[id];
     if(!puzzle) throw new Error('Unknown gym puzzle: '+id);
     return puzzle;
   }
@@ -106,6 +140,6 @@ const CAMPAIGN_PUZZLES = (() => {
     store(save)[key(id)]={step:0,solved:false};
     return true;
   }
-  return Object.freeze({GYMS,status,isSolved,attempt,reset});
+  return Object.freeze({GYMS,EVENTS,status,isSolved,attempt,reset});
 })();
 if(typeof module!=='undefined'&&module.exports)module.exports=CAMPAIGN_PUZZLES;
