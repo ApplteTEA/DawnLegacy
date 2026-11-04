@@ -42,6 +42,15 @@ assert.equal(CORE.canFightRival(player,'RIV_02').ok,false,'Rival cannot be chall
 let html='',callbacks={},fights=[],saveCount=0;
 function pop(body,setup){html=body;callbacks={};setup?.()}
 function btn(id,callback){callbacks[id]=callback}
+function acceptDialogue(){
+  let count=0;
+  while(typeof callbacks.campaignNext==='function'){
+    callbacks.campaignNext();
+    if(++count>30)throw new Error('Dialogue did not reach confirmation');
+  }
+  assert.equal(typeof callbacks.campaignAccept,'function');
+  callbacks.campaignAccept();
+}
 const api={
   getState:()=>player,saveGame:()=>{saveCount++},pop,btn,
   back:()=>{},toast:()=>{},startBattle:npc=>{fights.push(npc)},
@@ -80,8 +89,7 @@ c.flags.POSTGAME_UNLOCKED=true;
 UI.open(api);
 assert.equal(typeof callbacks.post_PG_01_ARCHIVE,'function','Archive scene must become available');
 callbacks.post_PG_01_ARCHIVE();
-assert.equal(typeof callbacks.campaignAccept,'function');
-callbacks.campaignAccept();
+acceptDialogue();
 assert.equal(c.flags.ARCHIVE_RESTORED,true);
 assert.equal(CORE.completePostgame(player,'PG_01_ARCHIVE').ok,false);
 
@@ -90,7 +98,7 @@ c.flags.RESONANCE_NETWORK_OFF=true;
 UI.open(api);
 assert.equal(typeof callbacks.post_PG_03_SHRINE_RETURN,'function');
 callbacks.post_PG_03_SHRINE_RETURN();
-callbacks.campaignAccept();
+acceptDialogue();
 assert.equal(c.flags.ARCEUS_RETURN_VISITED,true);
 assert.ok(saveCount>0);
 
