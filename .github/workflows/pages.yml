@@ -35,6 +35,8 @@ jobs:
           node --check campaign-data.js
           node --check campaign-core.js
           node tests/campaign-core.test.cjs
+          node --check campaign-ui.js
+          node tests/campaign-ui.test.cjs
           node tests/restart-rival-visibility.test.cjs
           node tests/campaign-system.test.cjs
       - name: Configure Pages and initialize site
