@@ -29,6 +29,7 @@ jobs:
           node --check rival-system.js
           node tests/field-actors.test.cjs
           node tests/rival-system.test.cjs
+          node tests/rival-encounter.test.cjs
       - name: Configure Pages and initialize site
         uses: actions/configure-pages@v5
         with:
