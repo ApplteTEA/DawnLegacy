@@ -1,10 +1,17 @@
 # DawnLegacy — 공통 개발 지침
 
-이 문서는 ChatGPT Work와 일반 ChatGPT가 공통으로 따르는 저장소 규칙이다.
+이 문서는 GPT-6 High(메인 개발)와 ChatGPT Work(집중 개선 및 정밀 검증)가 공통으로 따르는 저장소 규칙이다. 상세 운영 절차는 `docs/WORKFLOW.md`를 따른다.
+
+## 역할 및 운영
+- **GPT-6 High:** 신규 기능/게임 시스템/콘텐츠/스토리 개발과 일반 버그 수정, 기본 테스트, GitHub 반영.
+- **ChatGPT Work:** 사용량이 허용될 때 기존 기능의 디테일·완성도 개선, 구조 점검, 복잡한 버그 및 상세 검증.
+- 신규 기능은 `docs/TODO.md`, 기존 기능의 결함/기술 부채/품질 개선은 `docs/IMPROVEMENTS.md`에서 관리한다.
+- 같은 파일/기능을 두 에이전트가 동시에 변경하지 않는다. 대기 또는 진행 중인 Work 범위를 확인하고, 필요하면 별도 브랜치/PR에서 작업한다.
+- Work에 요청을 보냈거나 사용량 제한으로 대기한다는 사실은 **작업 완료의 증거가 아니다.** 각 과제는 실제 코드 및 검증 기록으로 완료 판정한다.
 
 ## 작업 시작
 1. GitHub 최신 기본 브랜치를 읽는다. 이전 대화나 과거 커밋을 현재 코드로 가정하지 않는다.
-2. docs/PROJECT_STATUS.md, docs/TODO.md, docs/ARCHITECTURE.md, docs/GAME_DESIGN.md, docs/STORY.md, docs/WORLD_LORE.md를 읽는다.
+2. `docs/WORKFLOW.md`, `docs/PROJECT_STATUS.md`, `docs/TODO.md`, `docs/IMPROVEMENTS.md`, `docs/CHANGELOG.md`, `docs/ARCHITECTURE.md`, `docs/GAME_DESIGN.md`, `docs/STORY.md`, `docs/WORLD_LORE.md`를 읽는다. Work의 집중 개선 작업 시작/재개 시에는 저장소의 다른 모든 MD(에셋 라이선스와 테스트 문서 포함)도 읽는다.
 3. **확정 기획**, **제안**, **실제 구현**, **검증**을 구분한다. 문서와 소스가 다르면 실제 코드를 확인하고 차이를 기록한다.
 4. 한 번에 여러 기능을 고칠 때는 기존 게임의 이동, 전투, 포획, 파티, 저장, NPC 상호작용, 모바일 조작을 회귀 테스트한다.
 
@@ -15,7 +22,9 @@
 - 외부 에셋은 출처와 라이선스를 확인한다. 원작의 저작권을 존중한다.
 - 기존 저장 데이터와의 호환성 및 새로운 필드 추가 시 마이그레이션을 고려한다.
 - 코드 커밋 성공과 실제 배포/Android 실기기 시각 검증을 구분한다. 검증하지 않은 항목은 완료라고 쓰지 않는다.
-- 변경 후 PROJECT_STATUS, TODO, CHANGELOG를 갱신하고, 시스템/설정 변경 시 해당 설계 문서도 갱신한다.
+- 변경 후 PROJECT_STATUS, TODO 또는 IMPROVEMENTS(해당하는 문서), CHANGELOG를 갱신하고, 시스템/설정 변경 시 해당 설계 문서도 갱신한다.
+- 최신 GitHub 코드/문서를 확인한 뒤 수정한다. 다른 에이전트가 추가한 기록을 통째로 덮어쓰지 않는다.
+- 코드 구현, 테스트 통과, 브라우저 검증, Android/iOS 실기기 검증을 명확하게 구분한다.
 
 ## 문서 상태 표기
 - **확정**: 사용자와 합의된 기획
@@ -25,4 +34,4 @@
 - **미확인**: 아직 확인하지 못함
 
 ## 작업 인계
-변경 파일, 커밋 SHA, 수행한 테스트, 실패/미검증 항목, 다음 작업을 CHANGELOG와 PROJECT_STATUS에 남긴다. GitHub 문서가 모든 에이전트의 공통 인계 기준이다.
+변경 파일, 커밋 SHA, 수행한 테스트, 실패/미검증 항목, 다음 작업을 CHANGELOG와 PROJECT_STATUS에 남긴다. GitHub 문서가 모든 에이전트의 공통 인계 기준이다. 담당·우선순위·상태·완료 조건은 `docs/IMPROVEMENTS.md` 또는 `docs/TODO.md`에서 관리하고, Work 사용량 제한으로 대기 중인 작업은 `대기`로 기록한다.
