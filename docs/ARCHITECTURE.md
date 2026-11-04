@@ -3,13 +3,21 @@
 기준: 2026-11-03 필드 재구축 코드 및 브라우저 검증.
 
 ## 웹 실행 흐름
-1. index.html: Canvas, HUD, 방향키/액션 UI, 에셋 로딩 상태.
+1. index.html: Canvas, HUD, 방향키/액션 UI, 에셋 로딩 상태. **rival-system.js를 bootstrap.js보다 먼저 로드.**
 2. bootstrap.js: field-manifest.js → field-actors.js → world-v2.js → game.js 순차 로드.
 3. field-manifest.js: 로컬 PNG 경로, 프레임 크기/개수, 발 기준점, 원본 출처/크레딧.
 4. field-actors.js: 승인된 이동 한 칸을 140ms로 보간. 동행은 주인공의 직전 경로 꼭짓점으로 이동하며 자신의 이동 벡터로 방향 결정. 발 y 기준 정렬 후 PNG만 그림. 캐릭터 도형 대체 없음.
 5. world-v2.js: 기존 필드 타일/건물/수목과 카메라. 캐릭터 그리기는 FIELD_ACTORS에 위임.
 6. game.js: 기존 충돌/인카운터/전투/진행 로직을 유지하고 이동 성공 후 FIELD_ACTORS.move 호출. 빠른 입력은 보간 중 제한하여 경로 유실 방지.
 7. assets/field/: 인물 5종, 포켓몬 84종, 그림자, manifest.json, 원본 및 라이선스. 필드의 외부 이미지 요청 없음. 기존 배틀 이미지 외부 로딩은 유지.
+
+## 라이벌 스타팅 모듈 — 2026-11-04
+- `rival-system.js`: DOM/필드 이동과 독립된 타입 상성 기반 라이벌 포켓몬 추첨, 실제 포켓몬 DB/진화 규칙 재사용. 기본 17타입 매핑 및 후보 선택 함수 제공.
+- `game.js`: 플레이어 스타팅 룰렛 최종 결정 시 라이벌 타입·종을 함께 한 번 추첨해 `s.rival`에 저장. 결과를 별도의 라이벌 룰렛 화면에서 공개하며 모험 기록에 표시.
+- 구형 세이브에 `rival` 필드가 없으면 시작 시 안전하게 보강. 새로운 세이브 키나 버전은 사용하지 않는다.
+- 배틀·NPC 위치·필드 이동/충돌/카메라·그래픽 관련 함수는 이 변경에서 수정하지 않았다. 실제 라이벌 NPC 및 배틀은 후속 개발.
+- 검증: `tests/rival-system.test.cjs`를 GitHub Pages CI 실행 단계에 추가. UI 실기기 검증은 별도.
+- Work가 대기 중인 필드·충돌 개선과 같은 `game.js`를 건드릴 때는 **현행 최신 커밋에서 라이벌 저장·룰렛 변경을 보존하고 병합**한다.
 
 ## 저장 호환
 - 키 dawnLegacyCompleteV2 / 기존 version 유지.
