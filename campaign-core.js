@@ -126,6 +126,8 @@ const CAMPAIGN_CORE = (() => {
   function completeEvent(save,id) {
     const allowed=canStartEvent(save,id);
     if(!allowed.ok)return {ok:false,reason:allowed.reason};
+    if(PUZZLES.EVENTS[id] && !PUZZLES.isSolved(save,id))
+      return {ok:false,reason:'공명 장치를 안전한 순서로 분리해야 해'};
     const event=DATA.STORY.find(x=>x.id===id);
     const c=ensure(save);
     c.flags[id]=true;
