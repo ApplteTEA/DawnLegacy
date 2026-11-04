@@ -82,8 +82,8 @@ attacker.status=null;
 }
 {
   const player=make('브케인',10),target=make('치코리타',10);
-  player.moves=[E.freshMove('물대포')];player.moves[0].accuracy=0;
-  const result=E.moveResult(player,target,0,DB,{random:fixed});
+  player.moves=[E.freshMove('번개')];
+  const result=E.moveResult(player,target,0,DB,{random:()=>0.99});
   assert.equal(result.events[0].missed,true,'Accuracy misses without dealing damage');
   assert.equal(target.hp,target.max);
 }
