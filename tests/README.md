@@ -41,6 +41,14 @@
 - 후반 관장 및 사천왕 팀의 누락 8종은 **배틀 데이터**에 추가되어 현재 DB 기준 8체육관/리그 상대 종 목록 유효성을 검사. 해당 종의 **필드 스프라이트는 미제작**.
 - 검증 범위 주의: 캠페인 지도는 메뉴형 임시 이동 UI이며 게임 필드용 맵·충돌/동행·NPC 컷신/퍼즐이 구현됐다는 뜻이 아니다. 자동 상태 검사 또한 실제 16~22시간 플레이/Android 실기기 확인을 대신하지 않는다.
 
+## Campaign engine, eight gym story and rival endgame — 2026-11-04
+- `node tests/campaign-core.test.cjs`: 34개 지역 그래프 및 이동 게이트, 8관장/39 본편 사건/카이론 결전/사천왕·챔피언, 2회차 진입 시뮬레이션. 구형 네 배지/시온 승리·저장 데이터가 새로운 기록으로 오인되지 않는지 검사.
+- `node tests/campaign-rival.test.cjs`: 17타입 × 본편 6회+후일담 1회 팀 성장, 저장된 스타팅/6인 구성의 일관성, 7단계 승리 중복 방지, UI 모의 호출, 봉인서고·신전 후일담.
+- `node tests/campaign-ui.test.cjs`: 모험 지도/관장·리그 브리지 단위 검사.
+- `node --check campaign-data.js`, `campaign-core.js`, `campaign-ui.js`와 기존 필드/라이벌/초기화 단위 테스트를 GitHub Pages CI에서 실행.
+- **주의:** 본 테스트는 데이터·상태 전이·모의 UI의 자동 검사이며, 실제 34개 픽셀아트 맵이 구현되었다거나 PC/Android 실기기에서 엔딩까지 플레이한 검증이 아님.
+- Work의 이동·충돌/시각 재구축 결과와 통합된 후, 처음부터 엔딩·2회차를 통과하는 실제 입력 기반 E2E를 별도로 구축해야 한다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
