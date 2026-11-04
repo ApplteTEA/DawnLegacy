@@ -18,8 +18,8 @@ function party(){pop('<h2>내 파티 ('+s.party.length+'/6)</h2>'+s.party.map(ca
 function box(){pop('<h2>포켓몬 박스 ('+s.box.length+')</h2><p class="muted">박스에서 파티로 이동할 수 있어. 출전 규칙은 그대로 적용돼.</p>'+(!s.box.length?'<p>아직 보관한 포켓몬이 없어.</p>':'')+s.box.map((p,i)=>'<div class="panel"><b>'+(p.shiny?'✨ ':'')+p.name+' Lv.'+p.level+'</b> '+tag(p)+'<button data-take="'+i+'" '+(s.party.length>=6?'disabled':'')+'>파티로 이동</button></div>').join('')+'<button id="back">메뉴</button>',()=>{document.querySelectorAll('[data-take]').forEach(b=>b.onclick=()=>{s.party.push(s.box.splice(+b.dataset.take,1)[0]);save();box()});btn('back',menu)})}
 function bag(){pop('<h2>가방 / 상점</h2><p>소지금: '+s.money+'원</p><div class="panel">몬스터볼 ×'+s.balls+' · 슈퍼볼 ×'+s.great+' · 상처약 ×'+s.potions+'</div><button id="heal">상처약 사용 (HP 20 회복)</button><div class="separator"></div><h3>상점</h3><button id="buyBall">몬스터볼 200원</button><button id="buyGreat">슈퍼볼 600원</button><button id="buyPotion">상처약 300원</button><button id="back">메뉴</button>',()=>{btn('heal',()=>{if(!s.potions)return toast('상처약이 없어');let p=s.party.find(p=>p.hp<p.max);if(!p)return toast('모두 건강해!');s.potions--;p.hp=Math.min(p.max,p.hp+20);save();bag()});[['buyBall','balls',200],['buyGreat','great',600],['buyPotion','potions',300]].forEach(([id,k,c])=>btn(id,()=>{if(s.money<c)return toast('돈이 부족해');s.money-=c;s[k]++;save();bag()}));btn('back',menu)})}
 function dex(){let found=Object.keys(s.dex);pop('<h2>포켓몬 도감</h2><p>발견 '+found.length+' / '+DB.length+'종 · 포획 '+found.filter(k=>s.dex[k]>1).length+'종</p><div class="grid">'+found.sort().map(n=>'<div class="panel"><b>'+n+'</b><div class="muted">'+(s.dex[n]>1?'포획 완료':'발견')+'</div></div>').join('')+'</div><button id="back">메뉴</button>',()=>btn('back',menu))}
-function guide(){pop('<h2>타입 챌린지 규칙</h2><p>① 시작 시 17개 타입 중 하나를 선택하고 룰렛으로 첫 파트너를 받아.</p><p>② 선택 타입을 가진 포켓몬과 진화하면 해당 타입이 되는 포켓몬만 전투에 사용할 수 있어.</p><p>③ <b>이로치 포켓몬은 타입과 상관없이 출전 가능</b>하고 진화해도 예외가 유지돼.</p><p>④ 다른 타입도 포획·도감 등록·박스 보관은 가능해.</p><p>⑤ 숲길에서 배틀하고 관장 4명에게 승리한 뒤 챔피언을 이겨봐.</p><p>⑥ 방향키 이동 / A 대화 / B 닫기. 메뉴에서 파티, 상점, 박스를 관리해.</p><p>⑦ 라이벌은 네 선택 타입에 강한 타입의 포켓몬을 무작위로 받고, 첫 선택을 계속 유지해.</p><button id="back">메뉴</button>',()=>btn('back',menu))}
-function record(){pop('<h2>모험 기록</h2><p>타입: '+s.type+'</p><p>라이벌: '+(s.rival?s.rival.type+' 타입 · '+s.rival.starter:'미정')+'</p><p class="muted">시온은 새벽마을 시작 지점의 오른쪽 길에 있어.</p><p>배지: '+s.badges+'/4 · 승리: '+s.wins+'회 · 이동: '+s.steps+'걸음</p><p>플레이 시간: '+Math.floor(s.playSeconds/60)+'분</p><p>포켓몬: 파티 '+s.party.length+'마리 / 박스 '+s.box.length+'마리</p><p>'+(s.champion?'🏆 여명지방 챔피언 등극!':'아직 모험이 진행 중이야.')+'</p><button id="back">메뉴</button>',()=>btn('back',menu))}
+function guide(){pop('<h2>타입 챌린지 규칙</h2><p>① 시작 시 17개 타입 중 하나를 선택하고 룰렛으로 첫 파트너를 받아.</p><p>② 선택 타입을 가진 포켓몬과 진화하면 해당 타입이 되는 포켓몬만 전투에 사용할 수 있어.</p><p>③ <b>이로치 포켓몬은 타입과 상관없이 출전 가능</b>하고 진화해도 예외가 유지돼.</p><p>④ 다른 타입도 포획·도감 등록·박스 보관은 가능해.</p><p>⑤ 숲길에서 배틀하고 관장 4명에게 승리한 뒤 챔피언을 이겨봐.</p><p>⑥ 방향키 이동 / A 대화 / B 닫기. 메뉴에서 파티, 상점, 박스를 관리해.</p><p>⑦ 라이벌은 네 선택 타입에 강한 타입의 포켓몬을 무작위로 받고, 배지를 모으면 새벽마을에서 재대결할 수 있어.</p><button id="back">메뉴</button>',()=>btn('back',menu))}
+function record(){pop('<h2>모험 기록</h2><p>타입: '+s.type+'</p><p>라이벌: '+(s.rival?s.rival.type+' 타입 · '+s.rival.starter:'미정')+'</p><p class="muted">시온은 새벽마을 시작 지점의 오른쪽 길에 있어.</p><p>라이벌 대결: '+RIVAL_SYSTEM.ROUNDS.filter(r=>s.defeated.includes(r.id)).length+'/4회 · 다음: '+(RIVAL_SYSTEM.nextRound(s)?.title||'모든 대결 완료')+'</p><p>배지: '+s.badges+'/4 · 승리: '+s.wins+'회 · 이동: '+s.steps+'걸음</p><p>플레이 시간: '+Math.floor(s.playSeconds/60)+'분</p><p>포켓몬: 파티 '+s.party.length+'마리 / 박스 '+s.box.length+'마리</p><p>'+(s.champion?'🏆 여명지방 챔피언 등극!':'아직 모험이 진행 중이야.')+'</p><button id="back">메뉴</button>',()=>btn('back',menu))}
 function start(){
   let selected='불꽃';
   const SYMBOLS={'노말':'◈','불꽃':'♨','물':'◉','풀':'❀','전기':'ϟ','얼음':'❄','격투':'✊','독':'☣','땅':'◆','비행':'➤','에스퍼':'✦','벌레':'❖','바위':'⬟','고스트':'☾','드래곤':'♜','악':'☯','강철':'⬡'};
@@ -61,7 +61,7 @@ function start(){
             });
             s.type=selected;
             s.party=[chosen];
-            s.rival=rival;
+            s.rival=rival?RIVAL_SYSTEM.withSupport(rival,DB,EVOS):null;
             s.dex[chosen.name]=2;
             save();
             reveal(chosen);
@@ -106,12 +106,35 @@ function start(){
   };
   typeScreen();
 }
-function nearby(){return NPCS.find(n=>Math.abs(n.x-s.x)+Math.abs(n.y-s.y)<=1)}function interact(){if(mode!=='world'||dialogOpen)return;let n=nearby();if(n){if(n.type==='rival'){if(!s.rival||!s.rival.starter){toast('라이벌의 포켓몬 정보를 확인할 수 없어. 새로고침해 줘.');return}if(s.defeated.includes(n.name)){pop('<h2>라이벌 시온</h2><p>첫 승부는 네가 이겼지만, 다음에는 꼭 따라잡을 거야!</p><p class="muted">나의 파트너 '+s.rival.starter+'도 계속 강해질 거야.</p><button id="ok">다음에 또 만나자</button>',()=>btn('ok',close));return}pop('<h2>라이벌 시온</h2><p>드디어 왔네! 네가 '+s.type+' 타입을 골랐으니, 난 유리한 '+s.rival.type+' 타입으로 도전하겠어!</p><p><b>'+s.rival.starter+' Lv.'+(s.rival.level||5)+'</b>와 함께 첫 승부야.</p><button class="primary" id="challenge">시온과 대결!</button><button id="cancel">나중에</button>',()=>{btn('challenge',()=>beginBattle({...n,team:[s.rival.starter],level:s.rival.level||5}));btn('cancel',close)});return}if(n.type==='intro'){pop('<h2>여명 연구소</h2><p>여명지방에 온 걸 환영해! 풀숲을 탐험하고 관장들에게 도전해 봐.</p><p>회복은 각 마을의 빨간 지붕 건물에서 가능해.</p><button id="ok">확인</button>',()=>btn('ok',close));return}if(s.defeated.includes(n.name)){toast(n.name+': 멋진 승부였어!');return}if(n.badge&&s.badges<n.badge-1){toast('이전 체육관 배지를 먼저 획득해!');return}if(n.champion&&s.badges<4){toast('배지 4개를 모아야 도전할 수 있어!');return}pop('<h2>'+n.name+'</h2><p>포켓몬 승부를 시작할까?</p><p class="muted">상대 레벨 '+n.level+' · '+n.team.length+'마리</p><button class="primary" id="challenge">승부!</button><button id="cancel">나중에</button>',()=>{btn('challenge',()=>beginBattle(n));btn('cancel',close)});return}let house=houseAt(s.x,s.y);if(house){s.party.forEach(p=>{p.hp=p.max;p.moves.forEach(m=>m.pp=m.maxpp)});save();pop('<h2>포켓몬 센터</h2><p>포켓몬들의 체력과 기술 PP가 모두 회복되었어!</p><button id="ok">고마워!</button>',()=>btn('ok',close));return}toast('주변을 살펴보았어.')}
+function nearby(){return NPCS.find(n=>Math.abs(n.x-s.x)+Math.abs(n.y-s.y)<=1)}function interact(){if(mode!=='world'||dialogOpen)return;let n=nearby();if(n){if(n.type==='rival'){
+  if(!s.rival||!s.rival.starter){toast('라이벌의 포켓몬 정보를 확인할 수 없어. 새로고침해 줘.');return}
+  const round=RIVAL_SYSTEM.nextRound(s);
+  if(!round){
+    pop('<h2>라이벌 시온</h2><p>여기까지 네 번의 승부를 모두 치렀네. 이제 다음엔 더 큰 무대에서 만나자!</p><p class="muted">처음 선택한 '+s.rival.starter+'와 함께 계속 성장할 거야.</p><button id="ok">또 만나자</button>',()=>btn('ok',close));
+    return
+  }
+  if(!RIVAL_SYSTEM.canChallenge(s)){
+    pop('<h2>라이벌 시온</h2><p>지난 승부는 잊지 않았어. 배지를 '+round.badges+'개 모으면 '+round.title+'을 하자!</p><p class="muted">현재 배지 '+s.badges+'개 · 다음 상대 레벨 '+round.level+'</p><button id="ok">알겠어</button>',()=>btn('ok',close));
+    return
+  }
+  let team;
+  try{team=RIVAL_SYSTEM.teamForRound(s.rival,round,DB,EVOS)}
+  catch(error){console.error('라이벌 팀 구성 실패',error);toast('라이벌 팀을 준비하지 못했어.');return}
+  const lead=team[team.length-1];
+  const message=round.badges===0
+    ?'드디어 왔네! 네가 '+s.type+' 타입을 골랐으니, 난 유리한 '+s.rival.type+' 타입으로 도전하겠어!'
+    :'배지를 '+s.badges+'개나 모았구나! 나도 '+s.rival.starter+'와 함께 성장했어. 다시 승부하자!';
+  pop('<h2>라이벌 시온 · '+round.title+'</h2><p>'+message+'</p><p><b>'+lead+' Lv.'+round.level+'</b>를 포함한 '+team.length+'마리와 승부해!</p><p class="muted">승리하면 상금 '+round.prize+'원 · 다음 대결은 배지 획득 후 해금</p><button class="primary" id="challenge">시온과 대결!</button><button id="cancel">나중에</button>',()=>{
+    btn('challenge',()=>beginBattle({...n,name:round.id,team,level:round.level,prize:round.prize}));
+    btn('cancel',close);
+  });
+  return
+}if(n.type==='intro'){pop('<h2>여명 연구소</h2><p>여명지방에 온 걸 환영해! 풀숲을 탐험하고 관장들에게 도전해 봐.</p><p>회복은 각 마을의 빨간 지붕 건물에서 가능해.</p><button id="ok">확인</button>',()=>btn('ok',close));return}if(s.defeated.includes(n.name)){toast(n.name+': 멋진 승부였어!');return}if(n.badge&&s.badges<n.badge-1){toast('이전 체육관 배지를 먼저 획득해!');return}if(n.champion&&s.badges<4){toast('배지 4개를 모아야 도전할 수 있어!');return}pop('<h2>'+n.name+'</h2><p>포켓몬 승부를 시작할까?</p><p class="muted">상대 레벨 '+n.level+' · '+n.team.length+'마리</p><button class="primary" id="challenge">승부!</button><button id="cancel">나중에</button>',()=>{btn('challenge',()=>beginBattle(n));btn('cancel',close)});return}let house=houseAt(s.x,s.y);if(house){s.party.forEach(p=>{p.hp=p.max;p.moves.forEach(m=>m.pp=m.maxpp)});save();pop('<h2>포켓몬 센터</h2><p>포켓몬들의 체력과 기술 PP가 모두 회복되었어!</p><button id="ok">고마워!</button>',()=>btn('ok',close));return}toast('주변을 살펴보았어.')}
 function houseAt(x,y){return x<20?(x>=12&&x<=16&&y>=8&&y<=10):ZONES.some(z=>{let a=z.x0+8;return x>=a-2&&x<=a+3&&y>=5&&y<=10})}
 function move(dx,dy){if(mode!=='world'||dialogOpen||!s.type||FIELD_ACTORS.isMoving())return;let nx=Math.max(1,Math.min(98,s.x+dx)),ny=Math.max(3,Math.min(20,s.y+dy));s.face=dx?dx>0?1:3:dy>0?2:0;if(NPCS.some(n=>n.x===nx&&n.y===ny))return;if(fieldHouse(nx,ny))return;if(nx===s.x&&ny===s.y)return;const previousX=s.x,previousY=s.y;s.x=nx;s.y=ny;s.followerTrail=[{x:previousX,y:previousY,face:s.face},...(s.followerTrail||[])].slice(0,6);s.lastMoveAt=Date.now();FIELD_ACTORS.move(s,{x:previousX,y:previousY});s.steps++;if(s.steps%10===0)save();if(isGrass(nx,ny)){s.grassSteps=(s.grassSteps||0)+1;if(s.grassSteps===3||Math.random()<.16)wild()}if(s.steps%45===0)save()}
 function isGrass(x,y){return y>=10&&y<=19&&((x*7+y*11)%5<3)||y>=3&&y<=6&&x%13>=8}
 function wild(){let z=zone(),name=choose(z.enc),l=s.wins===0?2:z.level+rand(3);let p=createMon(name,l);s.dex[p.name]=Math.max(s.dex[p.name]||0,1);beginBattle(null,p)}
-function beginBattle(npc,mon){if(!s.party.some(p=>eligible(p)&&p.hp>0)){toast('출전 가능한 포켓몬이 없어! 센터에서 회복해.');close();return}fight={npc,enemies:npc?npc.team.map(n=>createMon(n,npc.type==='rival'?npc.level:npc.level+rand(3))):[mon],index:0,active:s.party.findIndex(p=>eligible(p)&&p.hp>0),message:npc?npc.name+'이(가) 승부를 걸어왔다!':'야생 '+mon.name+' 등장!',busy:false};if(npc)fight.enemies.forEach(p=>s.dex[p.name]=Math.max(s.dex[p.name]||0,1));mode='battle';battleUI()}
+function beginBattle(npc,mon){if(!s.party.some(p=>eligible(p)&&p.hp>0)){toast('출전 가능한 포켓몬이 없어! 센터에서 회복해.');close();return}fight={npc,enemies:npc?npc.team.map(n=>createMon(n,npc.type==='rival'?npc.level:npc.level+rand(3),npc.type==='rival'?false:Math.random()<1/2048)):[mon],index:0,active:s.party.findIndex(p=>eligible(p)&&p.hp>0),message:npc?npc.name+'이(가) 승부를 걸어왔다!':'야생 '+mon.name+' 등장!',busy:false};if(npc)fight.enemies.forEach(p=>s.dex[p.name]=Math.max(s.dex[p.name]||0,1));mode='battle';battleUI()}
 function active(){return s.party[fight.active]}function foe(){return fight.enemies[fight.index]}function damage(a,b,m){let atk=lookup(a.name).atk,def=lookup(b.name).def;let base=Math.max(1,Math.floor(((2*a.level/5+2)*m.power*(atk/Math.max(1,def)))/50)+2);let mult=b.types.reduce((v,t)=>v*((MATCH[m.type]||{})[t]??1),1);let stab=a.types.includes(m.type)?1.5:1;return{value:Math.max(mult===0?0:1,Math.floor((base+2)*mult*stab*(.85+Math.random()*.15))),mult}}
 
 function battleWait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
@@ -354,5 +377,14 @@ if(s.type&&s.party.length&&!s.rival&&typeof RIVAL_SYSTEM!=='undefined'){
     });
     save();
   }catch(error){console.warn('라이벌 저장 데이터 이전 실패:',error)}
+}
+if(s.rival&&typeof RIVAL_SYSTEM!=='undefined'){
+  try{
+    const prepared=RIVAL_SYSTEM.withSupport(s.rival,DB,EVOS);
+    if(JSON.stringify(prepared.support)!==JSON.stringify(s.rival.support)){
+      s.rival=prepared;
+      save();
+    }
+  }catch(error){console.warn('라이벌 지원 포켓몬 데이터 생성 실패:',error)}
 }
 if(!s.type)start();else toast('모험이 이어집니다!');
