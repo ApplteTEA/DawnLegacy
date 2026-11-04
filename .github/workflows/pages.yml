@@ -32,6 +32,9 @@ jobs:
           node tests/rival-system.test.cjs
           node tests/rival-encounter.test.cjs
           node tests/rival-growth.test.cjs
+          node --check campaign-data.js
+          node --check campaign-core.js
+          node tests/campaign-core.test.cjs
           node tests/restart-rival-visibility.test.cjs
           node tests/campaign-system.test.cjs
       - name: Configure Pages and initialize site
