@@ -1,5 +1,16 @@
 # 변경 기록 / 작업 인계
 
+## 2026-11-05 — High: 포켓몬 전투/육성 독립 엔진 및 기존 게임 연동
+- **코드:** `battle-engine.js` 신규. 복합 타입·면역/페어리 방어 포함 상성표, 물리/특수·명중·급소·PP·우선도/속도 순서·상태/버프·트레이너 AI·포획 확률·경험치/진화·기술 습득/교체 API 제공.
+- **기존 연결:** `game.js`의 `beginBattle/attack/enemyAction/settleBattleTurn/capture/gain/createMon` 사용 코드 갱신. 배틀 애니메이션/HP UI/리그 보상/라이벌/기존 세이브/필드 동작 구조는 유지. 배틀 스테이지 리셋, Lv.70~100 EXP 애니메이션 수정.
+- **데이터:** 13종 배틀 DB/진화 경로 추가(총 105종), 74기술, 배지별 재사용 TM 8종. 파티 내 기술 관리 UI 구현. `campaign-ui.js` 회복에서 상태이상 제거.
+- **로더:** `bootstrap.js`가 `battle-engine.js`를 `game.js`보다 먼저 불러오도록 변경하고 `index.html`과 캐시 버전을 `battle-progression-20261105`로 맞춤.
+- **테스트/CI:** `tests/battle-engine.test.cjs`, `tests/battle-runtime.test.cjs`, `tests/move-management.test.cjs` 신설 및 `.github/workflows/pages.yml` 등록. 기존 필드·17타입·라이벌·캠페인/퍼즐·신규게임 테스트도 CI에서 실행.
+- **대표 커밋:** 엔진 `8f7611da`, 전투 연동/진화 데이터 `4545b02a`, 로더 `fa69467b`/`f570db9a`, 자동 테스트 `8e0dbe4b`, 게임 기술 UI `f77dece7`, 고유 TM `60e1ecb7`, Lv.70+ 애니메이션 `33d9a8bd`, 런타임 테스트 `242e3c05`, 기술 관리 UI 테스트 `c2f97826`.
+- **검증 경계:** CI 통과는 Node 기반 게임 함수/데이터/모의 DOM 자동 검사. 105종 전체 육성·실제 브라우저 16~22시간 플레이·Android 물리 기기 조작은 수행하지 않았고 **미검증**으로 남김.
+- **미구현:** 251종 전체 도감/종족별 완전한 속도·특수 능력치, 지닌도구/특성/EV·IV·모든 원작 기술/AI, 진화석·교환 진화 원작 규칙, 추가 진화형 필드 스프라이트, 전체 스토리/필드 통합 검증.
+- **Work 인계:** 신규 `battle-engine.js`와 `game.js`의 전투 영역을 보존. Work가 담당한 이동/충돌/픽셀아트 필드 코드는 이번 작업에서 수정하지 않음.
+
 ## 2026-11-04 — High: 8체육관 퍼즐·신전 공명기 차단·39개 스토리 대사
 - `campaign-puzzles.js` 신설: 관장 8개 고유 순서 조작 퍼즐 + 하늘신전 3개 공명 장치 안전 해제 퍼즐. 기존 `s.campaign.questStates`로 체크포인트 저장/복원, 오답 재시도 및 완료 상태 유지.
 - `campaign-core.js`: 퍼즐 완료 전 관장전 접근 제한 및 신전 공명선 사건 플래그 기록 방지. 기존 4배지 세이브와 새 캠페인 배지/보상은 별도로 유지.
