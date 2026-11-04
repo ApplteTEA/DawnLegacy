@@ -62,6 +62,13 @@
 - `node tests/campaign-scenes.test.cjs`: 모든 39개 메인 스토리 사건의 대사 페이지 존재·변수 치환·필수 텍스트 검증. `node tests/campaign-rival.test.cjs`: 스토리 대사 페이지가 추가된 뒤에도 라이벌/2회차 진행 확인.
 - GitHub Actions 최신 성공: `41787592989`. 테스트는 Node 기반 자동 검증이며 Android 실기기에서 게임 전체를 플레이한 증거가 아니다.
 
+## Battle, progression and TM system — 2026-11-05
+- `node tests/battle-engine.test.cjs`: 17개 챌린지·18개 방어 타입, 상성/면역, 속도와 우선도, 74개 기술, 명중/급소/PP/발버둥, 독/화상/마비/수면 등, 트레이너 기술 선택, 경험치·다단계 진화/이로치/구세이브 데이터 보존, 8배지 TM 적합성.
+- `node tests/battle-runtime.test.cjs`: 실제 `game.js`의 `beginBattle`/턴 진행/`win`/포획 함수를 모의 DOM/즉시 완료 애니메이션 환경에서 호출. 트레이너 승리·보상·PP·XP·이로치 포획과 레벨70 이상 애니메이션 상한 코드 검증.
+- `node tests/move-management.test.cjs`: 실제 파티 기술관리 메뉴의 버튼 콜백과 배지 TM 선택/4칸 기술 교체/세이브 횟수/PP·이로치 보존, 구형 4배지에서 새 배지 TM을 잘못 얻지 않는지 검사.
+- `node --check battle-engine.js`, `node --check game.js` 포함 CI. 기존 이동/필드·라이벌·캠페인·신규게임 테스트는 그대로 유지.
+- **검증하지 않은 것:** 실제 PC 브라우저 그래픽 애니메이션/Android 터치·프레임, 전체 8배지 플레이, 105종별 포획/연속 전투/진화 전체 조합. 이 자동 테스트를 사용자 실기기 QA로 표현하지 않는다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
