@@ -2,6 +2,16 @@
 
 기준: 2026-11-03 필드 재구축 코드 및 브라우저 검증.
 
+## 2026-11-04 — 확장 캠페인 런타임 구성 (부분 구현)
+- `campaign-data.js`: `CAMPAIGN_DATA` 고유 ID 표, 지도 34개 및 양방향 연결, 8관장/리그/보스, 39개 메인 사건, 라이벌 7개 회차와 포스트게임 이벤트. **타일 그래픽 데이터나 현재 게임의 지도 충돌 데이터는 아님**.
+- `campaign-core.js`: `CAMPAIGN_CORE` 순수 저장·규칙 엔진. `s.campaign`에 `mapId`, `visited`, `flags`, `gymWins`, `rivalWins`, `rewardClaims`, `cutsceneSeen`, `leagueRun`, `legacy`를 버전과 함께 보관한다. `ensure(s)`는 구형 저장의 원래 `s.badges`, `s.champion`, `s.x/y`, `s.rival`을 보존하고 과거 4배지/챔피언을 새 스토리 8배지 완료로 간주하지 않는다.
+- `campaign-ui.js`: `CAMPAIGN_UI.open(adapter)`로 게임의 `pop/btn/save/beginBattle/createMon`을 사용. 임시 지역 탐험/스토리 대화·야생·체육관·리그·라이벌·일부 후일담을 연결. 별도 Canvas 맵이나 실제 이벤트 컷신을 구현하지 않았다.
+- 로딩 순서: `bootstrap.js`에서 배경 필드/캠페인 데이터/캠페인 규칙/`game.js`/`campaign-ui.js`를 순차 로드, `index.html`의 캐시 쿼리와 `bootstrap.js` 내부 버전을 동기화. `rival-system.js`는 기존 선로드 유지.
+- `game.js`: 메뉴에 캠페인 진입 버튼을 추가하고 기존 전투 승리 시 `campaignBattleId`가 있으면 `CAMPAIGN_CORE.completeBattle()`로 8체육관/리그/라이벌 진행을 별도 기록. 리그 패배 시 시도 중 플래그만 초기화. 기존 게임의 `move()`/카메라/필드 충돌을 수정하지 않음.
+- 8종 추가 포켓몬은 `game.js`의 `DB`에 **트레이너용 stage3 배틀 데이터**로만 반영하고 `CAMPAIGN_BATTLE_ART`로 기존 외부 배틀 이미지 연결을 사용. 기존 `POKEMON_DEX`(84개 필드 에셋 검사 대상) 및 `field-manifest.js`에는 추가하지 않음. 해당 종의 필드 걷기 이미지/파티 동행은 별도 작업.
+- 충돌 방지: Work가 `game.js`·`bootstrap.js`·`index.html`을 변경할 때 최신 HEAD와 대조 후 이 모듈 로딩·전투 결과·기존 새 게임 초기화 가드를 모두 유지해야 함.
+- QA: `tests/campaign-core.test.cjs`, `tests/campaign-rival.test.cjs`, `tests/campaign-ui.test.cjs` 및 기존 17타입·저장·필드 테스트. 순수 상태 전이 검증이지 전체 지도 게임 플레이 검증이 아니다.
+
 ## 웹 실행 흐름
 1. index.html: Canvas, HUD, 방향키/액션 UI, 에셋 로딩 상태. **rival-system.js를 bootstrap.js보다 먼저 로드.**
 2. bootstrap.js: field-manifest.js → field-actors.js → world-v2.js → game.js 순차 로드.
