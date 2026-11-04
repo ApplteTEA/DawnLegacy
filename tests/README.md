@@ -49,6 +49,12 @@
 - **주의:** 본 테스트는 데이터·상태 전이·모의 UI의 자동 검사이며, 실제 34개 픽셀아트 맵이 구현되었다거나 PC/Android 실기기에서 엔딩까지 플레이한 검증이 아님.
 - Work의 이동·충돌/시각 재구축 결과와 통합된 후, 처음부터 엔딩·2회차를 통과하는 실제 입력 기반 E2E를 별도로 구축해야 한다.
 
+## Campaign story pages — 2026-11-04
+- `node tests/campaign-scenes.test.cjs`: 39개 메인 사건의 대사 페이지·화자 존재, 선택 타입/스타팅 포켓몬/라이벌 변수 치환, 필수 전설/엔딩 대사 존재 검사.
+- `node tests/campaign-ui.test.cjs`: 페이지를 마지막까지 넘긴 뒤에만 이야기 완료 버튼을 제공하고, 실제 최종 확인 후에 사건 플래그가 기록되는지 검사.
+- `node tests/campaign-rival.test.cjs`: 엔딩 이후 봉인서고·신전 이벤트의 페이지형 대화 통과를 확인.
+- 검증 범위: 데이터/임시 메뉴 UI의 자동 검사. 실제 애니메이션 컷신·Android/iOS 실기기 확인을 대체하지 않음.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
