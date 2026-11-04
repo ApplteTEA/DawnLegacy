@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
+const RIVAL_SYSTEM = require('../rival-system.js');
 
 const source = fs.readFileSync(path.join(__dirname, '..', 'game.js'), 'utf8');
 function between(begin, end) {
@@ -15,6 +16,7 @@ function between(begin, end) {
 
 const definitions = between('const ZONES=', "const SAVE=");
 const world = vm.runInNewContext(definitions + '\n({NPCS,ZONES})');
+const species = vm.runInNewContext(source.slice(source.indexOf('const TYPES='),source.indexOf('const ZONES=')) + '\n({DB,EVOS})');
 const npc = world.NPCS.find(actor => actor.type === 'rival');
 
 assert.ok(npc, 'Rival must exist as a field NPC');
@@ -27,7 +29,7 @@ assert.equal(world.NPCS.filter(actor => actor.x === npc.x && actor.y === npc.y).
 
 const interactions = between('function nearby()', 'function move(dx,dy)');
 const state = {
-  x: 9, y: 12, type: '불꽃', rival: { type: '물', starter: '리아코', level: 5 }, defeated: []
+  x: 9, y: 12, type: '불꽃', rival: { type: '물', starter: '리아코', level: 5 }, defeated: [], badges: 0
 };
 
 let lastDialog = '';
@@ -37,6 +39,9 @@ let lastToast = '';
 const context = {
   NPCS: world.NPCS,
   ZONES: world.ZONES,
+  DB: species.DB,
+  EVOS: species.EVOS,
+  RIVAL_SYSTEM,
   s: state, mode: 'world', dialogOpen: false,
   pop(html, callback) {
     lastDialog = html;
@@ -65,8 +70,20 @@ const saved = JSON.parse(JSON.stringify(state));
 assert.equal(saved.rival.starter, '리아코', 'Rival must survive serialization');
 state.defeated.push('시온');
 context.interact();
-assert.match(lastDialog, /첫 승부는 네가 이겼지만/);
-assert.equal(buttons.challenge, undefined, 'First battle must not repeat after victory');
+assert.match(lastDialog, /배지를 1개 모으면/);
+assert.equal(buttons.challenge, undefined, 'Rematch must require first badge');
+state.badges = 1;
+context.interact();
+assert.match(lastDialog, /두 번째 대결/);
+buttons.challenge();
+assert.equal(battle.name, '시온 2차전');
+assert.equal(battle.level, 15);
+assert.equal(battle.team.length, 2);
+assert.equal(battle.team[1], '리아코');
+state.defeated.push('시온 2차전');
+context.interact();
+assert.match(lastDialog, /배지를 2개 모으면/);
+assert.equal(buttons.challenge, undefined);
 
 state.defeated.length = 0;
 state.rival = null;
@@ -75,4 +92,4 @@ assert.match(lastToast, /라이벌의 포켓몬 정보를 확인할 수 없어/)
 assert.equal(buttons.challenge, undefined);
 
 assert.match(source, /npc\.type==='rival'\?npc\.level:npc\.level\+rand\(3\)/, 'The first rival must enter at the advertised level');
-console.log('Rival NPC interaction, stored starter, single first battle and Lv.5 checks passed.');
+console.log('Rival NPC interaction, fixed starter, badge-gated rematch and Lv.5 checks passed.');
