@@ -1,12 +1,11 @@
 # 작업 우선순위
 
-## P0 — Work 그래픽 결과 확인
-- [x] Work의 그래픽 재구축 커밋/변경 파일 확인 — 73f50f533260023e164c73ebcb442836f604df16
-- [x] 주인공 네 방향 독립 스프라이트와 방향별 3프레임 이상 걷기 확인
-- [x] NPC 스타일과 동행 포켓몬 종류별 필드 스프라이트 확인
-- [ ] Android 세로 화면에서 이동/방향/동행/크기/발 위치 검증
-- [ ] 게임 기존 기능 회귀 검사
-> Chrome 390×844 세로 화면과 자동 검사는 완료. Android 실기기 및 전체 회귀 테스트는 미완료. 상세 증거: tests/README.md, tests/screenshots/mobile-field.jpg.
+> 이 문서는 **새로 구현할 게임 기능과 콘텐츠**의 개발 목록이다. 기존 기능의 버그, 그래픽 품질, 성능, 실기기 검증 과제는 [IMPROVEMENTS.md](IMPROVEMENTS.md)에서 별도 관리한다. 개발/인계 절차는 [WORKFLOW.md](WORKFLOW.md)를 따른다.
+
+## 개선 작업과 구분
+- 이전 그래픽 필드 재구축의 완료 및 검증 결과는 [PROJECT_STATUS.md](PROJECT_STATUS.md), [CHANGELOG.md](CHANGELOG.md), [tests/README.md](../tests/README.md)에 기록됨.
+- Android 실기기 검증 및 전체 회귀 검사는 `IMPROVEMENTS.md`의 **DL-004**로 관리.
+- 사용자가 Work에 맡긴 **배경 그래픽 개선, 장애물 통과·순간이동 문제**는 `IMPROVEMENTS.md`의 **DL-001~DL-003**으로 관리하며, 현재 사용량 제한으로 대기 중인 것으로 기록. 코드 변경 완료를 가정하지 않는다.
 
 ## P1 — 확정 시스템
 - [ ] 현재 스타팅 타입 선택/룰렛 구현 분석
@@ -32,6 +31,7 @@
 - [ ] 2회차 포획 및 후일담
 
 ## 문서 유지
-- [ ] 작업마다 PROJECT_STATUS/CHANGELOG/TODO 갱신
+- [ ] 기능 개발 시 PROJECT_STATUS/CHANGELOG/TODO 갱신
+- [ ] 품질 개선·버그 수정 시 PROJECT_STATUS/CHANGELOG/IMPROVEMENTS 갱신
 - [ ] 시스템 변경 시 GAME_DESIGN/ARCHITECTURE 갱신
 - [ ] 스토리 확정/변경 시 STORY/WORLD_LORE 갱신
