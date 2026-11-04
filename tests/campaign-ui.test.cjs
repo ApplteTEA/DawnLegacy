@@ -67,7 +67,7 @@ assert.ok(saved>=5);
 assert.equal(state.party[0].id,'starter');
 
 const missing=DATA.GYMS.find(x=>x.id==='GYM_08');
-assert.ok(CORE.missingSpecies(missing,DB).length>0,'Unsupported endgame artwork/species must be declared');
+assert.equal(CORE.missingSpecies(missing,DB).length,0,'Late-game opponent species must be available for battle');
 
 // No DOM substitution should modify old movement code or replace sprite renderer.
 const bootstrap=fs.readFileSync(path.join(__dirname,'..','bootstrap.js'),'utf8');
