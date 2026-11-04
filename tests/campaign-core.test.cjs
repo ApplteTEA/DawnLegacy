@@ -5,6 +5,7 @@ const path=require('node:path');
 const vm=require('node:vm');
 const DATA=require('../campaign-data.js');
 const CORE=require('../campaign-core.js');
+const PUZZLES=require('../campaign-puzzles.js');
 const game=fs.readFileSync(path.join(__dirname,'..','game.js'),'utf8');
 const tables=vm.runInNewContext(game.slice(game.indexOf('const TYPES='),game.indexOf('const ZONES='))+'\n({DB,TYPES,EVOS})');
 const {DB}=tables;
@@ -62,6 +63,12 @@ function event(id){
 }
 function gym(index){
   const id='GYM_'+String(index).padStart(2,'0');
+  assert.equal(CORE.canStartGymPuzzle(state,id).ok,true,'Puzzle prerequisites for '+id);
+  assert.equal(CORE.canFightGym(state,id).ok,false,'Gym must require puzzle first: '+id);
+  for(const action of PUZZLES.GYMS[id].steps){
+    const result=PUZZLES.attempt(state,id,action);
+    assert.equal(result.ok,true,'Puzzle action failed for '+id);
+  }
   assert.equal(CORE.canFightGym(state,id).ok,true,id);
   const result=CORE.completeBattle(state,id);
   assert.equal(result.ok,true,'Gym battle not applied: '+id);
