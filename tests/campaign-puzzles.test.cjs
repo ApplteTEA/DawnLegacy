@@ -42,6 +42,19 @@ for(const gym of DATA.GYMS){
   assert.equal(PUZZLES.status(serialized,gym.id).step,3);
 }
 
+assert.equal(Object.keys(PUZZLES.EVENTS).length,3);
+for(const [id,puzzle] of Object.entries(PUZZLES.EVENTS)){
+  assert.equal(puzzle.steps.length,3);
+  const save={version:1,type:'불꽃',party:[{name:'브케인'}]};
+  CORE.ensure(save);
+  assert.equal(PUZZLES.isSolved(save,id),false);
+  for(const action of puzzle.steps.slice(0,2))assert.equal(PUZZLES.attempt(save,id,action).ok,true);
+  const restored=JSON.parse(JSON.stringify(save));
+  assert.equal(PUZZLES.status(restored,id).step,2);
+  assert.equal(PUZZLES.attempt(restored,id,puzzle.steps[2]).solved,true);
+  assert.equal(PUZZLES.isSolved(JSON.parse(JSON.stringify(restored)),id),true);
+}
+
 const player={version:1,type:'불꽃',party:[{name:'브케인'}],badges:4};
 CORE.ensure(player);
 const c=CORE.ensure(player);
@@ -56,4 +69,4 @@ assert.equal(CORE.completeBattle(player,'GYM_01').ok,false,'Badge and reward are
 assert.equal(player.badges,4,'Old four-badge progress must not be overwritten');
 assert.equal(CORE.badgeCount(player),1);
 assert.equal(PUZZLES.isSolved(player,'GYM_01'),true);
-console.log('Eight gym puzzles passed: checkpoint, retry, save compatibility and battle unlock.');
+console.log('Eight gym and three shrine puzzles passed: checkpoint, retry, save compatibility and gated rewards.');
