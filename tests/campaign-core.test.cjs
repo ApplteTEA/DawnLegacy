@@ -14,7 +14,7 @@ assert.deepEqual(report.problems,[],'Campaign registry and flags must be self-co
 assert.equal(Object.keys(DATA.MAPS).length,34);
 assert.equal(DATA.GYMS.length,8);
 assert.equal(DATA.LEAGUE.length,5);
-assert.equal(DATA.STORY.length,38);
+assert.equal(DATA.STORY.length,39);
 assert.ok(report.unavailableSpecies.some(x=>x.id==='GYM_08'),'Missing dragon species must be reported, never substituted silently');
 
 function legacySave(){
@@ -131,5 +131,5 @@ assert.equal(rr.flags.E4_1_CLEAR,undefined);
 assert.equal(rr.flags.LEAGUE_REGISTERED,true);
 assert.equal(replay.party[0].id,'saved-starter');
 
-console.log('Campaign data & state passed: 34 maps, 8 gyms, 38 events, full simulated story/league progression, old-save preservation, no duplicate rewards.');
+console.log('Campaign data & state passed: 34 maps, 8 gyms, 39 events, full simulated story/league progression, old-save preservation, no duplicate rewards.');
 console.log('Unimplemented species detected in: '+report.unavailableSpecies.map(x=>x.id).join(', '));
