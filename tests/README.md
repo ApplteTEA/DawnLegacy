@@ -34,6 +34,13 @@
 - `node tests/rival-encounter.test.cjs`: 새벽마을 시온 NPC와 1차전 및 배지 1개를 획득했을 때 2차전 대화와 저장된 팀 2마리 등장 조건 검사.
 - GitHub Pages CI에 해당 테스트를 연결. 이 자동 검사는 **실제 UI를 눌러 플레이한 테스트가 아니다**. 사용자 요청대로 실기기/통합 플레이 테스트는 추후 일괄 진행.
 
+## 8-gym campaign foundation — 2026-11-04
+- `node tests/campaign-core.test.cjs`: 기존 4배지 세이브·도감·라이벌 종·위치 보존, 34개 맵 연결/진입 게이트, 39개 메인 사건을 통한 배지1~8→공명기 차단→카이론→아르세우스 이벤트→리그 5연전→엔딩/2회차까지 **상태 시뮬레이션**, 동일 이벤트·보상 이중 지급 차단.
+- `node tests/campaign-rival.test.cjs`: 원래 스타팅/지원팀 고정, 7단계 라이벌 재대결과 별도 후일담 플래그 검사.
+- `node tests/campaign-ui.test.cjs`: 임시 지도 메뉴 진입, R01/M01 방문, 이벤트 기록, 솔비 관장 배틀 호출, 회복·야생 포켓몬 시작, 캐시 버전과 로더 연계 기본 검사.
+- 후반 관장 및 사천왕 팀의 누락 8종은 **배틀 데이터**에 추가되어 현재 DB 기준 8체육관/리그 상대 종 목록 유효성을 검사. 해당 종의 **필드 스프라이트는 미제작**.
+- 검증 범위 주의: 캠페인 지도는 메뉴형 임시 이동 UI이며 게임 필드용 맵·충돌/동행·NPC 컷신/퍼즐이 구현됐다는 뜻이 아니다. 자동 상태 검사 또한 실제 16~22시간 플레이/Android 실기기 확인을 대신하지 않는다.
+
 ## Browser QA
 
 `tests/mobile.html` embeds the **actual index.html** in a 390×844 viewport. This is a browser portrait viewport, not a physical handset or mobile OS emulation. Run on an isolated preview origin: fixture buttons write disposable localStorage test data on that origin. No test hooks run in index.html itself.
