@@ -190,6 +190,46 @@ assert.ok(E.experienceAward(make('치코리타',20),make('브케인',20),{traine
 assert.ok(E.captureChance({hp:1,max:40,status:'sleep'},'great')>
  E.captureChance({hp:40,max:40,status:null},'balls'));
 
+// TM access is earned from the matching badge, reusable, and not granted from legacy badges.
+{
+  const mon=make('치코리타',12);
+  assert.equal(E.availableMoves(mon,[],DB).includes('매지컬리프'),false);
+  assert.equal(E.learnMove(mon,'매지컬리프',-1,{earnedGymIds:[],dex:DB}).ok,false);
+  const available=E.availableMoves(mon,['GYM_01'],DB);
+  assert.ok(available.includes('매지컬리프'));
+  const count=mon.moves.length;
+  assert.equal(E.learnMove(mon,'매지컬리프',-1,{earnedGymIds:['GYM_01'],dex:DB}).ok,true);
+  assert.equal(mon.moves.length,count+1);
+  assert.equal(mon.moves.at(-1).name,'매지컬리프');
+  assert.equal(E.learnMove(mon,'매지컬리프',0,{earnedGymIds:['GYM_01'],dex:DB}).ok,false,
+    'A Pokémon must not learn the same move twice');
+  const restored=JSON.parse(JSON.stringify(mon));
+  assert.equal(restored.moves.at(-1).name,'매지컬리프','TM learned move persists across saves');
+}
+{
+  const mon=make('브케인',35);
+  assert.equal(mon.moves.length,4);
+  const original=mon.moves[0].name;
+  assert.equal(E.learnMove(mon,'도깨비불',-1,{earnedGymIds:['GYM_05'],dex:DB}).ok,false,
+    'A full moveset requires explicit move replacement');
+  const taught=E.learnMove(mon,'도깨비불',0,{earnedGymIds:['GYM_05'],dex:DB});
+  assert.equal(taught.ok,true);
+  assert.equal(taught.forgot,original);
+  assert.equal(mon.moves[0].name,'도깨비불');
+  mon.stages.atk=6;
+  E.clearBattleStages(mon);
+  assert.equal(mon.stages.atk,0,'Stat boosts must not leak across battles');
+}
+{
+  const wild=make('고오스',16),actor=make('꼬렛',16);
+  const result=E.calculateDamage(actor,wild,E.freshMove('발버둥'),DB,fixed);
+  assert.equal(result.mult,1,'Struggle must bypass type immunity to avoid PP softlock');
+  assert.ok(result.value>0);
+}
+for(const [gymId,technique] of Object.entries(E.GYM_TMS)){
+  assert.ok(E.MOVES[technique],gymId+' has an actual learnable TM move');
+}
+
 // Explicit Work boundary checks and real production loader order.
 const bootstrap=fs.readFileSync(path.join(__dirname,'..','bootstrap.js'),'utf8');
 const index=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
@@ -200,4 +240,4 @@ assert.ok(index.includes('rival-system.js?v='+revision));
 assert.match(source,/BATTLE_ENGINE\.round\(p,e,i,DB/);
 assert.match(source,/BATTLE_ENGINE\.gain\(p,amount/);
 assert.match(source,/BATTLE_ENGINE\.experienceAward/);
-console.log('Battle engine CI: 17 challenges, 18 defending types, 67 moves, speed/priority, statuses, AI, XP, 105 species and legacy saves OK.');
+console.log('Battle engine CI: 17 challenges, 18 defending types, 74 moves, speed/priority, statuses, AI, XP, 105 species and legacy saves OK.');
