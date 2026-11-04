@@ -1,11 +1,11 @@
 'use strict';
 (async function(){
- const version='campaign-scenes-20261104';
+ const version='battle-progression-20261105';
  for(const href of ['style.css','battle-v2.css']){
   const link=document.createElement('link');link.rel='stylesheet';link.href='./'+href+'?v='+version;document.head.appendChild(link);
  }
  try{
-  for(const src of ['field-manifest.js','field-actors.js','world-v2.js','campaign-data.js','campaign-scenes.js','campaign-puzzles.js','campaign-core.js','game.js','campaign-ui.js']){
+  for(const src of ['field-manifest.js','field-actors.js','world-v2.js','campaign-data.js','campaign-scenes.js','campaign-puzzles.js','campaign-core.js','battle-engine.js','game.js','campaign-ui.js']){
    await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='./'+src+'?v='+version;script.onload=resolve;script.onerror=()=>reject(new Error(src));document.body.appendChild(script)});
   }
  }catch(error){
