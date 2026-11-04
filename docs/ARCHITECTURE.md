@@ -23,6 +23,12 @@
 - 검증: `tests/rival-system.test.cjs`를 GitHub Pages CI 실행 단계에 추가. UI 실기기 검증은 별도.
 - Work가 대기 중인 필드·충돌 개선과 같은 `game.js`를 건드릴 때는 **현행 최신 커밋에서 라이벌 저장·룰렛 변경을 보존하고 병합**한다.
 
+## 긴급 수정 메모 — 새 게임 및 캐시 (2026-11-04)
+- 기존 `game.js`는 `beforeunload` 이벤트에서 `save()`를 호출하므로 저장 키 삭제만 수행하면 재로드 과정에서 기존 데이터를 재저장할 수 있었다. 현재는 `resetInProgress` 상태가 참일 때 `save()`가 동작하지 않도록 수정.
+- `bootstrap.js`가 `game.js`를 포함한 스크립트를 동적으로 로딩하므로 `index.html`만 캐시 무효화하면 충분하지 않다. 새 실행 파일을 반영할 때 양쪽 버전 쿼리를 일치시킬 것.
+- `game.js`의 `draw()`는 렌더러 호출 후 플레이어 샘플 좌표에서 NPC 위치를 화면으로 환산해 '라이벌 시온' 이름표를 오버레이한다. Work가 카메라/타일 구조를 변경할 경우 마커 연산도 함께 업데이트해야 한다.
+- 필드 지형·이동·충돌 재설계는 Work 대기 작업으로 유지한다.
+
 ## 저장 호환
 - 키 dawnLegacyCompleteV2 / 기존 version 유지.
 - fieldFollower: x, y, face를 추가 저장. 구형 followerTrail은 인접·충돌 검사 후 이관하고 없으면 안전한 인접 칸에서 시작.
