@@ -81,7 +81,18 @@ const CAMPAIGN_DATA = (() => {
       team:['코일','쏘콘','무장조','강철톤'],prize:4800,puzzle:'동력 레일과 전원을 분리한다'},
     {id:'GYM_08',mapId:'M08',name:'승천',type:'드래곤',badge:'창공배지',level:62,
       team:['미뇽','신뇽','킹드라','망나뇽'],prize:6000,puzzle:'바람 종과 상승 기류의 순서를 찾는다'}
-  ].map(x => Object.freeze({...x,team:Object.freeze(x.team)}))));
+  ].map(x => Object.freeze({...x,team:Object.freeze(x.team)})));
+
+  // Full story rival encounters are separate from four existing prototype NPC rematches.
+  const RIVALS=Object.freeze([
+    {id:'RIV_01',mapId:'M00',requires:['STARTER_CHOSEN'],size:1,level:5,prize:200},
+    {id:'RIV_02',mapId:'F01',requires:['GYM_2_WON'],size:2,level:22,prize:520},
+    {id:'RIV_03',mapId:'D04',requires:['DAWN_STONE_OBTAINED'],size:3,level:37,prize:980},
+    {id:'RIV_04',mapId:'D06',requires:['CLUE_HISTORY'],size:4,level:50,prize:1700},
+    {id:'RIV_05',mapId:'M08',requires:['GYM_8_WON'],size:5,level:60,prize:2600},
+    {id:'RIV_06',mapId:'R09',requires:['LEAGUE_REGISTERED'],size:5,level:64,prize:3300},
+    {id:'PG_02_RIVAL_FINAL',mapId:'P02',requires:['ARCHIVE_RESTORED','POSTGAME_UNLOCKED'],size:6,level:78,prize:6000}
+  ].map(x=>Object.freeze({...x,requires:Object.freeze(x.requires)})));
 
   const LEAGUE = Object.freeze([
     {id:'E4_01',name:'유담',type:'격투',level:64,team:['알통몬','근육몬','헤라크로스','괴력몬']},
@@ -89,7 +100,7 @@ const CAMPAIGN_DATA = (() => {
     {id:'E4_03',name:'해령',type:'땅',level:66,team:['모래두지','고지','우파','데기라스','코리갑']},
     {id:'E4_04',name:'가온',type:'비행',level:67,team:['구구','피죤','무장조','골뱃','피죤투']},
     {id:'CHAMPION',name:'윤하',type:'혼합',level:70,team:['전룡','헤라크로스','팬텀','윈디','강철톤','망나뇽']}
-  ].map(x=>Object.freeze({...x,team:Object.freeze(x.team)}))));
+  ].map(x=>Object.freeze({...x,team:Object.freeze(x.team)})));
 
   const STORY = Object.freeze([
     {id:'EV_00_CHOOSE_STARTER',mapId:'M00',title:'두 파트너의 출발',require:[],flags:['STARTER_CHOSEN','RIVAL_STARTER_FIXED'],text:'해솔 박사의 제안으로 타입 챌린지를 선택하고 시온과 첫 승부를 준비한다.'},
@@ -131,7 +142,7 @@ const CAMPAIGN_DATA = (() => {
     {id:'EV_36_LEAGUE_ROAD',mapId:'R09',title:'리그의 초대',require:['GYM_8_WON','ECLIPSE_RESOLVED'],flags:['LEAGUE_REGISTERED'],text:'사천왕과 챔피언에 도전할 자격을 인정받는다.'},
     {id:'EV_37_CHAMPION',mapId:'L01',title:'명예의 전당',require:['LEAGUE_REGISTERED','E4_4_CLEAR'],flags:['CHAMPION_WON'],text:'챔피언 윤하와 정면 승부를 펼친다.',battleId:'CHAMPION'},
     {id:'EV_38_CREDITS',mapId:'L01',title:'새로운 아침',require:['CHAMPION_WON'],flags:['CREDITS_SEEN','POSTGAME_UNLOCKED'],text:'포켓몬과 사람들이 일상을 되찾는 모습을 보며 엔딩을 맞는다.'}
-  ].map(x=>Object.freeze({...x,require:Object.freeze(x.require),flags:Object.freeze(x.flags)}))));
+  ].map(x=>Object.freeze({...x,require:Object.freeze(x.require),flags:Object.freeze(x.flags)})));
 
   const BOSS = Object.freeze({
     ECL_KAIRON:Object.freeze({id:'ECL_KAIRON',name:'카이론',level:64,prize:8800,
@@ -144,8 +155,8 @@ const CAMPAIGN_DATA = (() => {
     {id:'PG_04_ELITE_REMATCH',mapId:'L01',requires:['POSTGAME_UNLOCKED'],text:'강화된 사천왕과 챔피언 재대결.'},
     {id:'PG_05_TOWER',mapId:'P03',requires:['POSTGAME_UNLOCKED'],text:'배틀탑 연승 기록.'},
     {id:'PG_06_EXPLORATION',mapId:'R01',requires:['POSTGAME_UNLOCKED'],text:'새로운 서식지를 탐험한다.'}
-  ].map(x=>Object.freeze({...x,requires:Object.freeze(x.requires)}))));
+  ].map(x=>Object.freeze({...x,requires:Object.freeze(x.requires)})));
 
-  return Object.freeze({MAPS,GYMS,LEAGUE,STORY,BOSS,POSTGAME,paths:Object.freeze(paths)});
+  return Object.freeze({MAPS,GYMS,RIVALS,LEAGUE,STORY,BOSS,POSTGAME,paths:Object.freeze(paths)});
 })();
 if (typeof module !== 'undefined' && module.exports) module.exports=CAMPAIGN_DATA;
